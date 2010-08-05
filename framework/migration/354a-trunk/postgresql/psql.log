@@ -1,0 +1,208 @@
+
+#Run Scripts:
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/584_BF2795492.sql:3: NOTICE:  ALTER TABLE / ADD PRIMARY KEY creará el índice implícito «ad_document_action_access_key» para la tabla «ad_document_action_access»
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/584_BF2795492.sql:6: NOTICE:  ALTER TABLE / ADD PRIMARY KEY creará el índice implícito «r_contactinterest_key» para la tabla «r_contactinterest»
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/604_BF2902984_GridPerformance.sql:6: WARNING:  no hay una transacción en curso
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/606_BF2904257_WrongRMALineValidationSQL.sql:6: WARNING:  no hay una transacción en curso
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/623_BF2904257_WrongRMALineValidationSQL.sql:6: WARNING:  no hay una transacción en curso
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/639_FR2913307-OrderSource.sql:25: NOTICE:  CREATE TABLE / PRIMARY KEY creará el índice implícito «cordersource_key» para la tabla «c_ordersource»
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/664_FR2934358_FixedTyposOnElements.sql:260: WARNING:  no hay una transacción en curso
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/665_FR2952245_ImportDataPlanning.sql:59: NOTICE:  CREATE TABLE / PRIMARY KEY creará el índice implícito «i_productplanning_key» para la tabla «i_productplanning»
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/678_BF_1774758.sql:9: WARNING:  no hay una transacción en curso
+psql:/home/harlock/workspace/adempiereTrunk/migration/354a-trunk/postgresql/687_FR2897194_Adv_Zoom.sql:602: NOTICE:  CREATE TABLE / PRIMARY KEY creará el índice implícito «ad_relationtype_key» para la tabla «ad_relationtype»
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+
+ altercolumn 
+-------------
+ 
+(1 fila)
+

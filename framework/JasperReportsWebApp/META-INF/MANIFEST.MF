@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JasperReportsWebApp
+Bundle-SymbolicName: JasperReportsWebApp
+Bundle-Version: 1.0.0.qualifier
+Export-Package: org.compiere.ejb,
+ org.compiere.interfaces,
+ org.compiere.utils,
+ org.compiere.web
