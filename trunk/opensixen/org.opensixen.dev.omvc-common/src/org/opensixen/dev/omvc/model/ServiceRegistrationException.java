@@ -1,4 +1,4 @@
-package org.opensixen.dev.omvc;
+package org.opensixen.dev.omvc.model;
 
 public class ServiceRegistrationException extends RuntimeException {
 
