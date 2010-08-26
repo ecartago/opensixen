@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Opensixen Client Lite" uid="Opensixen" id="product.opensixen.client.lite.Opensixen" application="org.opensixen.clientGUI.OpensixenGUI" version="1.0.0" useFeatures="true" includeLaunchers="true">
+<product name="Opensixen Client Lite" uid="OpensixenLite" id="product.opensixen.client.lite.Opensixen" application="org.opensixen.clientGUI.OpensixenGUI" version="1.0.0" useFeatures="true" includeLaunchers="true">
+
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-consoleLog -console</programArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.6 -XX:MaxPermSize=256m -Xms40m -Xmx512m -Declipse.ignoreApp=false -Dosgi.noShutdown=true</vmArgs>
+      <programArgs>-consoleLog</programArgs>
+      <vmArgs>-Dosgi.requiredJavaVersion=1.6 -XX:MaxPermSize=256m -Xms128m -Xmx512m -Declipse.ignoreApp=false -Dosgi.noShutdown=true</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
+
+   <windowImages/>
+
 
    <launcher name="opensixen">
       <solaris/>
@@ -19,14 +23,16 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
    </plugins>
 
    <features>
-      <feature id="feature.opensixen.client.core" version="1.0.0.qualifier"/>
+      <feature id="feature.opensixen.opensixen_lite" version="1.0.0.qualifier"/>
    </features>
 
 
