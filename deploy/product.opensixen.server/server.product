@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="Opensixen Server" uid="OpensixenServer" id="product.opensixen.server.OpensixenServer" application="org.opensixen.as.server.ApplicationServer" version="1.0.0" useFeatures="true" includeLaunchers="true">
+
+   <configIni use="default">
+      <linux>/product.opensixen.server/config.ini</linux>
+      <macosx>/product.opensixen.server/config.ini</macosx>
+      <solaris>/product.opensixen.server/config.ini</solaris>
+      <win32>/product.opensixen.server/config.ini</win32>
+   </configIni>
+
+   <launcherArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+   </launcherArgs>
+
+   <windowImages/>
+
+   <launcher>
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="feature.opensixen.server" version="1.0.0.qualifier"/>
+   </features>
+
+
+</product>
