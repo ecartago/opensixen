@@ -24,4 +24,12 @@
          id="feature.opensixen.server.tomcat"
          version="0.0.0"/>
 
+   <includes
+         id="feature.opensixen.server.zkwebui"
+         version="0.0.0"/>
+
+   <includes
+         id="feature.opensixen.spain"
+         version="0.0.0"/>
+
 </feature>
