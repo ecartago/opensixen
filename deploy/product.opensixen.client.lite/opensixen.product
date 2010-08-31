@@ -3,7 +3,6 @@
 
 <product name="Opensixen Client Lite" uid="OpensixenLite" id="product.opensixen.client.lite.Opensixen" application="org.opensixen.clientGUI.OpensixenGUI" version="1.0.0" useFeatures="true" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -15,18 +14,15 @@
 
    <windowImages/>
 
-
-   <launcher name="opensixen">
+   <launcher name="opensixen-lite">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
    </plugins>
