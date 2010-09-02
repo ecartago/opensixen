@@ -10,7 +10,7 @@
             name="OpensixenClient">
          <property
                name="appName"
-               value="Opensixen Client">
+               value="OpensixenClient">
          </property>
       </product>
    </extension>
