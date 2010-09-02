@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Opensixen Client" uid="Opensixen Client" id="product.opensixen.client.OpensixenClient" application="org.opensixen.clientGUI.OpensixenGUI" version="1.0.0" useFeatures="true" includeLaunchers="true">
+<product name="Opensixen Client" uid="OpensixenClient" id="product.opensixen.client.OpensixenClient" application="org.opensixen.clientGUI.OpensixenGUI" version="1.0.0" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
