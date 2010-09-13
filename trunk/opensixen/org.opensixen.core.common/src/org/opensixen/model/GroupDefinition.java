@@ -1,9 +1,7 @@
 /**
  * 
  */
-package org.opensixen.report;
-
-import ar.com.fdvs.dj.domain.entities.DJGroupVariable;
+package org.opensixen.model;
 
 public class GroupDefinition {
 	private String[] groupColumns;

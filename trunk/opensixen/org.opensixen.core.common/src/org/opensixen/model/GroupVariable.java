@@ -1,10 +1,7 @@
 /**
  * 
  */
-package org.opensixen.report;
-
-import ar.com.fdvs.dj.domain.DJCalculation;
-import ar.com.fdvs.dj.domain.Style;
+package org.opensixen.model;
 
 /**
  * @author harlock
@@ -14,14 +11,18 @@ public class GroupVariable {
 
 	private String name;
 	
-	private DJCalculation calculation;
+	private int calculation;
 	
-	private Style style = AbstractDynamicReport.groupVariables;
+	private String style;
 
 	
+	public static final int SUM=0;
+	
+	public static final String STYLE_DEFAULT="default";
 	
 	
-	public GroupVariable(String name, DJCalculation calculation) {
+	
+	public GroupVariable(String name, int calculation) {
 		super();
 		this.name = name;
 		this.calculation = calculation;
@@ -44,28 +45,28 @@ public class GroupVariable {
 	/**
 	 * @return the calculation
 	 */
-	public DJCalculation getCalculation() {
+	public int getCalculation() {
 		return calculation;
 	}
 
 	/**
 	 * @param calculation the calculation to set
 	 */
-	public void setCalculation(DJCalculation calculation) {
+	public void setCalculation(int calculation) {
 		this.calculation = calculation;
 	}
 
 	/**
 	 * @return the style
 	 */
-	public Style getStyle() {
+	public String getStyle() {
 		return style;
 	}
 
 	/**
 	 * @param style the style to set
 	 */
-	public void setStyle(Style style) {
+	public void setStyle(String style) {
 		this.style = style;
 	}
 		
