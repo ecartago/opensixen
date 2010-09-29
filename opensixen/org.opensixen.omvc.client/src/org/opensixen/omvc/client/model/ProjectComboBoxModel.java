@@ -1,12 +1,12 @@
-package org.opensixen.dev.omvc.swing;
+package org.opensixen.omvc.client.model;
 
 import java.util.List;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
 
-import org.opensixen.dev.omvc.interfaces.IRevisionUploader;
 import org.opensixen.dev.omvc.model.Project;
+import org.opensixen.omvc.client.proxy.RemoteConsoleProxy;
 
 public class ProjectComboBoxModel implements ComboBoxModel {
 
@@ -14,8 +14,9 @@ public class ProjectComboBoxModel implements ComboBoxModel {
 	private Project selected;
 	
 	
-	public ProjectComboBoxModel(IRevisionUploader console) {
+	public ProjectComboBoxModel() {
 		try	{
+			RemoteConsoleProxy console = RemoteConsoleProxy.getInstance();
 			projects = console.getProjects();
 		}
 		catch (Exception e)	{
