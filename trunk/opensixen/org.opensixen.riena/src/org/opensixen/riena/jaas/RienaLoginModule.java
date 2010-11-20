@@ -1,4 +1,4 @@
-package org.opensixen.omvc.console.jaas;
+package org.opensixen.riena.jaas;
 
 import java.security.Principal;
 import java.util.Map;
@@ -18,7 +18,7 @@ import org.eclipse.riena.security.common.authentication.RemoteLoginProxy;
 
 
 
-public class OMVCLoginModule implements LoginModule {
+public class RienaLoginModule implements LoginModule {
 
 	private Subject subject;
 	private CallbackHandler callbackHandler;
@@ -30,7 +30,7 @@ public class OMVCLoginModule implements LoginModule {
 	private Set<Principal> principal;
 	private AuthenticationTicket ticket;
 
-	public OMVCLoginModule() {
+	public RienaLoginModule() {
 		
 	}
 
