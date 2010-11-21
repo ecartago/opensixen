@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.opensixen.omvc.client.model;
+package org.opensixen.dev.omvc;
 
 import org.compiere.model.MClient;
 import org.compiere.model.ModelValidationEngine;
