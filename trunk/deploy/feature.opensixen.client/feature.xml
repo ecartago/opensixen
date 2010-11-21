@@ -2,9 +2,7 @@
 <feature
       id="feature.opensixen.client"
       label="Client"
-      version="1.0.0.qualifier"
-      exclusive="true"
-      colocation-affinity="OpensixenClient">
+      version="1.0.0.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
