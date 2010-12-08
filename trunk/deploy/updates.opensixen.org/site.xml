@@ -3,41 +3,49 @@
    <description name="Opensixen Update Site" url="updates.opensixen.org">
       Actualizaciones del proyecto Opensixen
    </description>
-   <feature url="features/feature.opensixen.client_1.0.0.qualifier.jar" id="feature.opensixen.client" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.client_1.0.0.201012072036.jar" id="feature.opensixen.client" version="1.0.0.201012072036">
       <category name="Cliente"/>
    </feature>
-   <feature url="features/feature.opensixen.client.as.lite_1.0.0.qualifier.jar" id="feature.opensixen.client.as.lite" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.client.as.lite_1.0.0.201012072036.jar" id="feature.opensixen.client.as.lite" version="1.0.0.201012072036">
       <category name="Lite"/>
    </feature>
-   <feature url="features/feature.opensixen.client.core_1.0.0.qualifier.jar" id="feature.opensixen.client.core" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.client.core_1.0.0.201012072036.jar" id="feature.opensixen.client.core" version="1.0.0.201012072036">
       <category name="Cliente"/>
    </feature>
-   <feature url="features/feature.opensixen.opensixen_lite_1.0.0.qualifier.jar" id="feature.opensixen.opensixen_lite" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.opensixen_lite_1.0.0.201012072036.jar" id="feature.opensixen.opensixen_lite" version="1.0.0.201012072036">
       <category name="Cliente"/>
    </feature>
-   <feature url="features/feature.opensixen.spain_1.0.0.qualifier.jar" id="feature.opensixen.spain" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.spain_1.0.0.201012072036.jar" id="feature.opensixen.spain" version="1.0.0.201012072036">
       <category name="Cliente"/>
    </feature>
-   <feature url="features/feature.opensixen.server_1.0.0.qualifier.jar" id="feature.opensixen.server" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.server_1.0.0.201012072036.jar" id="feature.opensixen.server" version="1.0.0.201012072036">
       <category name="Servidor"/>
    </feature>
-   <feature url="features/feature.opensixen.server.core_1.0.0.qualifier.jar" id="feature.opensixen.server.core" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.server.core_1.0.0.201012072036.jar" id="feature.opensixen.server.core" version="1.0.0.201012072036">
       <category name="Servidor"/>
    </feature>
-   <feature url="features/feature.opensixen.server.tomcat_1.0.0.qualifier.jar" id="feature.opensixen.server.tomcat" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.server.tomcat_1.0.0.201012072036.jar" id="feature.opensixen.server.tomcat" version="1.0.0.201012072036">
       <category name="Servidor"/>
    </feature>
-   <feature url="features/feature.opensixen.server.zkwebui_1.0.0.qualifier.jar" id="feature.opensixen.server.zkwebui" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.server.zkwebui_1.0.0.201012072036.jar" id="feature.opensixen.server.zkwebui" version="1.0.0.201012072036">
       <category name="Servidor"/>
    </feature>
-   <feature url="features/feature.opensixen.client.as_1.0.0.qualifier.jar" id="feature.opensixen.client.as" version="1.0.0.qualifier">
+   <feature url="features/feature.opensixen.client.as_1.0.0.201012072036.jar" id="feature.opensixen.client.as" version="1.0.0.201012072036">
       <category name="Cliente"/>
    </feature>
-   <feature url="features/feature.org.opensixen.installer_1.0.0.qualifier.jar" id="feature.org.opensixen.installer" version="1.0.0.qualifier">
+   <feature url="features/feature.org.opensixen.installer_1.0.0.201012072036.jar" id="feature.org.opensixen.installer" version="1.0.0.201012072036">
       <category name="Installer"/>
+   </feature>
+   <feature url="features/feature.opensixen.bundle.postgres_1.0.0.201012072036.jar" id="feature.opensixen.bundle.postgres" version="1.0.0.201012072036">
+      <category name="Postgres"/>
+   </feature>
+   <feature url="features/feature.opensixen.omvc.console_1.0.0.201012072036.jar" id="feature.opensixen.omvc.console" version="1.0.0.201012072036">
+      <category name="DevTools"/>
    </feature>
    <category-def name="Cliente" label="Cliente Opensixen"/>
    <category-def name="Servidor" label="Server Category"/>
    <category-def name="Installer" label="Installer"/>
    <category-def name="Lite" label="Lite version"/>
+   <category-def name="Postgres" label="Servidor Postgres"/>
+   <category-def name="DevTools" label="Dev Tools"/>
 </site>
