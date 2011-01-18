@@ -58,40 +58,18 @@
  * lo gobiernan,  GPL 2.0/CDDL 1.0/EPL 1.0.
  *
  * ***** END LICENSE BLOCK ***** */
+package org.opensixen.osgi.interfaces;
 
-package org.opensixen.core.reports;
+import org.compiere.process.ProcessCall;
 
-import org.adempiere.util.ProcessUtil;
-import org.opensixen.report.ReportStarterOSGI;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-
-public class Activator implements BundleActivator {
-
-	private static BundleContext context;
-
-	public static BundleContext getContext() {
-		return context;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext bundleContext) throws Exception {
-		Activator.context = bundleContext;
-		
-		// Cambiamos la clase para lanzar informes Jasper
-		ProcessUtil.JASPER_STARTER_CLASS = ReportStarterOSGI.class.getName();
-		
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext bundleContext) throws Exception {
-		Activator.context = null;
-	}
+/**
+ * IProcessCall 
+ *
+ * @author Eloy Gomez
+ * Indeos Consultoria http://www.indeos.es
+ */
+public interface IProcessCall extends ProcessCall, IService {
+	
+	public static final String P_VALUE = "value";
 
 }
