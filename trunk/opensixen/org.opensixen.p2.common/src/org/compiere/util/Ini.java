@@ -14,7 +14,7 @@
  * ComPiere, Inc., 2620 Augustine Dr. #245, Santa Clara, CA 95054, USA        *
  * or via info@compiere.org or http://www.compiere.org/license.html           *
  *****************************************************************************/
-package org.opensixen.p2.installer;
+package org.compiere.util;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -32,8 +32,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.compiere.util.SecureEngine;
-import org.compiere.util.SecureInterface;
 
 
 /**
