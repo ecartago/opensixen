@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="feature.opensixen.client"
-      label="Client"
-      version="1.0.0.qualifier">
+      label="Opensixen Client"
+      version="1.0.0.qualifier"
+      provider-name="Fundesle">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="http://www.opensixen.org">
+      Full client with server connection captabilities.
    </description>
 
    <copyright url="http://www.example.com/copyright">
