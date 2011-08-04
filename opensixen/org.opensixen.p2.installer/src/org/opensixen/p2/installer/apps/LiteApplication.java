@@ -59,19 +59,32 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package org.opensixen.p2.swt;
+package org.opensixen.p2.installer.apps;
+
+import java.net.URI;
+
+import org.opensixen.p2.applications.InstallableApplication;
+
 
 /**
  * 
  * 
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
- *@deprecated
+ *
  */
-public interface ProgressBarRunnable extends Runnable {
+public class LiteApplication extends InstallableApplication {
+
+	public final static String IU_LITE = "OpensixenLite"; //$NON-NLS-1$  
+	public final static URI URI_LITE= URI.create("http://dev.opensixen.org/products/lite/"); //$NON-NLS-1$
+	public final static String PROFILE_LITE = "OpensixenLite";
 	
-	public ProgressBarRunnableMessage getMessage();
-	public ProgressBarRunnableBarStatus getBarStatus();
-	
+	/**
+	 * @param iu
+	 */
+	public LiteApplication() {
+		super(IU_LITE, "OpensixenLite", URI_LITE);
+	}
+
 
 }

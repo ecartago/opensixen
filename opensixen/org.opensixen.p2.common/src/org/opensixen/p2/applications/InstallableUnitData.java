@@ -58,59 +58,128 @@
  * lo gobiernan,  GPL 2.0/CDDL 1.0/EPL 1.0.
  *
  * ***** END LICENSE BLOCK ***** */
+package org.opensixen.p2.applications;
 
-package org.opensixen.p2.swt;
-
-import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.swt.widgets.Shell;
+import java.net.URI;
 
 /**
+ * InstallableUnit model.
  * 
- * 
+ * This class contains the minimal data required 
+ * to contain Opensixen Instalable Units information
+ *
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
- *
  */
-@Deprecated
-public class InstallProgressBarDialog extends RunableProgressBarDialog {
+public class InstallableUnitData {
 
-	private InstallerWizard wizard;
+	 private String name;
+	 
+	 private String description;
+	 
+	 private String ID;
+	 
+	 private URI updateSite;
+	 
+
+	/**
+	 * 
+	 */
+	public InstallableUnitData() {
+		super();
+	}
+
+	/**
+	 * @param name
+	 * @param description
+	 * @param iD
+	 */
+	public InstallableUnitData(String ID,String name, String description) {
+		super();
+		this.name = name;
+		this.description = description;
+		this.ID = ID;
+	}
 	
 	/**
-	 * @param parent
-	 * @param wizard
+	 * @param name
+	 * @param description
+	 * @param iD
 	 */
-	public InstallProgressBarDialog(Shell parent) {
-		super(parent);
+	public InstallableUnitData(String ID,String name, String description, URI updateSite) {
+		super();
+		this.name = name;
+		this.description = description;
+		this.updateSite = updateSite;
+		this.ID = ID;
 	}
-	
-	@Override
-	public void create() {
-		super.create();
-		setTitle(Messages.INSTALLING_OPENSIXEN);
-		setMessage(Messages.INSTALLING_OPENSIXEN_WAIT, IMessageProvider.INFORMATION);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.opensixen.p2.swt.RunableProgressBarDialog#getRunnable()
+
+	/**
+	 * @param name
+	 * @param iD
 	 */
-	@Override
-	public ProgressBarRunnable getRunnable() {
-		//String installType = wizard.getInstallationTypePage().getInstallType();
-		//String clientPath = wizard.getInstallLocationPage().getClientInstallPath();
-		//String serverPath = wizard.getInstallLocationPage().getServerInstallPath();
-		//String dbPath = wizard.getInstallLocationPage().getDBInstallPath();
-		
-		//InstallWorker worker = new InstallWorker(installType, clientPath, serverPath, this);
-		//return worker;
-		return null;
+	public InstallableUnitData(String ID,String name, URI updateSite) {
+		super();
+		this.name = name;
+		this.updateSite = updateSite;
+		this.ID = ID;
 	}
-
-	public void install()	{
-		run();
-	}
-
 	
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * @return the iD
+	 */
+	public String getID() {
+		return ID;
+	}
+
+	/**
+	 * @param iD the iD to set
+	 */
+	public void setID(String iD) {
+		ID = iD;
+	}
+
+	/**
+	 * @return the updateSite
+	 */
+	public URI getUpdateSite() {
+		return updateSite;
+	}
+
+	/**
+	 * @param updateSite the updateSite to set
+	 */
+	public void setUpdateSite(URI updateSite) {
+		this.updateSite = updateSite;
+	}	 	 	
+	
 	
 }

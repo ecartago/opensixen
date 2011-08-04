@@ -58,32 +58,89 @@
  * lo gobiernan,  GPL 2.0/CDDL 1.0/EPL 1.0.
  *
  * ***** END LICENSE BLOCK ***** */
+package org.opensixen.p2.applications;
 
-package org.opensixen.p2.swt;
-@Deprecated
-class ProgressBarRunnableBarStatus	{
-	private int selection;
-	private RunableProgressBarDialog dialog;
-	
-	
+import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
+/**
+ * LoggerProgressMonitor 
+ *
+ * @author Eloy Gomez
+ * Indeos Consultoria http://www.indeos.es
+ */
+public class LoggerProgressMonitor implements IProgressMonitor {
 
-	public ProgressBarRunnableBarStatus(RunableProgressBarDialog dialog) {
-		super();
-		this.dialog = dialog;
+	private Logger log = Logger.getLogger(getClass());
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#beginTask(java.lang.String, int)
+	 */
+	@Override
+	public void beginTask(String name, int totalWork) {
+		log.info("Starting "+ name);		
 	}
 
-	/**
-	 * @return the selection
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#done()
 	 */
-	public int getSelection() {
-		return selection;
+	@Override
+	public void done() {
+		log.info("Work done.");
+		
 	}
 
-	/**
-	 * @param selection the selection to set
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#internalWorked(double)
 	 */
-	public void setSelection(int selection) {
-		this.selection = selection;
-		dialog.fireChange();
-	}		
+	@Override
+	public void internalWorked(double work) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#isCanceled()
+	 */
+	
+	private boolean canceled;
+	@Override
+	public boolean isCanceled() {
+		return canceled;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#setCanceled(boolean)
+	 */
+	@Override
+	public void setCanceled(boolean value) {
+		canceled = value;
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#setTaskName(java.lang.String)
+	 */
+	@Override
+	public void setTaskName(String name) {
+		log.info("Starting task" + name);		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#subTask(java.lang.String)
+	 */
+	@Override
+	public void subTask(String name) {
+		log.info("Starting sub task" + name);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#worked(int)
+	 */
+	@Override
+	public void worked(int work) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

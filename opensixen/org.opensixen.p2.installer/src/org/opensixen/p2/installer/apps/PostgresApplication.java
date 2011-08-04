@@ -59,90 +59,61 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package org.opensixen.p2.swt;
+package org.opensixen.p2.installer.apps;
 
-import java.util.Properties;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import org.compiere.util.Ini;
+import org.opensixen.os.PlatformProvider;
+import org.opensixen.os.ProviderFactory;
+import org.opensixen.p2.applications.InstallableApplication;
 
 /**
  * 
  * 
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
- *@deprecated
+ *
  */
-public class ConfigWorker implements ProgressBarRunnable {
+public class PostgresApplication extends InstallableApplication {
 
-	public ProgressBarRunnableMessage messages;
-	public ProgressBarRunnableBarStatus bar;
+	public final static String IU_POSTGRES = "feature.opensixen.bundle.postgres.feature.group"; //$NON-NLS-1$	
+	public final static String PROFILE_POSTGRES = "PostgreSQL";	
 	
-	private ConfigProgressBarDialog dialog;
-	private Properties configuration;
+	private static String CMD_REGISTER = "addService.bat";
+	private static String CMD_UNREGISTER = "removeService.bat";
 	
 	
-	public ConfigWorker(Properties configuration, ConfigProgressBarDialog dialog)	{
-		this.configuration = configuration;
-		this.dialog = dialog;
-		
-		 messages = new ProgressBarRunnableMessage(dialog);
-		 bar = new ProgressBarRunnableBarStatus(dialog);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opensixen.p2.swt.ProgressBarRunnable#getMessage()
+	/**
+	 * 
 	 */
-	@Override
-	public ProgressBarRunnableMessage getMessage() {
-		return messages;
+	public PostgresApplication() {
+		super();
+		setID(IU_POSTGRES);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.opensixen.p2.swt.ProgressBarRunnable#getBarStatus()
+	 * @see org.opensixen.p2.applications.InstallableApplication#afterInstall()
 	 */
 	@Override
-	public ProgressBarRunnableBarStatus getBarStatus() {
-		return bar;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
-		// Create Properties
-		messages.setText(Messages.ConfigWorker_CREATING_PROPERTIES);
-		bar.setSelection(20);
-		createProperties();
-		bar.setSelection(100);
-		
-		dialog.finishWork(true);
-	}
-	
-	private boolean createProperties()	{
-		/*
-		// If server is not selected, then need client conf.
-		String installType = configuration.getProperty("InstallType");
-		if (!ProductDescription.TYPE_SERVER.equals(installType))	{
-			createProperties(configuration.getProperty("ClientPath"));
+	public void afterInstall() {
+		PlatformProvider provider = ProviderFactory.getProvider();
+		// Unix don't need this
+		if (provider.isUnix())	{
+			return;
 		}
 		
-		if (ProductDescription.TYPE_SERVER.equals(installType) || ProductDescription.TYPE_FULL.equals(installType))	{
-			createProperties(configuration.getProperty("ServerPath"));
+		String cmdReg = getPath() + "/" + CMD_REGISTER;		
+		String cmdUnreg = getPath() + "/" + CMD_UNREGISTER;
+		try {
+			// First try to unregister
+			provider.runCommand(cmdUnreg);
+			
+			// Register database.
+			provider.runCommand(cmdReg);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		*/
-		return true;
-	}
-
-	
-	private boolean createProperties(String path)	{
-		// Setup as server and setup path as adempiere home
-		Ini.setClient(false);
-		Ini.setAdempiereHome(path);
-		Ini.loadProperties(true);
-		Ini.setProperty (Ini.P_CONNECTION, configuration.getProperty(Ini.P_CONNECTION));
-		Ini.saveProperties(false);
-		return true;
-		
-	}
+	}			
 }

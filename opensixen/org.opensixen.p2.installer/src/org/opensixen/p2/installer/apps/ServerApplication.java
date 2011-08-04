@@ -1,4 +1,4 @@
- /******* BEGIN LICENSE BLOCK *****
+/******* BEGIN LICENSE BLOCK *****
  * Versión: GPL 2.0/CDDL 1.0/EPL 1.0
  *
  * Los contenidos de este fichero están sujetos a la Licencia
@@ -59,62 +59,96 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package org.opensixen.p2.applications;
+package org.opensixen.p2.installer.apps;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 
+import org.apache.log4j.Logger;
 import org.opensixen.os.PlatformProvider;
 import org.opensixen.os.ProviderFactory;
+import org.opensixen.p2.applications.InstallableApplication;
 
 /**
  * 
  * 
- * @author Eloy Gomez
- * Indeos Consultoria http://www.indeos.es
- *
+ * @author Eloy Gomez Indeos Consultoria http://www.indeos.es
+ * 
  */
-public class PostgresApplication extends InstallableApplication {
+public class ServerApplication extends InstallableApplication {
 
-	public final static String IU_POSTGRES = "feature.opensixen.bundle.postgres.feature.group"; //$NON-NLS-1$	
-	public final static String PROFILE_POSTGRES = "PostgreSQL";	
-	
-	private static String CMD_REGISTER = "addService.bat";
-	private static String CMD_UNREGISTER = "removeService.bat";
-	
+	public final static String IU_SERVER = "OpensixenServer"; //$NON-NLS-1$
+	public final static URI URL_SERVER = URI.create("http://dev.opensixen.org/products/server/"); //$NON-NLS-1$
+	//public final static String URL_SERVER = "file:///tmp/server/repository/";
+
+	private static final String SERVER_SUFIX = "/tomcat/webapps/osx/WEB-INF/eclipse";
+			
+	private PlatformProvider provider;	
 	
 	/**
 	 * 
 	 */
-	public PostgresApplication() {
-		super(IU_POSTGRES, PROFILE_POSTGRES);
+	public ServerApplication() {
+		super(IU_SERVER, PROFILE_SERVER, URL_SERVER );
+		setProfile(PROFILE_SERVER);
+		provider = ProviderFactory.getProvider();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.opensixen.p2.applications.InstallableApplication#afterInstall()
+	/**
+	 * Tenemos que añadirle nun sufijo al servidor para que se instale en el
+	 * sitio correcto
 	 */
 	@Override
-	public void afterInstall() {
-		PlatformProvider provider = ProviderFactory.getProvider();
-		// Unix don't need this
-		if (provider.isUnix())	{
-			return;
-		}
-		
-		String cmdReg = getPath() + "/" + CMD_REGISTER;		
-		String cmdUnreg = getPath() + "/" + CMD_UNREGISTER;
-		try {
-			// First try to unregister
-			provider.runCommand(cmdUnreg);
-			
-			// Register database.
-			provider.runCommand(cmdReg);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public String getPath() {
+		String path = super.getPath();
+
+		return path + SERVER_SUFIX;
 	}
 	
-	
-	
+	public String getRealPath()	{
+		return super.getPath();
+	}
+
+	@Override
+	public URI getUpdateSite() {
+		// TODO Auto-generated method stub
+		return URL_SERVER;
+	}
+
+	@Override
+	public void afterInstall() {
+		if (provider.isUnix()) {
+			afterInstallLinux();
+		} else {
+			afterInstallWindows();
+		}
+	}
+
+	private boolean afterInstallWindows() {
+		return true;
+	}
+
+	private boolean afterInstallLinux() {
+		String path = super.getPath();
+		try {
+			// Generate the script
+			String script = "#!/bin/sh\nchmod 755 " + path
+					+ "/startup\nchmod 755 " + path + "/stop\nchmod 755 "
+					+ path + "/tomcat/bin/*.sh\n";
+			String file = path + "/.setupPerms.sh";
+			BufferedWriter out = new BufferedWriter(new FileWriter(file));
+			out.write(script);
+			out.close();
+			provider.runCommand("/bin/sh " + file);
+			return true;
+		} catch (Exception e) {
+			log.error("Error afterInstall:", e);
+			return false;
+		}
+	}
+
 }
