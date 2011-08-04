@@ -58,37 +58,46 @@
  * lo gobiernan,  GPL 2.0/CDDL 1.0/EPL 1.0.
  *
  * ***** END LICENSE BLOCK ***** */
-
-package org.opensixen.p2.applications;
-
-import java.net.URI;
-import java.net.URISyntaxException;
+package org.opensixen.p2.exceptions;
 
 /**
- * 
- * 
+ * P2Exception 
+ *
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
- *
  */
-public class ClientApplication extends InstallableApplication {
-	
-	public final static String IU_CLIENT = "OpensixenClient"; //$NON-NLS-1$
-	public final static String URL_CLIENT="http://dev.opensixen.org/products/client/"; //$NON-NLS-1$
-	public final static String PROFILE_CLIENT = "OpensixenClient";
-	
+public class P2Exception extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
-	 * @param iu
+	 * 
 	 */
-	public ClientApplication() {
-		super(IU_CLIENT, PROFILE_CLIENT);
+	public P2Exception() {
+		super();
+	}
+
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public P2Exception(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	/**
+	 * @param message
+	 */
+	public P2Exception(String message) {
+		super(message);
+	}
+
+	/**
+	 * @param cause
+	 */
+	public P2Exception(Throwable cause) {
+		super(cause);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.opensixen.p2.applications.InstallableApplication#getLocation()
-	 */
-	@Override
-	public String getLocation() {
-		return URL_CLIENT;
-	}
+	
 }
