@@ -68,6 +68,7 @@ import java.awt.event.HierarchyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.sql.Timestamp;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -102,10 +103,10 @@ public class AcctEditorFormPanel extends JPanel implements FormPanel,ActionListe
 
 	private AcctEditorDefaults defaults;
 	private AcctEditorSearch search;
-	private AcctEditorJournal journal;
+	private static AcctEditorJournal journal;
 	private AcctEditorDefaultEntry defaultentry;
 	
-	private JSplitPane split1 = new JSplitPane();
+	private static JSplitPane split1 = new JSplitPane();
 	
 	@Override
 	public void tableChanged(TableModelEvent arg0) {
@@ -160,7 +161,7 @@ public class AcctEditorFormPanel extends JPanel implements FormPanel,ActionListe
 	    //Prueba borrar!!!!!!!!!-----------------------------------------------------------------------
 	    journal = new AcctEditorJournal(this);
 	   // MFactAcct act = new MFactAcct(Env.getCtx(),2484115,null);
-	   // journal = new AcctEditorJournal(act.getJournalNo(),act.getAD_Org_ID(),act.getDateAcct());
+	    //journal = new AcctEditorJournal(act.getJournalNo(),act.getAD_Org_ID(),act.getDateAcct());
 	    split1.add(journal, JSplitPane.LEFT);
 	    
 	    //Listener para el posicionamiento del divisor
@@ -191,7 +192,13 @@ public class AcctEditorFormPanel extends JPanel implements FormPanel,ActionListe
         m_frame = null;
 		
 	}
-
+	
+	protected static void setAcctEditorJournal(int journalno,int ad_org_id,Timestamp DateAcct){
+		journal = new AcctEditorJournal(journalno,ad_org_id,DateAcct);
+		journal.updateUI();
+		split1.add(journal, JSplitPane.LEFT);
+		split1.updateUI();
+	}
 	
 	/**
 	 * Retorna el panel de parametros

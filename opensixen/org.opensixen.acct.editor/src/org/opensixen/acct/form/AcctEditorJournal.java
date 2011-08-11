@@ -262,9 +262,9 @@ public class AcctEditorJournal extends JPanel implements PropertyChangeListener,
 		s_sqlFrom+=" INNER JOIN ".concat(MElementValue.Table_Name).concat(" m ").concat(" ON ");
 		s_sqlFrom+=" f.".concat(MFactAcct.COLUMNNAME_Account_ID).concat("=").concat("m.").concat(MElementValue.COLUMNNAME_C_ElementValue_ID);
 
-		s_sqlFrom+=" INNER JOIN ".concat(MJournalLine.Table_Name).concat(" l ").concat(" ON ");
+		s_sqlFrom+=" LEFT JOIN ".concat(MJournalLine.Table_Name).concat(" l ").concat(" ON ");
 		s_sqlFrom+=" f.".concat(MFactAcct.COLUMNNAME_Line_ID).concat("=").concat("l.").concat(MJournalLine.COLUMNNAME_GL_JournalLine_ID);
-		s_sqlFrom+=" AND f.".concat(MFactAcct.COLUMNNAME_AD_Table_ID).concat("=").concat(String.valueOf(MJournal.Table_ID));
+		//s_sqlFrom+=" AND f.".concat(MFactAcct.COLUMNNAME_AD_Table_ID).concat("=").concat(String.valueOf(MJournal.Table_ID));
 
 		ColumnInfo[] s_layoutJournal = new ColumnInfo[]{
         		new ColumnInfo(Msg.translate(Env.getCtx(), MFactAcct.COLUMNNAME_JournalNo), MFactAcct.COLUMNNAME_JournalNo, String.class, true, true, null),
