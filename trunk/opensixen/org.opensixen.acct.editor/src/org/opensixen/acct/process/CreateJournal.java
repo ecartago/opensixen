@@ -92,6 +92,8 @@ public class CreateJournal {
 
 	public CreateJournal(TableAccount journalTable) {
 		t=journalTable;
+		//Si existe ya un registro, es decir tenemos un batch ya añadido
+		//borramos el registro anterior y lo volvemos a crear
 		int batch_id=CreateJournalBatch(true);
 		
 		if(batch_id==0){

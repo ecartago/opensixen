@@ -118,7 +118,6 @@ public class AcctEditorSearch extends JPanel implements ActionListener{
 	private CMenuItem 			mZoomPartner;
 	private CMenuItem 			mZoomAccounts;
 	private CMenuItem			mZoomProduct;
-
 	
 	private MouseListener mouseListener = new AcctEditorMouseAdapter( this );
 	
@@ -261,11 +260,11 @@ public class AcctEditorSearch extends JPanel implements ActionListener{
 	            
 	         }
 	      }    
-		  if (SwingUtilities.isRightMouseButton(e))
+		  if (SwingUtilities.isRightMouseButton(e)){
 				popupMenu.show(this, e.getX(), e.getY());
-		  else
+		  }else{
 				popupMenu.setVisible(false);
-		
+		  }
 	}
 
 
@@ -277,9 +276,8 @@ public class AcctEditorSearch extends JPanel implements ActionListener{
 			
 		}else if(arg0.getSource().equals(mZoomAccounts)){
 			//Visor de cuentas con los campos de búsqueda rellenos con los valores de la validcombination seleccionada
-			//AcctViewer view = new AcctViewer(); //Este es el visor de cuentas mediante búsqueda de la aplicación
-			AccountViewer view = new AccountViewer();
-			view.setVisible(true);
+			//AcctEditorViewer view = new AcctEditorViewer(); //Este es el visor de cuentas mediante búsqueda de la aplicación
+			//view.setVisible(true);
 		}
 		
 	}

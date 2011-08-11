@@ -65,16 +65,20 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import javax.swing.JPanel;
 import org.compiere.grid.ed.VDate;
 import org.compiere.grid.ed.VLookup;
 import org.compiere.grid.ed.VNumber;
+import org.compiere.minigrid.IDColumn;
 import org.compiere.model.MClientInfo;
 import org.compiere.model.MConversionType;
 import org.compiere.model.MCurrency;
@@ -82,14 +86,17 @@ import org.compiere.model.MGLCategory;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
 import org.compiere.model.MOrg;
+import org.compiere.swing.CButton;
 import org.compiere.swing.CCheckBox;
 import org.compiere.swing.CLabel;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
+import org.compiere.util.KeyNamePair;
 import org.compiere.util.Msg;
 import org.opensixen.acct.grid.TableAccount;
 import org.opensixen.model.POFactory;
 import org.opensixen.model.QParam;
+import org.opensixen.swing.AccountDetailViewer;
 
 /**
  * 
@@ -103,7 +110,12 @@ public class AcctEditorDefaults extends JPanel implements VetoableChangeListener
 
 	private static final long serialVersionUID = 1L;
 
-
+	
+	/**
+	 * Paneles
+	 */
+	AcctEditorFormPanel principal=null;
+	
 	/**
 	 * Descripción de variables globales
 	 */
@@ -146,11 +158,18 @@ public class AcctEditorDefaults extends JPanel implements VetoableChangeListener
 	private CLabel lCurrencyRate = new CLabel();
 	protected static VNumber vCurrencyRate;
 	
+	//Búsqueda de asientos
+	private CButton vjournalsearch = new CButton(Msg.translate(Env.getCtx(), "SearchJournal"));
+	
+	//Visor de asientos
+	private AcctEditorViewer view=null;
+	
 	public AcctEditorDefaults(){
 		initComponents();
 	}
 	
 	public AcctEditorDefaults(AcctEditorFormPanel acctEditorFormPanel) {
+		principal=acctEditorFormPanel;
 		initComponents();
 	}
 
@@ -166,7 +185,8 @@ public class AcctEditorDefaults extends JPanel implements VetoableChangeListener
         this.add( vAcctSchema,new GridBagConstraints( 5,0,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,10 ),0,0 ));
         this.add( lOrg,new GridBagConstraints( 6,0,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
         this.add( vOrg,new GridBagConstraints( 7,0,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,20 ),0,0 ));
-        this.add( multicurrency,new GridBagConstraints( 0,1,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
+        this.add( vjournalsearch,new GridBagConstraints( 0,1,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
+        this.add( multicurrency,new GridBagConstraints( 1,1,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
         this.add( lCurrency,new GridBagConstraints( 2,1,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
         this.add( vCurrency,new GridBagConstraints( 3,1,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,20 ),0,0 ));
         this.add( lConversionType,new GridBagConstraints( 4,1,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
@@ -234,6 +254,7 @@ public class AcctEditorDefaults extends JPanel implements VetoableChangeListener
 		lCurrencyRate.setText(Msg.translate(Env.getCtx(), "CurrencyRate"));
 		lCurrencyRate.setLabelFor(vCurrencyRate);
 		
+		vjournalsearch.addActionListener(this);
 		//Valor por defecto al panel
 		defaultvalues();
 		
@@ -253,8 +274,9 @@ public class AcctEditorDefaults extends JPanel implements VetoableChangeListener
 		vCurrency.setValue(currency.getC_Currency_ID());
 		
 		//Tipo de conversión por defecto
-		MConversionType config = POFactory.get(MConversionType.class, new QParam(MConversionType.COLUMNNAME_IsDefault, "Y"));
-		vConversionType.setValue(config.getC_ConversionType_ID());
+		ArrayList<MConversionType> config = (ArrayList<MConversionType>) POFactory.getList(Env.getCtx(),MConversionType.class, new QParam(MConversionType.COLUMNNAME_IsDefault, "Y"),null);
+		
+		vConversionType.setValue(config.get(0).getC_ConversionType_ID());
 		
 		//Categoria CG
 		MGLCategory category = POFactory.get(MGLCategory.class, new QParam[]{
@@ -394,6 +416,33 @@ public class AcctEditorDefaults extends JPanel implements VetoableChangeListener
 		        lCurrencyRate.setVisible(false);
 		        vCurrencyRate.setVisible(false);
 			}
+		}else if(arg0.getSource().equals(vjournalsearch)){
+			System.out.println("Lalalalalalalalaa");
+			view = new AcctEditorViewer(Env.getAD_Client_ID(Env.getCtx()),(AcctEditorJournal.jn==null)?0:AcctEditorJournal.jn.getJournalNo());
+			view.getTable().addMouseListener(new MouseListener() {			
+				@Override
+				public void mouseReleased(MouseEvent e) {}
+				@Override
+				public void mousePressed(MouseEvent e) {}			
+				@Override
+				public void mouseExited(MouseEvent e) {}			
+				@Override
+				public void mouseEntered(MouseEvent e) {}
+				
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if(e.getClickCount()==2){
+						int row=view.getTable().getSelectedRow();
+						int JournalNo=Integer.valueOf((String)view.getTable().getRModel().getValueAt(row, view.getTable().getRModel().getColumnIndex("JournalNo")));
+						Timestamp dateacct=(Timestamp)view.getTable().getRModel().getValueAt(row, view.getTable().getRModel().getColumnIndex("DateAcct"));
+						KeyNamePair ad_org_id=(KeyNamePair)view.getTable().getRModel().getValueAt(row, view.getTable().getRModel().getColumnIndex("AD_Org_ID"));
+						
+						AcctEditorFormPanel.setAcctEditorJournal(JournalNo,ad_org_id.getKey(),dateacct);
+
+						view.setVisible(false);
+					}
+				}
+			});
 		}
 		
 	}
