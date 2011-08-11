@@ -75,8 +75,10 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
@@ -112,6 +114,8 @@ import org.opensixen.acct.grid.TableAccount;
 import org.opensixen.acct.process.CreateJournal;
 import org.opensixen.acct.utils.AcctEditorJournalNo;
 import org.opensixen.acct.utils.AcctEditorSwingUtils;
+import org.opensixen.model.POFactory;
+import org.opensixen.model.QParam;
 
 /**
  * 
@@ -365,6 +369,28 @@ public class AcctEditorJournal extends JPanel implements PropertyChangeListener,
 	public BigDecimal getDifference(){
 		return (BigDecimal)fDifference.getValue();
 	}
+	
+	/**
+	 * Checkea si es valor a editar y si la tabla es la de asientos manuales
+	 * @return
+	 */
+	
+	private boolean checktable(){
+		//Si no tiene valores, no guardamos nada
+		if(journaltab.getRowCount()==0)
+			return false;
+		//Si no existe valor en journal el registro es nuevo
+		if(journaltab.getValueAt(0, TableAccount.COLUMN_JournalNo)==null)
+			return true;
+		
+		ArrayList<MFactAcct> facts = (ArrayList<MFactAcct>) POFactory.getList(Env.getCtx(),MFactAcct.class, new QParam[]{
+			new QParam(MFactAcct.COLUMNNAME_AD_Client_ID,Env.getAD_Client_ID(Env.getCtx())),
+			new QParam(MFactAcct.COLUMNNAME_AD_Table_ID,MJournal.Table_ID),
+			new QParam(MFactAcct.COLUMNNAME_JournalNo,Integer.valueOf(journaltab.getValueAt(0, TableAccount.COLUMN_JournalNo).toString()))},null,null);
+		
+		return facts.size()>0?true:false;
+	}
+	
 
 	/**
 	 * Checkea los valores necesarios para guardar un asiento
@@ -485,6 +511,12 @@ public class AcctEditorJournal extends JPanel implements PropertyChangeListener,
 			journaltab.setRowCount(10);
 			AcctEditorDefaults.setDateOnJournal();
 		}else if(arg0.getSource().equals(savejournal)){
+			//Checkeamos si la tabla a editar es la tabla manual
+			if(!checktable()){
+				JOptionPane.showMessageDialog(null, Msg.translate(Env.getCtx(), "Invalid Operation"),Msg.translate(Env.getCtx(), "Error") , JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+				
 			//Checkeamos valores
 			if(!checkvalues())
 				return;

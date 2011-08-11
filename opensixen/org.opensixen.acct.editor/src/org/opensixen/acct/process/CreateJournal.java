@@ -62,10 +62,12 @@ package org.opensixen.acct.process;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
 import org.compiere.model.MDocType;
+import org.compiere.model.MFactAcct;
 import org.compiere.model.MJournal;
 import org.compiere.model.MJournalBatch;
 import org.compiere.model.MJournalLine;
@@ -73,6 +75,8 @@ import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.opensixen.acct.form.AcctEditorDefaults;
 import org.opensixen.acct.grid.TableAccount;
+import org.opensixen.model.POFactory;
+import org.opensixen.model.QParam;
 
 /**
  * 
@@ -94,6 +98,10 @@ public class CreateJournal {
 		t=journalTable;
 		//Si existe ya un registro, es decir tenemos un batch ya añadido
 		//borramos el registro anterior y lo volvemos a crear
+		if(t.getValueAt(0, TableAccount.COLUMN_JournalNo)!=null)
+			DeleteJournal(Integer.valueOf(t.getValueAt(0, TableAccount.COLUMN_JournalNo).toString()));
+			
+		
 		int batch_id=CreateJournalBatch(true);
 		
 		if(batch_id==0){
@@ -105,6 +113,92 @@ public class CreateJournal {
 		CompleteBatch(batch_id);
 	}
 	
+	/**
+	 * Elimina el asiento, tanto en gestión como en contabilidad 
+	 * @param journalno
+	 */
+	
+	private void DeleteJournal(Integer journalno) {
+		//Buscamos los fact_acct asociados al asiento
+		ArrayList<MFactAcct> facts = (ArrayList<MFactAcct>) POFactory.getList(Env.getCtx(),MFactAcct.class, new QParam[]{
+			new QParam(MFactAcct.COLUMNNAME_AD_Client_ID,Env.getAD_Client_ID(Env.getCtx())),
+			new QParam(MFactAcct.COLUMNNAME_AD_Table_ID,MJournal.Table_ID),
+			new QParam(MFactAcct.COLUMNNAME_JournalNo,journalno)},null,null);
+		
+		//Si existen apuntes contables realizados
+		if(facts!=null){
+			//1-Buscamos los MJournal asociados a los apuntes
+			
+			ArrayList<MJournal> journals = (ArrayList<MJournal>) POFactory.getList(Env.getCtx(),MJournal.class, new QParam[]{
+				new QParam(MJournal.COLUMNNAME_AD_Client_ID,Env.getAD_Client_ID(Env.getCtx())),
+				new QParam(MJournal.COLUMNNAME_GL_Journal_ID+" IN "+getWhereJournal(facts))},null,null);
+			
+			
+			//2-Buscamos los MJournalLines asociados a los apuntes
+			
+			ArrayList<MJournalLine> lines = (ArrayList<MJournalLine>) POFactory.getList(Env.getCtx(),MJournalLine.class, new QParam[]{
+				new QParam(MJournalLine.COLUMNNAME_AD_Client_ID,Env.getAD_Client_ID(Env.getCtx())),
+				new QParam(MJournalLine.COLUMNNAME_GL_Journal_ID+" IN "+getWhereJournal(facts))},null,null);
+			
+			//3-Buscamos los MJournalBatch asociados a los apuntes
+			
+			ArrayList<MJournalBatch> batchs = (ArrayList<MJournalBatch>) POFactory.getList(Env.getCtx(),MJournalBatch.class, new QParam[]{
+				new QParam(MJournalBatch.COLUMNNAME_AD_Client_ID,Env.getAD_Client_ID(Env.getCtx())),
+				new QParam(MJournalBatch.COLUMNNAME_GL_JournalBatch_ID+" IN "+getWhereJournalBatch(journals))},null,null);
+			
+			//Una vez seleccionados todos los elementos, procedemos a su eliminación
+			
+			for(MFactAcct acct : facts)
+				acct.delete(true);
+			
+			for(MJournalLine line : lines)
+				line.delete(true);
+			
+			for(MJournal journal :journals)
+				journal.delete(true);
+			
+			for(MJournalBatch batch: batchs)
+				batch.delete(true);
+			
+		}
+		
+		
+	}
+
+	/**
+	 * Devuelve String con registros JournalBatch seleccionados
+	 * @param journals
+	 * @return
+	 */
+
+	private String getWhereJournalBatch(ArrayList<MJournal> journals) {
+		String sql="(0";
+		
+		for(MJournal journal : journals){
+			sql+=","+journal.getGL_JournalBatch_ID();
+		}
+		sql+=")";
+		
+		return sql;
+	}
+
+	/**
+	 * Devuelve String con la clausula where de los registros GL_Journal seleccionados
+	 * @param facts
+	 * @return
+	 */
+	
+	private String getWhereJournal(ArrayList<MFactAcct> facts) {
+		String sql="(0";
+		
+		for(MFactAcct fact : facts){
+			sql+=","+fact.getRecord_ID();
+		}
+		sql+=")";
+		
+		return sql;
+	}
+
 	/**
 	 * Completa el journal creado
 	 * @param batch_id
