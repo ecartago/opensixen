@@ -61,8 +61,6 @@
 
 package org.opensixen.dev.omvc;
 
-import java.net.ConnectException;
-
 import org.compiere.model.MClient;
 import org.compiere.model.MSysConfig;
 import org.compiere.model.ModelValidationEngine;
@@ -70,9 +68,6 @@ import org.compiere.model.ModelValidator;
 import org.compiere.model.PO;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
-import org.opensixen.omvc.client.proxy.OMVCAuthServiceProxy;
-import org.opensixen.omvc.client.proxy.RemoteConsoleProxy;
-import org.opensixen.omvc.client.proxy.RevisionDownloaderProxy;
 import org.opensixen.osgi.interfaces.IModelValidator;
 
 /**
@@ -116,18 +111,6 @@ public class StartupModelValidator implements IModelValidator {
 	 */
 	@Override
 	public String login(int AD_Org_ID, int AD_Role_ID, int AD_User_ID) {
-		try {
-			// Register Auth proxy
-			OSXServiceConnectionHandler handler = OSXServiceConnectionHandler.getInstance();
-
-			// Set connection Handlers
-			RemoteConsoleProxy.getInstance().setServiceConnectionHandler(handler);
-			RevisionDownloaderProxy.getInstance().setServiceConnectionHandler(handler);
-			OMVCAuthServiceProxy.getInstance().setServiceConnectionHandler(	handler);
-			OMVCAuthServiceProxy.getInstance().register();
-		} catch (Exception e) {
-			log.warning("No se puede contectar con el servidor OMVC");
-		}
 		return null;
 	}
 
