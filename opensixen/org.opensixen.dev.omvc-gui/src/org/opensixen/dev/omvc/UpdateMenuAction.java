@@ -120,6 +120,7 @@ public class UpdateMenuAction extends AbstractMenuAction implements
 
 		// Run app in secure context
 		try {
+			OSXServiceConnectionHandler.register();
 			Subject.doAs(RemoteConsoleProxy.getInstance().getLoginContext().getSubject(),
 					getRunAction(updater));
 		} catch (LoginException ex) {

@@ -71,6 +71,9 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.compiere.model.MSysConfig;
+import org.opensixen.omvc.client.proxy.OMVCAuthServiceProxy;
+import org.opensixen.omvc.client.proxy.RemoteConsoleProxy;
+import org.opensixen.omvc.client.proxy.RevisionDownloaderProxy;
 import org.opensixen.riena.client.proxy.ServiceConnection;
 import org.opensixen.riena.interfaces.IConnectionChangeListener;
 import org.opensixen.riena.interfaces.IServiceConnectionHandler;
@@ -155,5 +158,31 @@ public class OSXServiceConnectionHandler implements IServiceConnectionHandler, C
 			listener.fireConnectionChange();
 		}
 	}	
+	
+	
+	private static boolean registered = false;
+	
+	public static void register()	{
+		if (registered)	{
+			return;
+		}
+		
+		try {
+			// Register Auth proxy
+			OSXServiceConnectionHandler handler = OSXServiceConnectionHandler.getInstance();
+
+			// Set connection Handlers
+			RemoteConsoleProxy.getInstance().setServiceConnectionHandler(handler);
+			RevisionDownloaderProxy.getInstance().setServiceConnectionHandler(handler);
+			OMVCAuthServiceProxy.getInstance().setServiceConnectionHandler(	handler);
+			OMVCAuthServiceProxy.getInstance().register();
+			registered = true;
+		} catch (Exception e) {
+			
+		}
+		
+		
+
+	}
 	
 }
