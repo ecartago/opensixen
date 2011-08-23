@@ -20,7 +20,6 @@ import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.equinox.internal.p2.core.helpers.CollectionUtils;
 import org.eclipse.equinox.internal.p2.core.helpers.LogHelper;
-import org.eclipse.equinox.internal.p2.repository.RepositoryTransport;
 import org.eclipse.equinox.p2.metadata.VersionedId;
 import org.eclipse.equinox.p2.metadata.IVersionedId;
 import org.opensixen.p2.applications.InstallableApplication;

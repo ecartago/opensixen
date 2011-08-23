@@ -82,7 +82,7 @@ import org.opensixen.p2.applications.InstallableApplication;
 public class ServerApplication extends InstallableApplication {
 
 	public final static String IU_SERVER = "OpensixenServer"; //$NON-NLS-1$
-	public final static URI URL_SERVER = URI.create("http://dev.opensixen.org/products/server/"); //$NON-NLS-1$
+	public final static URI URL_SERVER = URI.create("http://dev.opensixen.org/updates"); //$NON-NLS-1$
 	//public final static String URL_SERVER = "file:///tmp/server/repository/";
 
 	private static final String SERVER_SUFIX = "/tomcat/webapps/osx/WEB-INF/eclipse";
