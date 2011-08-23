@@ -21,8 +21,10 @@ Export-Package: de.schaeffer.compiere.tools,
  org.opensixen.osgi,
  org.opensixen.osgi.interfaces,
  org.opensixen.swing
-Require-Bundle: org.opensixen.libs;bundle-version="1.0.0",
- org.opensixen.base;bundle-version="1.0.0",
- org.eclipse.core.runtime;bundle-version="3.5.0"
-Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.5.0",
+ org.opensixen.libs;bundle-version="1.0.0",
+ org.opensixen.base;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.opensixen.osgi.Activator
+Bundle-ClassPath: .
