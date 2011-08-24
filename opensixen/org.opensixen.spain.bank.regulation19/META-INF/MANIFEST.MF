@@ -6,6 +6,6 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.opensixen.spain.bank.regulation19.Activator
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.compiere.util,
- org.osgi.framework;version="1.3.0"
-Require-Bundle: org.opensixen.bankoperations;bundle-version="1.0.0"
+Import-Package: org.osgi.framework;version="1.3.0"
+Require-Bundle: org.opensixen.bankoperations;bundle-version="1.0.0",
+ org.opensixen.base;bundle-version="1.0.0"
