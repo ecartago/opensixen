@@ -20,14 +20,16 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.compiere.acct.AcctViewer;
-import org.compiere.acct.AcctViewerData;
 import org.compiere.apps.ADialog;
 import org.compiere.apps.AEnv;
 import org.compiere.apps.PrintScreenPainter;
 import org.compiere.apps.search.Info;
 import org.compiere.grid.ed.VDate;
+import org.compiere.grid.ed.VLookup;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MAcctSchemaElement;
+import org.compiere.model.MLookup;
+import org.compiere.model.MLookupFactory;
 import org.compiere.model.X_C_AcctSchema_Element;
 import org.compiere.report.core.RModel;
 import org.compiere.report.core.RModelExcelExporter;
@@ -51,7 +53,7 @@ import org.compiere.util.ValueNamePair;
 import org.opensixen.osgi.ResourceFinder;
 import org.opensixen.osgi.interfaces.IAccountViewer;
 
-public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionListener,ChangeListener {
+public class AcctEditorViewer extends CFrame implements ActionListener,ChangeListener {
 
 	
 	public AcctEditorViewer(int AD_Client_ID,int journalno){
@@ -88,11 +90,6 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 		}
 	}
 
-	@Override
-	public void view(int AD_Client_ID, int AD_Table_ID, int record_ID) {
-		// TODO Auto-generated method stub
-
-	}
 	
 
 	/** State Info          */
@@ -110,6 +107,9 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 	private CTabbedPane tabbedPane = new CTabbedPane();
 	private CPanel query = new CPanel();
 	private BorderLayout mainLayout = new BorderLayout();
+	
+	private CPanel northresult = new CPanel();
+	private CPanel mainresult = new CPanel();
 	private CScrollPane result = new CScrollPane();
 	private ResultTable table = new ResultTable();
 	private CPanel southPanel = new CPanel();
@@ -128,6 +128,7 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 	private CCheckBox displaySourceAmt = new CCheckBox();
 //	private CPanel graphPanel = new CPanel();
 	private CCheckBox displayDocumentInfo = new CCheckBox();
+	private CCheckBox displayBalanceMode = new CCheckBox();
 	private CLabel lSort = new CLabel();
 	private CComboBox sortBy1 = new CComboBox();
 	private CComboBox sortBy2 = new CComboBox();
@@ -151,6 +152,11 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 	private CLabel lpostingType = new CLabel();
 	private VDate selDateFrom = new VDate("DateFrom", false, false, true, DisplayType.Date, Msg.translate(Env.getCtx(), "DateFrom"));
 	private VDate selDateTo = new VDate("DateTo", false, false, true, DisplayType.Date, Msg.translate(Env.getCtx(), "DateTo"));
+	private CLabel lpartner = new CLabel(Msg.getMsg(Env.getCtx(), "C_BPartner_ID"));
+	private VLookup vpartner = null;
+	private CLabel laccount = new CLabel(Msg.getMsg(Env.getCtx(), "C_ElementValue_ID"));
+	private VLookup vaccount = null;
+	
 	private CLabel lsel1 = new CLabel();
 	private CLabel lsel2 = new CLabel();
 	private CLabel lsel3 = new CLabel();
@@ -221,6 +227,16 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 		lsel7.setLabelFor(sel7);
 		lsel8.setLabelFor(sel8);
 
+		MLookup partnerL = MLookupFactory.get (Env.getCtx(), 0, 0, 2893, DisplayType.TableDir);
+		vpartner = new VLookup ("C_BPartner_ID", false, true, true, partnerL);
+		lpartner.setText(Msg.translate(Env.getCtx(), "C_BPartner_ID"));
+		lpartner.setLabelFor(vpartner);
+		
+		MLookup accountL = MLookupFactory.get (Env.getCtx(), 0, 0, 1125, DisplayType.TableDir);
+		vaccount = new VLookup ("C_ElementValue_ID", false, true, true, accountL);
+		laccount.setText(Msg.translate(Env.getCtx(), "C_ElementValue_ID"));
+		laccount.setLabelFor(vaccount);
+		
 		//  Display
 		displayBorder = new TitledBorder(BorderFactory.createEtchedBorder(
 			Color.white,new Color(148, 145, 140)), Msg.getMsg(Env.getCtx(),"Display"));
@@ -229,13 +245,16 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 		displayQty.setText(Msg.getMsg(Env.getCtx(), "DisplayQty"));
 		displaySourceAmt.setText(Msg.getMsg(Env.getCtx(), "DisplaySourceInfo"));
 		displayDocumentInfo.setText(Msg.getMsg(Env.getCtx(), "DisplayDocumentInfo"));
+		displayBalanceMode.setText(Msg.getMsg(Env.getCtx(), "DisplayBalanceMode"));
 		lSort.setText(Msg.getMsg(Env.getCtx(), "SortBy"));
 		lGroup.setText(Msg.getMsg(Env.getCtx(), "GroupBy"));
 		//
-		displayPanel.add(displaySourceAmt,          new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
-			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
+		//displayPanel.add(displaySourceAmt,          new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+		//	,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
 		displayPanel.add(displayDocumentInfo,        new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0
 			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
+		displayPanel.add(displayBalanceMode,          new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+					,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
 		displayPanel.add(lSort,       new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
 			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
 		displayPanel.add(sortBy1,       new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0
@@ -329,8 +348,19 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 		query.add(selectionPanel,  BorderLayout.CENTER);
 		query.add(displayPanel,  BorderLayout.EAST);
 		//
+		mainresult.setLayout(new BorderLayout());
+		mainresult.add(result,BorderLayout.CENTER);
+		
+		northresult.setLayout(new GridBagLayout());
+		northresult.add( lpartner,new GridBagConstraints( 0,0,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
+        northresult.add( vpartner,new GridBagConstraints( 1,0,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,10 ),0,0 ));
+        northresult.add( laccount,new GridBagConstraints( 0,1,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
+        northresult.add( vaccount,new GridBagConstraints( 1,1,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,10 ),0,0 ));
+
+        mainresult.add(northresult,BorderLayout.NORTH);
+		
 		tabbedPane.add(query,        Msg.getMsg(Env.getCtx(), "ViewerQuery"));
-		tabbedPane.add(result,       Msg.getMsg(Env.getCtx(), "ViewerResult"));
+		tabbedPane.add(mainresult,       Msg.getMsg(Env.getCtx(), "ViewerResult"));
 //		tabbedPane.add(graphPanel,   Msg.getMsg(Env.getCtx(), "ViewerGraph"));
 		tabbedPane.addChangeListener(this);
 		result.getViewport().add(table, null);
@@ -589,6 +619,7 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 		para.append(", Source=").append(m_data.displaySourceAmt);
 		m_data.displayDocumentInfo = displayDocumentInfo.isSelected();
 		para.append(", Doc=").append(m_data.displayDocumentInfo);
+		m_data.displayBalanceMode = displayBalanceMode.isSelected();
 		//
 		m_data.sortBy1 = ((ValueNamePair)sortBy1.getSelectedItem()).getValue();
 		m_data.group1 = group1.isSelected();
@@ -614,6 +645,7 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 
 		//  Set TableModel with Query
 		table.setModel(m_data.query());
+
 
 		bQuery.setEnabled(true);
 		statusLine.setText(" " + Msg.getMsg(Env.getCtx(), "ViewerOptions"));
@@ -668,6 +700,8 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 		log.info(keyColumn);
 		String whereClause = "(IsSummary='N' OR IsSummary IS NULL)";
 		String lookupColumn = keyColumn;
+
+		
 		if (keyColumn.equals("Account_ID"))
 		{
 			lookupColumn = "C_ElementValue_ID";
@@ -726,6 +760,14 @@ public class AcctEditorViewer extends CFrame implements IAccountViewer,ActionLis
 		else
 			m_data.whereInfo.put(keyColumn, keyColumn + "=" + key.intValue());
 
+		
+		if(keyColumn.equals("C_BPartner_ID")){
+			vpartner.setValue(key.intValue());
+		}
+
+		if(keyColumn.equals("Account_ID")){
+			vaccount.setValue(key.intValue());
+		}
 		//  Display Selection and resize
 		button.setText(m_data.getButtonText(tableName, lookupColumn, selectSQL));
 		pack();
