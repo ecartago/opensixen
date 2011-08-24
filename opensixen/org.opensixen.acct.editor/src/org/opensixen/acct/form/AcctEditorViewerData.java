@@ -13,7 +13,7 @@ import java.util.logging.Level;
 
 import javax.swing.JComboBox;
 
-import org.compiere.acct.AcctViewerData;
+//import org.compiere.acct.AcctViewerData;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MAcctSchemaElement;
 import org.compiere.model.MFactAcct;
@@ -94,6 +94,8 @@ public class AcctEditorViewerData
 	public boolean          displaySourceAmt = false;
 	/** Display Document info	*/
 	public boolean          displayDocumentInfo = false;
+	/** Display Balance Mode*/
+	public boolean			displayBalanceMode = false;
 	//
 	public String           sortBy1 = "";
 	public String           sortBy2 = "";
@@ -112,7 +114,7 @@ public class AcctEditorViewerData
 	/** UserElement2 Reference	*/
 	private String 			m_ref2 = null;
 	/**	Logger			*/
-	private static CLogger log = CLogger.getCLogger(AcctViewerData.class);
+	private static CLogger log = CLogger.getCLogger(AcctEditorViewerData.class);
 
 	/**
 	 *  Dispose
@@ -322,7 +324,7 @@ public class AcctEditorViewerData
 			}
 		}
 
-		RModel rm = getRModel();
+		RModel rm = getRModel(whereClause.toString());
 		
 		//  Set Order By Clause
 		StringBuffer orderClause = new StringBuffer();
@@ -380,7 +382,7 @@ public class AcctEditorViewerData
 		//  Totals
 		rm.setFunction("AmtAcctDr", RModel.FUNCTION_SUM);
 		rm.setFunction("AmtAcctCr", RModel.FUNCTION_SUM);
-
+		rm.setFunction("AmtAcctDr-AmtAcctCr", RModel.FUNCTION_SUM);
 		rm.query (Env.getCtx(), whereClause.toString(), orderClause.toString());
 
 		return rm;
@@ -398,7 +400,7 @@ public class AcctEditorViewerData
 	 *  Create Report Model (Columns)
 	 *  @return Report Model
 	 */
-	public RModel getRModel()
+	public RModel getRModel(String whereClause)
 	{
 		Properties ctx = Env.getCtx();
 		RModel rm = new RModel("Fact_Acct");
@@ -412,12 +414,15 @@ public class AcctEditorViewerData
 			String column = (String)keys.get(i);
 			if (column != null && column.startsWith("Date"))
 				rm.addColumn(new RColumn(ctx, column, DisplayType.Date));
-			else if (column != null && column.endsWith("_ID"))
-				rm.addColumn(new RColumn(ctx, column, DisplayType.TableDir));
+			else if (column != null && column.endsWith("_ID")){
+				if(!(whereClause.contains(column) && column.equals("Account_ID"))) 
+					rm.addColumn(new RColumn(ctx, column, DisplayType.TableDir));
+			}
 		}
 		//  Main Info
 		rm.addColumn(new RColumn(ctx, "AmtAcctDr", DisplayType.Amount));
 		rm.addColumn(new RColumn(ctx, "AmtAcctCr", DisplayType.Amount));
+		rm.addColumn(new RColumn(ctx, "AmtAcctDr-AmtAcctCr", DisplayType.Amount));
 		if (displaySourceAmt)
 		{
 			if (!keys.contains("DateTrx"))
@@ -442,14 +447,21 @@ public class AcctEditorViewerData
 				else
 					rm.addColumn(new RColumn(ctx, column, DisplayType.TableDir, null, 0, m_ref2));
 			}
-			else if (column != null && column.endsWith("_ID"))
-				rm.addColumn(new RColumn(ctx, column, DisplayType.TableDir));
+			else if (column != null && column.endsWith("_ID")){
+				if(displayBalanceMode){
+					if(!column.equals("C_BPartner_ID") && !column.equals("M_Product_ID"))
+						rm.addColumn(new RColumn(ctx, column, DisplayType.TableDir));
+				}else{	
+					if(!whereClause.contains(column)) 
+						rm.addColumn(new RColumn(ctx, column, DisplayType.TableDir));
+				}
+			}
 		}
 		//	Info
 		if (!keys.contains("DateAcct"))
 			rm.addColumn(new RColumn(ctx, "DateAcct", DisplayType.Date));
-		if (!keys.contains("C_Period_ID"))
-			rm.addColumn(new RColumn(ctx, "C_Period_ID", DisplayType.TableDir));
+	//	if (!keys.contains("C_Period_ID"))
+	//		rm.addColumn(new RColumn(ctx, "C_Period_ID", DisplayType.TableDir));
 		if (displayQty)
 		{
 			rm.addColumn(new RColumn(ctx, "C_UOM_ID", DisplayType.TableDir));
@@ -461,11 +473,11 @@ public class AcctEditorViewerData
 			rm.addColumn(new RColumn(ctx, "Record_ID", DisplayType.ID));
 			rm.addColumn(new RColumn(ctx, "Description", DisplayType.String));
 		}
-		if (PostingType == null || PostingType.length() == 0)
-			rm.addColumn(new RColumn(ctx, "PostingType", DisplayType.List, // teo_sarca, [ 1664208 ]
-					RModel.TABLE_ALIAS+".PostingType",
-					MFactAcct.POSTINGTYPE_AD_Reference_ID,
-					null));
+		if(displayBalanceMode){
+			rm.addColumn(new RColumn(ctx, "AD_Table_ID", DisplayType.TableDir));
+			rm.addColumn(new RColumn(ctx, "Description", DisplayType.String));
+		}
+		
 		rm.addColumn(new RColumn(ctx, "JournalNo", DisplayType.String));
 		
 		return rm;

@@ -2,10 +2,16 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.opensixen.osgi.interfaces.IAccountViewer">
-      <viewer
-            class="org.opensixen.acct.form.AcctEditorViewer">
-      </viewer>
+         point="org.opensixen.osgi.interfaces.IModelValidator">
+      <validator
+            class="org.opensixen.acct.model.AllocationModelValidator">
+      </validator>
+   </extension>
+   <extension
+         point="org.opensixen.osgi.interfaces.IModelValidator">
+      <validator
+            class="org.opensixen.acct.model.BankStatementValidator">
+      </validator>
    </extension>
 
 </plugin>
