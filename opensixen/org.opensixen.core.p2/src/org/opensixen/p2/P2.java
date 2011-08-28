@@ -210,9 +210,9 @@ public class P2 {
 			log.log(Level.SEVERE, "Error cargando el repositorio", e);
 			return iunits;
 		}
-
-		IQueryResult<IInstallableUnit> result = repository.query(
-				QueryUtil.createIUGroupQuery(), null);
+		IQuery<IInstallableUnit> query = QueryUtil.createIUGroupQuery();
+		query = QueryUtil.createLatestQuery(query);
+		IQueryResult<IInstallableUnit> result = repository.query(query, null);
 		IInstallableUnit[] units = result.toArray(IInstallableUnit.class);
 
 		for (IInstallableUnit installableUnit : units) {
