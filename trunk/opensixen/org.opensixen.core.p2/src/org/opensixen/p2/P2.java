@@ -61,7 +61,6 @@
 
 package org.opensixen.p2;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -71,7 +70,9 @@ import java.util.logging.Level;
 import org.compiere.util.CLogger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.equinox.internal.p2.metadata.repository.SimpleMetadataRepositoryFactory;
+import org.eclipse.equinox.internal.p2.operations.IStatusCodes;
 import org.eclipse.equinox.p2.core.IAgentLocation;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
@@ -79,7 +80,9 @@ import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 import org.eclipse.equinox.p2.operations.InstallOperation;
+import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
+import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.equinox.p2.query.IQuery;
 import org.eclipse.equinox.p2.query.IQueryResult;
 import org.eclipse.equinox.p2.query.QueryUtil;
@@ -99,8 +102,17 @@ import org.opensixen.core.p2.Activator;
  */
 public class P2 {
 
+	/**
+	 * A status code used to indicate that there were no updates found when
+	 * looking for updates.
+	 */
+	public static final int STATUS_NOTHING_TO_UPDATE = IStatusCodes.NOTHING_TO_UPDATE;
+	
+	
+	
 	private static P2 instance;
 	private CLogger log = CLogger.getCLogger(getClass());
+	private static CLogger s_log = CLogger.getCLogger(P2.class);
 
 	private IRepositoryManager<IMetadataRepository> metadataManager;
 	private final IProvisioningAgent agent;
@@ -176,7 +188,7 @@ public class P2 {
 	 */
 	public URI[] getRepositories() {
 		return metadataManager
-				.getKnownRepositories(metadataManager.REPOSITORIES_ALL);
+				.getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
 	}
 
 	public RepositoryModel[] getAllRepositoryModel() {
@@ -201,6 +213,15 @@ public class P2 {
 	@SuppressWarnings("restriction")
 	public List<IUnitModel> getAllIUnit(URI location) throws RuntimeException {
 		ArrayList<IUnitModel> iunits = new ArrayList<IUnitModel>();
+		IInstallableUnit[] units = getAllIInstallableUnit(location);
+		for (IInstallableUnit installableUnit : units) {
+			iunits.add(new IUnitModel(location, installableUnit));
+		}
+		return iunits;
+	}
+	
+	
+	public IInstallableUnit[] getAllIInstallableUnit(URI location)	{		
 		SimpleMetadataRepositoryFactory factory = new SimpleMetadataRepositoryFactory();
 		factory.setAgent(agent);
 		IMetadataRepository repository;
@@ -208,43 +229,48 @@ public class P2 {
 			repository = factory.load(location, 0, new P2ProgressMonitor());
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Error cargando el repositorio", e);
-			return iunits;
+			return new IInstallableUnit[0];
 		}
 		IQuery<IInstallableUnit> query = QueryUtil.createIUGroupQuery();
 		query = QueryUtil.createLatestQuery(query);
 		IQueryResult<IInstallableUnit> result = repository.query(query, null);
-		IInstallableUnit[] units = result.toArray(IInstallableUnit.class);
-
-		for (IInstallableUnit installableUnit : units) {
-			iunits.add(new IUnitModel(location, installableUnit));
-		}
-		return iunits;
+		return result.toArray(IInstallableUnit.class);
 	}
-
+	
+	
 	/**
-	 * Install instalableUnits into the _SELF_ profile
-	 * 
-	 * @param installableUnits
+	 * Check for updates
+	 * @param agent
 	 * @param monitor
 	 * @return
+	 * @throws OperationCanceledException
 	 */
-	public boolean install(ArrayList<IInstallableUnit> installableUnits,
-			IProgressMonitor monitor) {
+	public IStatus update(IProgressMonitor monitor) throws OperationCanceledException {
 		ProvisioningSession session = new ProvisioningSession(agent);
-		InstallOperation op = new InstallOperation(session, installableUnits);
-
-		IStatus resultado = op.resolveModal(monitor);
-
-		if (resultado.isOK()) {
-			log.info("Resultado OK");
-			op.getProvisioningJob(monitor).schedule();
-
-		} else {
-			log.info("Resultado distinto de OK");
-			log.info("Mensaje: " + op.getResolutionDetails());
+		List<IInstallableUnit> toBeUpdated = P2.get().getInstalled();
+		UpdateOperation operation = new UpdateOperation(session, toBeUpdated);
+		IStatus status = operation.resolveModal(monitor);
+		if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
+			return status;
 		}
-
-		return true;
+		if (status.getSeverity() == IStatus.CANCEL)
+			throw new OperationCanceledException();
+		
+		if (status.getSeverity() != IStatus.ERROR) {
+			// More complex status handling might include showing the user what updates
+			// are available if there are multiples, differentiating patches vs. updates, etc.
+			// In this example, we simply update as suggested by the operation.
+			ProvisioningJob job = operation.getProvisioningJob(null);
+			if (job == null)	{
+				log.info("No provisioning job: " + status.getCode());
+				return status;
+			}
+			
+			status = job.run(monitor);
+			if (status.getSeverity() == IStatus.CANCEL)
+				throw new OperationCanceledException();
+		}
+		return status;
 	}
 
 	/**
@@ -253,12 +279,22 @@ public class P2 {
 	 * @param iunits
 	 * @return
 	 */
-	public boolean install(ArrayList<IUnitModel> iunits) {
+	public IStatus install(ArrayList<IUnitModel> iunits, IProgressMonitor monitor) {
 		ArrayList<IInstallableUnit> installableUnits = new ArrayList<IInstallableUnit>();
 		for (IUnitModel iunit : iunits) {
 			installableUnits.add(iunit.getInstallableUnit());
 		}
-		return install(installableUnits, new P2ProgressMonitor());
+		ProvisioningSession session = new ProvisioningSession(agent);
+		InstallOperation op = new InstallOperation(session, installableUnits);
+		
+		IStatus status = op.resolveModal(monitor);
+		if (status.getCode() == IStatus.ERROR)	{
+			return status;
+		}
+		
+		ProvisioningJob job = op.getProvisioningJob(monitor);
+		status = job.run(monitor);
+		return status;
 	}
 	
 	/**
@@ -287,15 +323,33 @@ public class P2 {
 	 * as IUnitModel list
 	 * @return
 	 */
-	public List<IUnitModel> getInstalledModel()	{
-		System.out.print(debug());
-		
+	public List<IUnitModel> getInstalledModel()	{		
 		ArrayList<IUnitModel> models = new ArrayList<IUnitModel>(); 
 		List<IInstallableUnit> installed = getInstalled();
 		for (IInstallableUnit unit:installed)	{
 			models.add(new IUnitModel(unit));
 		}
 		return models;
+	}
+	
+	public static String debug(IStatus status)	{
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(status.getCode()  + ": " +status.getMessage());
+		buffer.append("\n");
+		for (IStatus s:status.getChildren())	{			
+			debug(s, buffer);
+		}
+		
+		return buffer.toString();
+		
+	}
+	public static void debug(IStatus status, StringBuffer buffer)	{
+		
+		buffer.append(status.getCode()  + ": " +status.getMessage());
+		buffer.append("\n");
+		for (IStatus s:status.getChildren())	{			
+			debug(s, buffer);
+		}
 	}
 		
 	public String debug()	{
