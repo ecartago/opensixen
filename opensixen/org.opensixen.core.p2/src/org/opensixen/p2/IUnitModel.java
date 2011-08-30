@@ -141,7 +141,7 @@ public class IUnitModel{
 	}
 
 	public String getName()	{		
-		return installableUnit.getProperty(IInstallableUnit.PROP_NAME);
+		return installableUnit.getId();
 	}
 	
 	

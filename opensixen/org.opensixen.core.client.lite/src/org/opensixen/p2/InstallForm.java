@@ -62,7 +62,6 @@
 package org.opensixen.p2;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -76,10 +75,6 @@ import java.util.Properties;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 
 import org.compiere.apps.ADialog;
 import org.compiere.swing.CButton;
@@ -87,12 +82,12 @@ import org.compiere.swing.CComboBox;
 import org.compiere.swing.CDialog;
 import org.compiere.swing.CLabel;
 import org.compiere.swing.CPanel;
+import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
-import org.jdesktop.swingx.JXTaskPane;
+import org.eclipse.core.runtime.IStatus;
 import org.opensixen.p2.IUnitModel;
 import org.opensixen.p2.P2;
-import org.opensixen.p2.P2Updater;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.FilterList;
@@ -112,6 +107,9 @@ public class InstallForm extends CDialog {
 	private BasicEventList<IUnitModel> repoAppsList;
 	private BasicEventList<IUnitModel> installedAppsList;
 	private Properties ctx;
+	
+	
+	private CLogger log = CLogger.getCLogger(getClass());
 	
 	/**
 	 * Descripción de campos
@@ -242,19 +240,31 @@ public class InstallForm extends CDialog {
 				iunits.add(iunit);
 			}
 		}
+		P2ProgressMonitor monitor = new P2ProgressMonitor();
+		IStatus status = P2.get().install(iunits, monitor);
 		
-		if (P2.get().install(iunits))	{
-			ADialog.info(0, this, Msg.getMsg(Env.getAD_Language(ctx), "OK"));
+		if (status.isOK())	{
+			ADialog.info(0, this, Msg.getMsg(Env.getAD_Language(ctx), "Features installed, reboot required."));
 		}
 		else {
-			ADialog.error(0, this, Msg.getMsg(Env.getAD_Language(ctx), "Updates are not correctly installed "));
+			log.warning(P2.debug(status));
+			ADialog.error(0, this, Msg.getMsg(Env.getAD_Language(ctx), "Features are not correctly installed "));
 		}
 	}
 	
 	
 	private void update()	{
-		P2Updater.startupUpdater();
-		ADialog.info(0, this, Msg.getMsg(Env.getAD_Language(ctx), "OK"));
+		P2ProgressMonitor monitor = new P2ProgressMonitor();		
+		IStatus status = P2.get().update(monitor);
+		
+		if (status.getCode() == P2.STATUS_NOTHING_TO_UPDATE) {
+			ADialog.info(0, this, Msg.getMsg(Env.getAD_Language(ctx), "No updates."));			
+		} else if (status.getSeverity() != IStatus.ERROR) {
+			ADialog.info(0, this, Msg.getMsg(Env.getAD_Language(ctx), "Updates installed, reboot required."));			
+		} else {
+			log.warning(P2.debug(status));
+			ADialog.error(0, this, Msg.getMsg(Env.getAD_Language(ctx), "Can't install updates."));
+		}				
 	}
 	
 	/**
@@ -319,9 +329,9 @@ class IUnitTableFormat implements AdvancedTableFormat<IUnitModel>, WritableTable
 		case 0:
 			return "";
 		case 1:
-			return "Name";
+			return "ID";
 		case 2:
-			return "Description";
+			return "Name";
 		case 3:
 			return "Version";
 		default:
@@ -339,9 +349,9 @@ class IUnitTableFormat implements AdvancedTableFormat<IUnitModel>, WritableTable
 		case 0:
 			return new Boolean(iunit.isSelected());
 		case 1:
-			return iunit.getName();
+			return iunit.getID();
 		case 2:
-			return iunit.getDescription();
+			return iunit.getName();
 		case 3:
 			return iunit.getVersion();
 		default:
