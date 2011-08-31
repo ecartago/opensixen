@@ -61,12 +61,11 @@
 
 package org.opensixen.p2.swt;
 
+import java.net.URI;
+
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.equinox.p2.InstallDialog;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.p2.equinox.installer.InstallDescription;
-import org.eclipse.p2.equinox.installer.InstallDescriptionParser;
-import org.eclipse.p2.equinox.installer.InstallUpdateProductOperation;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -77,6 +76,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
+import org.opensixen.p2.P2Director;
 import org.opensixen.p2.applications.InstallJob;
 import org.opensixen.p2.applications.InstallableApplication;
 import org.opensixen.p2.installer.apps.ServerApplication;
@@ -175,17 +175,20 @@ public class InstallDetailsPage extends WizardPage implements InstallerWizardPag
 		}
 	}
 	
-	
+	/**
+	 * Perform installation
+	 * 
+	 * @throws Exception
+	 */
 	private void install() throws Exception	{
 		
 		InstallJob job = InstallJob.getInstance();
 		InstallDialog dialog = new InstallDialog(getShell());
 		
 		for (InstallableApplication app: job.getInstallableApplications())	{
-			InstallDescription description = InstallDescriptionParser.createDescription(app, null);							
-			InstallUpdateProductOperation op = new InstallUpdateProductOperation(description);			
-			IStatus status = dialog.run(op);	
-			
+
+									
+			IStatus status = dialog.run(app);
 			if (status.getSeverity() != IStatus.ERROR)	{
 				// run custom app stuff
 				app.afterInstall();
@@ -208,9 +211,12 @@ public class InstallDetailsPage extends WizardPage implements InstallerWizardPag
 			}			
 		}
 		
+		
 		dialog.close();
+		
 		refresh();
 		getContainer().updateButtons();
+		
 	}
 		
 	/*

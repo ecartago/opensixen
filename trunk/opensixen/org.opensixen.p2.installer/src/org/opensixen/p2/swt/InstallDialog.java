@@ -8,19 +8,23 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.equinox.p2;
+package org.opensixen.p2.swt;
+
+import java.net.URI;
 
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.*;
+import org.eclipse.equinox.p2.core.ProvisionException;
+import org.eclipse.equinox.p2.operations.InstallOperation;
+import org.eclipse.equinox.p2.operations.ProfileChangeOperation;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.p2.equinox.installer.InstallDescription;
-import org.eclipse.p2.equinox.installer.InstallUpdateProductOperation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+import org.opensixen.p2.P2Director;
+import org.opensixen.p2.applications.InstallableApplication;
 import org.opensixen.p2.installer.Activator;
-import org.opensixen.p2.swt.Messages;
 
 /**
  * The install wizard that drives the install. This dialog is used for user input
@@ -416,62 +420,7 @@ public class InstallDialog {
 		}
 	}
 
-	public boolean promptForLaunch(InstallDescription description) {
-		Display display = getDisplay();
-		if (display == null)
-			return false;
-		progressTask.setText(NLS.bind(Messages.Dialog_PromptStart, description.getProductName()));
-		progressSubTask.setText(""); //$NON-NLS-1$
-		progressBar.setVisible(false);
-		okButton.setText(Messages.Dialog_LaunchButton);
-		okButton.setVisible(true);
-		cancelButton.setText(Messages.Dialog_CloseButton);
-		cancelButton.setVisible(true);
-		waitingForClose = true;
-		while (shell != null && !shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		return returnCode == OK;
-	}
 
-	/**
-	 * Prompts the user for the install location, and whether the install should
-	 * be shared or standalone.
-	 */
-	public void promptForLocations(InstallDescription description) {
-		progressTask.setText(NLS.bind(Messages.Dialog_LocationPrompt, description.getProductName()));
-		okButton.setText(Messages.Dialog_InstallButton);
-		okButton.setVisible(true);
-		cancelButton.setText(Messages.Dialog_CancelButton);
-		cancelButton.setEnabled(true);
-		settingsGroup.setVisible(true);
-		validateInstallSettings();
-		Display display = getDisplay();
-		returnCode = -1;
-		while (returnCode == -1 && shell != null && !shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		if (returnCode == CANCEL)
-			close();
-		if (shell == null || shell.isDisposed())
-			throw new OperationCanceledException();
-		setInstallSettingsEnablement(false);
-		Path location = new Path(settingsLocation.getText());
-		description.setInstallLocation(location);
-		if (settingsStandalone.getSelection()) {
-			//force everything to be co-located regardless of what values were set in the install description
-			description.setAgentLocation(location.append("p2")); //$NON-NLS-1$
-			description.setBundleLocation(location);
-		} else {
-			if (description.getAgentLocation() == null)
-				description.setAgentLocation(new Path(System.getProperty("user.home")).append(".p2/")); //$NON-NLS-1$ //$NON-NLS-2$
-			//use bundle pool location specified in install description
-			//by default this will be null, causing the bundle pool to be nested in the agent location
-		}
-		okButton.setVisible(false);
-	}
 
 	/**
 	 * This method runs the given operation in the context of a progress dialog.
@@ -484,17 +433,23 @@ public class InstallDialog {
 	 * @param operation The operation to run
 	 * @return The result of the operation
 	 */
-	public IStatus run(final InstallUpdateProductOperation operation) {
+	public IStatus run(final InstallableApplication app) {
 		final Result result = new Result();
 		Thread thread = new Thread() {
 			public void run() {
+				IStatus status = null;
 				try {
-					result.setStatus(operation.install(new Monitor()));
+										
+					P2Director director = new P2Director(app.getURI());
+					 status = director.install(app, new Monitor());
+					result.setStatus(status);					
+					
 				} catch (ThreadDeath t) {
 					//must rethrow or the thread won't die
 					throw t;
-				} catch (RuntimeException t) {
+				} catch (ProvisionException t) {
 					result.failed(t);
+					result.setStatus(status);
 				} catch (Error t) {
 					result.failed(t);
 				} finally {
@@ -523,7 +478,7 @@ public class InstallDialog {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		return result.getStatus();
+		return result.status;
 	}
 
 	private void setInstallSettingsEnablement(boolean value) {

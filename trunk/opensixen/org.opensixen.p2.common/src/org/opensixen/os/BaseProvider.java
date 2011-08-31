@@ -65,8 +65,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
-
 /**
  * 
  * 
@@ -78,7 +76,6 @@ public abstract class BaseProvider implements PlatformProvider{
 	protected static String HOME = System.getProperty("user.home");
 	protected static String SP = System.getProperty("file.separator");
 
-	protected Logger log = Logger.getLogger(getClass());
 
 	private PlatformDetails platformDetails;
 	

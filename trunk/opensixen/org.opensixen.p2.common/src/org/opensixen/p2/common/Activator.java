@@ -61,9 +61,6 @@
 
 package org.opensixen.p2.common;
 
-import java.net.URL;
-
-import org.apache.log4j.PropertyConfigurator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -90,17 +87,7 @@ public class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
-		Activator.context = bundleContext;
-		
-		// Activamos Log4j
-		URL log4j = getClass().getClassLoader().getResource("log4j.properties");
-		
-		if (log4j == null)	{
-			return;
-		}
-		PropertyConfigurator.configure( log4j );
-
-		
+		Activator.context = bundleContext;			
 	}
 
 	/*

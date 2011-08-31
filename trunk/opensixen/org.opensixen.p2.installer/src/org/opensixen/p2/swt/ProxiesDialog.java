@@ -9,7 +9,7 @@
  *     EclipseSource
  *******************************************************************************/
 
-package org.eclipse.equinox.p2;
+package org.opensixen.p2.swt;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,7 +26,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 import org.opensixen.p2.installer.Activator;
-import org.opensixen.p2.swt.Messages;
 
 public final class ProxiesDialog {
 

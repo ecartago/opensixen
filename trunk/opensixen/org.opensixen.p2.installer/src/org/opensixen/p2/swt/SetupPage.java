@@ -329,12 +329,15 @@ public class SetupPage extends WizardPage implements InstallerWizardPage, Select
 		// Setup as server and setup path as adempiere home
 		Ini.setClient(false);
 		Ini.setAdempiereHome(path);
-		Ini.loadProperties(true);		
-		Ini.setProperty (Ini.P_CONNECTION, CustomConnection.getConnectionString(config));
-		
-		Ini.saveProperties(false);
-		return true;
-		
+		try {
+			Ini.loadProperties(true);		
+			Ini.setProperty (Ini.P_CONNECTION, CustomConnection.getConnectionString(config));		
+			Ini.saveProperties(false);
+			return true;
+		}
+		catch (Exception e)	{
+			return false;
+		}				
 	}
 	
 	

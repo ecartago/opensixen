@@ -72,9 +72,7 @@ import java.net.URI;
  * Indeos Consultoria http://www.indeos.es
  */
 public class InstallableUnitData {
-
-	 private String name;
-	 
+ 
 	 private String description;
 	 
 	 private String ID;
@@ -94,51 +92,31 @@ public class InstallableUnitData {
 	 * @param description
 	 * @param iD
 	 */
-	public InstallableUnitData(String ID,String name, String description) {
+	public InstallableUnitData(String ID, String description) {
 		super();
-		this.name = name;
 		this.description = description;
 		this.ID = ID;
 	}
-	
-	/**
-	 * @param name
-	 * @param description
-	 * @param iD
-	 */
-	public InstallableUnitData(String ID,String name, String description, URI updateSite) {
-		super();
-		this.name = name;
-		this.description = description;
-		this.updateSite = updateSite;
-		this.ID = ID;
-	}
-
 	/**
 	 * @param name
 	 * @param iD
 	 */
-	public InstallableUnitData(String ID,String name, URI updateSite) {
+	public InstallableUnitData(String ID, URI updateSite) {
 		super();
-		this.name = name;
 		this.updateSite = updateSite;
 		this.ID = ID;
 	}
 	
 	/**
-	 * @return the name
+	 * @param name
+	 * @param iD
 	 */
-	public String getName() {
-		return name;
+	public InstallableUnitData(String ID) {
+		super();		
+		this.ID = ID;
 	}
-
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	
+	
 	/**
 	 * @return the description
 	 */

@@ -60,7 +60,6 @@
  * ***** END LICENSE BLOCK ***** */
 package org.opensixen.p2.applications;
 
-import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 /**
  * LoggerProgressMonitor 
@@ -69,15 +68,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * Indeos Consultoria http://www.indeos.es
  */
 public class LoggerProgressMonitor implements IProgressMonitor {
-
-	private Logger log = Logger.getLogger(getClass());
+	
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IProgressMonitor#beginTask(java.lang.String, int)
 	 */
 	@Override
 	public void beginTask(String name, int totalWork) {
-		log.info("Starting "+ name);		
+		System.out.println("Starting "+ name);		
 	}
 
 	/* (non-Javadoc)
@@ -85,7 +83,7 @@ public class LoggerProgressMonitor implements IProgressMonitor {
 	 */
 	@Override
 	public void done() {
-		log.info("Work done.");
+		System.out.println("Work done.");
 		
 	}
 
@@ -122,7 +120,7 @@ public class LoggerProgressMonitor implements IProgressMonitor {
 	 */
 	@Override
 	public void setTaskName(String name) {
-		log.info("Starting task" + name);		
+		System.out.println("Starting task" + name);		
 	}
 
 	/* (non-Javadoc)
@@ -130,7 +128,7 @@ public class LoggerProgressMonitor implements IProgressMonitor {
 	 */
 	@Override
 	public void subTask(String name) {
-		log.info("Starting sub task" + name);
+		System.out.println("Starting sub task" + name);
 		
 	}
 
