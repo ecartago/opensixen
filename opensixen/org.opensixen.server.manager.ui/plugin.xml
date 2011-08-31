@@ -26,7 +26,8 @@
             class="org.opensixen.server.manager.ui.views.ConnectionView"
             icon="icons/sample2.gif"
             id="org.opensixen.server.manager.ui.views.ConnectionView"
-            name="Database configuration ">
+            name="Database configuration "
+            restorable="true">
       </view>
       <view
             allowMultiple="true"
@@ -41,14 +42,16 @@
             class="org.opensixen.server.manager.ui.views.ServerInstalledSoftwareView"
             icon="icons/sample2.gif"
             id="org.opensixen.server.manager.ui.serverInstalledSoftwareView"
-            name="Server Installed Software">
+            name="Server Installed Software"
+            restorable="true">
       </view>
       <view
             allowMultiple="true"
             class="org.opensixen.server.manager.ui.views.RepositoriesView"
             icon="icons/sample2.gif"
             id="org.opensixen.server.manager.ui.views.RepositoriesView"
-            name="Repositories View">
+            name="Repositories View"
+            restorable="true">
       </view>
    </extension>
    <extension

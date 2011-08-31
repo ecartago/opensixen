@@ -1,9 +1,12 @@
 package org.opensixen.server.manager.ui.views;
 
+import java.sql.SQLException;
 import java.util.Properties;
 
 import org.compiere.util.CustomConnection;
 import org.compiere.util.Ini;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -26,7 +29,9 @@ import org.opensixen.os.PlatformDetails;
 import org.opensixen.os.PlatformProvider;
 import org.opensixen.os.ProviderFactory;
 import org.opensixen.p2.applications.InstallJob;
+import org.opensixen.server.manager.ui.Activator;
 import org.opensixen.server.manager.ui.Messages;
+import org.opensixen.server.manager.ui.db.DB;
 
 public class ConnectionView extends ViewPart implements SelectionListener,
 		ModifyListener {
@@ -35,6 +40,8 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 
 	private PlatformProvider provider;
 
+	private Composite parent;
+	
 	private Combo fDbType;
 	private Text fDbHost;
 	private Text fDBuser;
@@ -42,13 +49,7 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 	private Text fDbPort;
 	private Text fDbName;
 
-	// Hardcode. From Database.DB_NAMES
-	private String DB_POSTGRES = "PostgreSQL";
-	private String PORT_POSTGRES = "5432";
-	private String DB_ORACLE = "Oracle";
-	private String PORT_ORACLE = "1521";
-
-	private String[] dbNames = { DB_POSTGRES, DB_ORACLE }; //$NON-NLS-1$ //$NON-NLS-2$
+	private String[] dbNames = { DB.DB_POSTGRES, DB.DB_ORACLE }; //$NON-NLS-1$ //$NON-NLS-2$
 	private Text fASHost;
 	private Text fASPort;
 
@@ -58,6 +59,8 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 
 	private Button btnReload;
 
+	private Button btnTest;
+
 	/**
 	 * @param pageName
 	 */
@@ -66,6 +69,7 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 	}
 
 	public void createPartControl(Composite parent) {
+		this.parent = parent;
 		ScrolledComposite scrollComposite = new ScrolledComposite(parent,
 				SWT.BORDER | SWT.V_SCROLL);
 		scrollComposite.setExpandVertical(true);
@@ -109,7 +113,7 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 		l.setText(Messages.DB_PORT);
 		fDbPort = new Text(setup, SWT.BORDER);
 		fDbPort.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-		fDbPort.setText(PORT_POSTGRES);
+		fDbPort.setText(DB.PORT_POSTGRES);
 		fDbPort.addModifyListener(this);
 
 		l = new Label(setup, SWT.NONE);
@@ -147,7 +151,7 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 		fDBuser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		// Not configurable
 		fDBuser.setText("adempiere"); //$NON-NLS-1$
-		// fDBuser.addModifyListener(this);
+		fDBuser.addModifyListener(this);
 		fDBuser.setEnabled(false);
 
 		l = new Label(setup, SWT.NONE);
@@ -164,10 +168,14 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 		btnOk = new Button(btnComposite, SWT.PUSH);
 		btnOk.setText("Save");
 		btnOk.addSelectionListener(this);
+		btnOk.setEnabled(false);
 
 		btnReload = new Button(btnComposite, SWT.PUSH);
 		btnReload.addSelectionListener(this);
 		btnReload.setText("Reload");
+		btnTest = new Button(btnComposite, SWT.PUSH);
+		btnTest.addSelectionListener(this);
+		btnTest.setText("Test");
 
 		scrollComposite.setContent(container);
 		scrollComposite.pack();
@@ -177,27 +185,32 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 
 	private void init() {
 		// Load current conf
-		boolean firstTime = Ini.loadProperties("/tmp/server_installer/Adempiere.properties");
+		try {
+			boolean firstTime = Ini.loadProperties(Activator.getServerHome() +"/" + Activator.PROPERTIES_FILENAME);
+			
+			if (firstTime == false) {
+				Properties properties = CustomConnection.getProperties(Ini.getProperty(Ini.P_CONNECTION));
+				if (properties != null)	{	
+					fASHost.setText(properties.getProperty(CustomConnection.P_AppsHost));
+					fASPort.setText(properties.getProperty(CustomConnection.P_AppsPort));
+					fDbHost.setText(properties.getProperty(CustomConnection.P_DBHost));
+					fDbPort.setText(properties.getProperty(CustomConnection.P_DBPort));
+					fDBPasswd.setText(properties
+							.getProperty(CustomConnection.P_DBPassword));
+					fDbName.setText(properties.getProperty(CustomConnection.P_DBName));
+					fDBuser.setText(properties.getProperty(CustomConnection.P_DBUser));
 		
-		if (firstTime == false) {
-			Properties properties = CustomConnection.getProperties(Ini.getProperty(Ini.P_CONNECTION));
-			if (properties != null)	{	
-				fASHost.setText(properties.getProperty(CustomConnection.P_AppsHost));
-				fASPort.setText(properties.getProperty(CustomConnection.P_AppsPort));
-				fDbHost.setText(properties.getProperty(CustomConnection.P_DBHost));
-				fDbPort.setText(properties.getProperty(CustomConnection.P_DBPort));
-				fDBPasswd.setText(properties
-						.getProperty(CustomConnection.P_DBPassword));
-				fDbName.setText(properties.getProperty(CustomConnection.P_DBName));
-				fDBuser.setText(properties.getProperty(CustomConnection.P_DBUser));
-	
-				for (int i = 0; i < dbNames.length; i++) {
-					if (dbNames[i].equals(properties
-							.getProperty(CustomConnection.P_DBType))) {
-						fDbType.select(i);
+					for (int i = 0; i < dbNames.length; i++) {
+						if (dbNames[i].equals(properties
+								.getProperty(CustomConnection.P_DBType))) {
+							fDbType.select(i);
+						}
 					}
 				}
 			}
+		}
+		catch (Exception e)	{
+			
 		}
 		PlatformDetails details = provider.getPlatformDetails();
 		if (fASHost.getText().length() == 0) {
@@ -222,24 +235,36 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 
 		// If change combo, change default port
 		if (e.getSource().equals(fDbType)) {
-			if (fDbType.getText().equals(DB_POSTGRES)) { //$NON-NLS-1$
-				fDbPort.setText(PORT_POSTGRES); //$NON-NLS-1$
+			if (fDbType.getText().equals(DB.DB_POSTGRES)) { //$NON-NLS-1$
+				fDbPort.setText(DB.PORT_POSTGRES); //$NON-NLS-1$
 			} else {
-				fDbPort.setText(PORT_ORACLE); //$NON-NLS-1$
+				fDbPort.setText(DB.PORT_ORACLE); //$NON-NLS-1$
 			}
 		}
 
 		else if (e.getSource().equals(btnReload)) {
 			init();
 		} else if (e.getSource().equals(btnOk)) {
-			createProperties("/tmp/server_installer");
+			Properties prop = bindProperties();
+			try {
+				createProperties(prop, Activator.getServerHome());
+			}
+			catch (Exception ex)	{
+				return;
+			}
+			try {DB.init(prop);} catch (SQLException ex){}
+			btnOk.setEnabled(false);
+		}
+		else if (e.getSource().equals(btnTest))	{
+			test();
 		}
 
 	}
-
-	private boolean createProperties(String path) {
-		// Setup as server and setup path as adempiere home
-
+	/**
+	 * create properties from fields
+	 * @return
+	 */
+	private Properties bindProperties()	{
 		Properties conf = new Properties();
 		conf.put("name", fASHost.getText()); //$NON-NLS-1$
 		conf.put("AppsHost", fASHost.getText()); //$NON-NLS-1$
@@ -251,18 +276,37 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 
 		conf.put("UID", fDBuser.getText()); //$NON-NLS-1$
 		conf.put("PWD", fDBPasswd.getText()); //$NON-NLS-1$
+		return conf;
 
+	}
+	
+	private boolean createProperties(Properties prop, String path) throws Exception {
+		// Setup as server and setup path as adempiere home
+		
 		Ini.setClient(false);
 		Ini.setAdempiereHome(path);
 		Ini.loadProperties(true);
 		Ini.setProperty(Ini.P_CONNECTION,
-				CustomConnection.getConnectionString(conf));
+				CustomConnection.getConnectionString(prop));
 
 		Ini.saveProperties(false);
 		return true;
 
 	}
 
+	
+	private void test()	{
+		try {
+			if (DB.test(bindProperties()))	{				
+				btnOk.setEnabled(true);
+				MessageDialog.open(MessageDialog.INFORMATION, parent.getShell(), "Connection Ok", "Connection Ok", SWT.NONE);
+			}
+		}
+		catch (SQLException e)	{
+			MessageDialog.open(MessageDialog.ERROR, parent.getShell(), "Connection Fail", e.getMessage(), SWT.NONE);
+		}
+	}
+	
 	public void setFocus() {
 	}
 
@@ -281,7 +325,7 @@ public class ConnectionView extends ViewPart implements SelectionListener,
 
 	@Override
 	public void modifyText(ModifyEvent e) {
-		// TODO Auto-generated method stub
+		btnOk.setEnabled(false);
 
 	}
 }

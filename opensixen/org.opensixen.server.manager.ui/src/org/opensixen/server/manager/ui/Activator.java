@@ -1,7 +1,10 @@
 package org.opensixen.server.manager.ui;
 
+import java.net.URI;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.opensixen.p2.applications.InstallableApplication;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -12,7 +15,8 @@ public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.opensixen.server.manager.ui"; //$NON-NLS-1$
-
+	public static final String PROPERTIES_FILENAME="Adempiere.properties";
+	
 	// The shared instance
 	private static Activator plugin;
 	
@@ -76,5 +80,14 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+	
+	
+	public static String getServerHome()	{
+		return ("/tmp/server_installer/");
+	}
+	
+	public static URI getServerProfileLocation()	{
+		return URI.create("file:///" + getServerHome() + InstallableApplication.RELATIVE_SERVER_PROFILE_LOCATION);
 	}
 }
