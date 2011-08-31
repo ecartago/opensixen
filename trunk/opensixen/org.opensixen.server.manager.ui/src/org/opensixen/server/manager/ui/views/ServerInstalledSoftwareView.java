@@ -77,6 +77,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 import org.opensixen.p2.P2Director;
 import org.opensixen.p2.applications.InstallableUnitData;
+import org.opensixen.server.manager.ui.Activator;
 
 /**
  * ServerInstalledSoftwareView 
@@ -152,8 +153,12 @@ public class ServerInstalledSoftwareView  extends ViewPart implements SelectionL
 	}
 
 	public void load()	{
-		File location = new File("/tmp/server_installer/" + P2Director.SERVER_LOCATION_SUFIX); 
-		List<InstallableUnitData> apps = P2Director.get().getServerInstalledApps(location);		
+		//File location = new File("/tmp/server_installer/" + P2Director.SERVER_LOCATION_SUFIX); 
+		//List<InstallableUnitData> apps = P2Director.get().getServerInstalledApps(location);
+	
+		/*
+		P2Director director = new P2Director(Activator.getServerProfileLocation());
+	
 		for (InstallableUnitData app:apps)	{
 			TableItem item = new TableItem (table, SWT.NONE);
 			if (app.getID() != null)
@@ -162,7 +167,10 @@ public class ServerInstalledSoftwareView  extends ViewPart implements SelectionL
 				item.setText(1, app.getName());
 			if (app.getDescription() != null)
 				item.setText(2, app.getDescription());			
-		}		
+		}
+		
+	*/
+		
 	}
 	
 	/* (non-Javadoc)

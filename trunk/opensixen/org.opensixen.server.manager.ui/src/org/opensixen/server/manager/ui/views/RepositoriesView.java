@@ -60,16 +60,38 @@
  * ***** END LICENSE BLOCK ***** */
 package org.opensixen.server.manager.ui.views;
 
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.equinox.p2.core.ProvisionException;
+import org.eclipse.jface.dialogs.MessageDialog;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 import org.opensixen.market.model.Market;
-import org.opensixen.market.model.MarketList;
-import org.opensixen.market.model.Plugin;
+import org.opensixen.market.model.Package;
+import org.opensixen.market.model.Profile;
+import org.opensixen.p2.P2Director;
+import org.opensixen.p2.applications.InstallJob;
+import org.opensixen.p2.applications.InstallableApplication;
+import org.opensixen.p2.applications.LoggerProgressMonitor;
+import org.opensixen.server.manager.ui.Activator;
+import org.opensixen.server.manager.ui.model.MPackage;
+
+
 
 /**
  * RepositoriesView 
@@ -77,16 +99,20 @@ import org.opensixen.market.model.Plugin;
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
  */
-public class RepositoriesView extends ViewPart{
+public class RepositoriesView extends ViewPart implements SelectionListener{
 
 	private Table table;
+	private Composite parent;
 
+	private String[] cols = {"Name", "Description", "Version", "Status"};
+	private Button btnInstall;
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
+		this.parent = parent;
 		// Tabla
 		table = new Table (parent, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 		table.setLinesVisible (true);
@@ -95,19 +121,47 @@ public class RepositoriesView extends ViewPart{
 		data.heightHint = 200;
 		table.setLayoutData(data);
 		
-		TableColumn col_url = new TableColumn (table, SWT.NONE);
-		col_url.setText ("UrL");
-		
-		
-		
+		ArrayList<TableColumn> columns = new ArrayList<TableColumn>();
+		/*
+		for (String colname:cols)	{
+			TableColumn col = new TableColumn (table, SWT.NONE);
+			col.setText (colname);	
+			
+		}
+						
+		*/
+		TableColumn col_name = new TableColumn (table, SWT.NONE);
+		col_name.setText ("Name");	
+		TableColumn col_desc = new TableColumn (table, SWT.NONE);
+		col_desc.setText ("Name");	
+		TableColumn col_ver = new TableColumn (table, SWT.NONE);
+		col_ver.setText ("Name");	
+		TableColumn col_status = new TableColumn (table, SWT.NONE);
+		col_status.setText ("Name");	
 		load();
+		/*
+		for (TableColumn col:columns)	{
+			col.pack();
+		}
+		*/
 		
-		col_url.pack();										
+		col_name.pack();
+		
+		col_desc.pack();	
+		
+		col_ver.pack();	
+		
+		col_status.pack();
+		Composite btnComposite = new Composite(parent, SWT.NONE);
+		btnComposite.setLayout(new RowLayout());
+		btnInstall = new Button(btnComposite, SWT.PUSH);
+		btnInstall.addSelectionListener(this);
+		btnInstall.setText("Install");
 	}
 
 	public void load()	{		
 		// Test code
-		/*
+/*		
 		InstallableApplication app = new InstallableApplication();
 		app.setID("feature.asesoriahc.feature.group");
 		File update_dir = new File("/tmp/asesoria");
@@ -118,15 +172,36 @@ public class RepositoriesView extends ViewPart{
 		job.addInstallableApplication(app);
 		
 		P2Director.get().install(job);
-		*/
+*/
 		
 		
-		
-		MarketList list = Market.getMarketList();
-		for (Plugin plugin:list.getPlugin())	{
-			TableItem item = new TableItem (table, SWT.NONE);
-			item.setText(0, plugin.getName());
-		}		
+		try {
+			List<MPackage> installed = MPackage.getInstalled();
+			
+			List<Package> packages = Market.getPackages();
+			for (Package pkg:packages)	{
+				TableItem item = new TableItem (table, SWT.NONE);
+				item.setText(0, pkg.getName());
+				item.setText(1, pkg.getDescription());
+				item.setText(2, pkg.getVersion());
+				String status = "Not installed";
+				for (MPackage i:installed)	{
+					if (i.getId().equals(pkg.getId())) 	{
+						if (i.getVersion().equals(pkg.getVersion()))	{
+							status = "Installed";
+						}
+						else {
+							status = "Update";
+						}
+					}
+				}
+				item.setText(3, status);
+			}
+		}
+		catch (Exception e)	{
+			MessageDialog.open(MessageDialog.ERROR, parent.getShell(), "Connection Fail", e.getMessage(), SWT.NONE);
+			e.printStackTrace();
+		}
 	}
 	
 
@@ -135,6 +210,62 @@ public class RepositoriesView extends ViewPart{
 	 */
 	@Override
 	public void setFocus() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void widgetSelected(SelectionEvent e) {
+		if (e.getSource().equals(btnInstall))	{
+			int index = table.getSelectionIndex();
+			Package pkg = Market.getPackages().get(index);			
+			install(pkg);						
+		}
+		
+	}
+
+	private void install(Package pkg)	{
+		Profile profile = null;
+		for (Profile p:pkg.getProfiles())	{
+			if (p.getProfile() == Profile.PROFILE_SERVER)	{
+				profile = p;
+			}
+		}
+		// if this pkg don't have server profiles, 
+		// skip installation
+		if (profile != null)	{
+			InstallJob job = InstallJob.getInstance();
+			job.setGlobalRepository(pkg.getURI());
+			job.setGlobalProfile(InstallableApplication.PROFILE_SERVER);
+			
+			for (String feature :profile.getFeatures())	{
+				InstallableApplication app = new InstallableApplication(feature, InstallableApplication.PROFILE_SERVER);
+				job.addInstallableApplication(app);
+			}
+			
+			try {
+				P2Director director = new P2Director(Activator.getServerProfileLocation());
+				LoggerProgressMonitor monitor = new LoggerProgressMonitor();
+				IStatus status = director.install(job, monitor);	
+				String debug = P2Director.debug(status);
+				System.out.println(debug);
+				
+				if (!status.isOK())	{
+					MessageDialog.open(MessageDialog.ERROR, parent.getShell(), "Installation failed", status.getMessage(), SWT.NONE);					
+				}
+				
+			}
+			catch (ProvisionException e)	{
+				MessageDialog.open(MessageDialog.ERROR, parent.getShell(), "Install Fail", e.getStatus().getMessage(), SWT.NONE);
+				return;
+			}
+		}
+		
+	}
+	
+	
+	@Override
+	public void widgetDefaultSelected(SelectionEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
