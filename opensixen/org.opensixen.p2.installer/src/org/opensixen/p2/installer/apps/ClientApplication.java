@@ -76,13 +76,13 @@ import org.opensixen.p2.applications.InstallableApplication;
 public class ClientApplication extends InstallableApplication {
 	
 	public final static String IU_CLIENT = "OpensixenClient"; //$NON-NLS-1$
-	public final static URI URI_CLIENT=  URI.create("http://dev.opensixen.org/products/client/"); //$NON-NLS-1$
+	public final static URI URI_CLIENT=  URI.create("http://dev.opensixen.org/updates/"); //$NON-NLS-1$
 	public final static String PROFILE_CLIENT = "OpensixenClient";
 	
 	/**
 	 * @param iu
 	 */
 	public ClientApplication() {
-		super(IU_CLIENT, "OpensixenClient", URI_CLIENT);
+		super(IU_CLIENT, PROFILE_CLIENT, URI_CLIENT);		
 	}
 }

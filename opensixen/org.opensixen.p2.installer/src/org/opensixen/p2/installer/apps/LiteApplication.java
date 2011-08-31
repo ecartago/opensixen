@@ -76,14 +76,14 @@ import org.opensixen.p2.applications.InstallableApplication;
 public class LiteApplication extends InstallableApplication {
 
 	public final static String IU_LITE = "OpensixenLite"; //$NON-NLS-1$  
-	public final static URI URI_LITE= URI.create("http://dev.opensixen.org/products/lite/"); //$NON-NLS-1$
+	public final static URI URI_LITE= URI.create("http://dev.opensixen.org/updates"); //$NON-NLS-1$
 	public final static String PROFILE_LITE = "OpensixenLite";
 	
 	/**
 	 * @param iu
 	 */
 	public LiteApplication() {
-		super(IU_LITE, "OpensixenLite", URI_LITE);
+		super(IU_LITE, PROFILE_LITE, URI_LITE);	
 	}
 
 

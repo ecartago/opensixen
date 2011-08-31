@@ -61,6 +61,7 @@
 
 package org.opensixen.p2.applications;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,6 +84,11 @@ public class InstallJob {
 		}
 		return instance;
 	}
+	
+	private URI globalRepository;
+	
+	private String globalProfile;
+	
 	
 	/**
 	 * Default Construnctor
@@ -140,4 +146,35 @@ public class InstallJob {
 		
 		return installableApplications.remove(app);
 	}
+
+	/**
+	 * @return the globalRepository
+	 */
+	public URI getGlobalRepository() {
+		return globalRepository;
+	}
+
+	/**
+	 * @param globalRepository the globalRepository to set
+	 */
+	public void setGlobalRepository(URI globalRepository) {
+		this.globalRepository = globalRepository;
+	}
+
+	/**
+	 * @return the globalProfile
+	 */
+	public String getGlobalProfile() {
+		return globalProfile;
+	}
+
+	/**
+	 * @param globalProfile the globalProfile to set
+	 */
+	public void setGlobalProfile(String globalProfile) {
+		this.globalProfile = globalProfile;
+	}
+	
+	
+	
 }

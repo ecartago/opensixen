@@ -218,52 +218,37 @@ public final class Ini implements Serializable
 	
 	private static String s_propertyFileName = null;
 	
-	/**	Logger						*/
-	private static org.apache.log4j.Logger			log = org.apache.log4j.Logger.getLogger(Ini.class);
-
 	/**
 	 *	Save INI parameters to disk
 	 *  @param tryUserHome get user home first
+	 * @throws Exception 
 	 */
-	public static void saveProperties (boolean tryUserHome)
+	public static void saveProperties (boolean tryUserHome) throws Exception
 	{
-		
-			String fileName = getFileName (tryUserHome);
-			FileOutputStream fos = null;
-			try
-			{
-				File f = new File(fileName);
-				f.getParentFile().mkdirs(); // Create all dirs if not exist - teo_sarca FR [ 2406123 ]
-				fos = new FileOutputStream(f);
-				s_prop.store(fos, "Adempiere");
-				fos.flush();
-				fos.close();
-			}
-			catch (Exception e)
-			{
-				log.error("Cannot save Properties to " + fileName + " - " + e.toString());
-				return;
-			}
-			catch (Throwable t)
-			{
-				log.error("Cannot save Properties to " + fileName + " - " + t.toString());
-				return;
-			}
-			log.trace(fileName);
+
+		String fileName = getFileName(tryUserHome);
+
+		File f = new File(fileName);
+		f.getParentFile().mkdirs(); // Create all dirs if not exist - teo_sarca
+									// FR [ 2406123 ]
+		FileOutputStream fos = new FileOutputStream(f);
+		s_prop.store(fos, "Adempiere");
+		fos.flush();
+		fos.close();
+						
 		
 	}	//	save
 
 	/**
 	 *	Load INI parameters from disk
 	 *  @param reload reload
+	 * @throws Exception 
 	 */
-	public static void loadProperties (boolean reload)
+	public static void loadProperties (boolean reload) throws Exception
 	{
 		if (reload || s_prop.size() == 0)
 		{
-
 				loadProperties(getFileName(s_client));
-
 		}
 	}	//	loadProperties
 
@@ -283,48 +268,23 @@ public final class Ini implements Serializable
 	 *	@param filename to load
 	 *	@return true if first time
 	 */
-	public static boolean loadProperties (String filename)
-	{
-		boolean loadOK = true;
+	public static boolean loadProperties (String filename)	throws Exception {
+		boolean loadOK = false;
 		boolean firstTime = false;
 		s_prop = new Properties();
 		FileInputStream fis = null;
-		try
-		{
-			fis = new FileInputStream(filename);
-			s_prop.load(fis);
-			fis.close();
-		}
-		catch (FileNotFoundException e)
-		{
-			log.warn(filename + " not found");
-			loadOK = false;
-		}
-		catch (Exception e)
-		{
-			log.error(filename + " - " + e.toString());
-			loadOK = false;
-		}
-		catch (Throwable t)
-		{
-			log.error(filename + " - " + t.toString());
-			loadOK = false;
-		}
-		if (!loadOK || s_prop.getProperty(P_TODAY, "").equals(""))
-		{
-			log.info(filename);
-			
-		}
-
-		checkProperties();
 		
+		fis = new FileInputStream(filename);
+		s_prop.load(fis);
+		fis.close();
+		
+		checkProperties();
+		loadOK = true;
 		//  Save if not exist or could not be read
 		if (!loadOK || firstTime)
 			saveProperties(true);
-		s_loaded = true;
-		log.info(filename + " #" + s_prop.size());
-		s_propertyFileName = filename;
-		
+		s_loaded = true;		
+		s_propertyFileName = filename;		
 		return firstTime;
 	}	//	loadProperties
 
@@ -354,17 +314,9 @@ public final class Ini implements Serializable
 		File file = new File(fileName);
 		if (file.exists())
 		{
-			try
-			{
-				if (!file.delete())
-					file.deleteOnExit();
-				s_prop = new Properties();
-				log.info (fileName);
-			}
-			catch (Exception e)
-			{
-				log.warn("Cannot delete Property file", e);
-			}
+			if (!file.delete())
+				file.deleteOnExit();
+			s_prop = new Properties();						
 		}
 	}	//	deleteProperties
 	

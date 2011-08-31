@@ -61,11 +61,8 @@
 
 package org.opensixen.p2.installer.apps;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 
 import org.apache.log4j.Logger;
@@ -80,12 +77,10 @@ import org.opensixen.p2.applications.InstallableApplication;
  * 
  */
 public class ServerApplication extends InstallableApplication {
-
+	private Logger log = Logger.getLogger(getClass());
+	
 	public final static String IU_SERVER = "OpensixenServer"; //$NON-NLS-1$
-	public final static URI URL_SERVER = URI.create("http://dev.opensixen.org/updates"); //$NON-NLS-1$
-	//public final static String URL_SERVER = "file:///tmp/server/repository/";
-
-	private static final String SERVER_SUFIX = "/tomcat/webapps/osx/WEB-INF/eclipse";
+	public final static URI URL_SERVER = URI.create("http://dev.opensixen.org/updates"); //$NON-NLS-1$	
 			
 	private PlatformProvider provider;	
 	
@@ -94,19 +89,18 @@ public class ServerApplication extends InstallableApplication {
 	 */
 	public ServerApplication() {
 		super(IU_SERVER, PROFILE_SERVER, URL_SERVER );
-		setProfile(PROFILE_SERVER);
 		provider = ProviderFactory.getProvider();
 	}
 
 	/**
-	 * Tenemos que añadirle nun sufijo al servidor para que se instale en el
-	 * sitio correcto
+	 * Tenemos que añadirle un sufijo al servidor para que se instale en el
+	 * sitio correcto 
 	 */
 	@Override
 	public String getPath() {
 		String path = super.getPath();
 
-		return path + SERVER_SUFIX;
+		return path + RELATIVE_SERVER_PROFILE_LOCATION;
 	}
 	
 	public String getRealPath()	{
@@ -150,5 +144,4 @@ public class ServerApplication extends InstallableApplication {
 			return false;
 		}
 	}
-
 }

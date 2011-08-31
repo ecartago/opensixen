@@ -63,8 +63,6 @@ package org.opensixen.p2.applications;
 
 import java.net.URI;
 
-import org.apache.log4j.Logger;
-
 /**
  * Model for installable Application via P2Director
  * 
@@ -73,8 +71,13 @@ import org.apache.log4j.Logger;
  *
  */
 public class InstallableApplication extends InstallableUnitData {
-				
+
+	/** Profile location from SERVER_HOME */
+	public static final String RELATIVE_SERVER_PROFILE_LOCATION = "/tomcat/webapps/osx/WEB-INF/eclipse";
+	
 	public final static String PROFILE_SERVER = "OpensixenServer";
+	public final static String PROFILE_CLIENT = "OpensixenClient";
+	public final static String PROFILE_LITE = "OpensixenLite";
 	
 	/**
 	 * 
@@ -85,39 +88,50 @@ public class InstallableApplication extends InstallableUnitData {
 
 	/**
 	 * @param ID
-	 * @param name
+	 * @param profile
 	 * @param description
 	 * @param updateSite
 	 */
-	public InstallableApplication(String ID, String name, String description,
+	public InstallableApplication(String ID, String profile, String description,
 			URI updateSite) {
-		super(ID, name, description, updateSite);
+		super(ID, updateSite);
+		this.profile = profile;
 	}
 
 	/**
 	 * @param ID
-	 * @param name
+	 * @param profile
 	 * @param description
 	 */
-	public InstallableApplication(String ID, String name, String description) {
-		super(ID, name, description);
+	public InstallableApplication(String ID, String profile, String description) {
+		super(ID, description);
+		this.profile = profile;
 	}
 
 	/**
 	 * @param ID
-	 * @param name
+	 * @param profile
 	 * @param updateSite
 	 */
-	public InstallableApplication(String ID, String name, URI updateSite) {
-		super(ID, name, updateSite);
+	public InstallableApplication(String ID, String profile, URI updateSite) {
+		super(ID, updateSite);
+		this.profile = profile;
+	}
+	
+	/**
+	 * @param ID
+	 * @param profile
+	 * @param updateSite
+	 */
+	public InstallableApplication(String ID, String profile) {
+		super(ID);
+		this.profile = profile;
 	}
 
 
 	private String path;
 	
 	private String profile;
-	
-	protected Logger log = Logger.getLogger(getClass());
 		
 	private boolean installOk = false; 
 	
@@ -134,6 +148,9 @@ public class InstallableApplication extends InstallableUnitData {
 		return path;
 	}
 
+	public URI getURI()	{
+		return URI.create("file://" + getPath());
+	}
 	/**
 	 * Set the path where the app shound be installed
 	 * or updated
