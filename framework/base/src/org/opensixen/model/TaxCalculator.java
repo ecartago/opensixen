@@ -104,6 +104,11 @@ public class TaxCalculator {
 		// for each line, get their tax and calculeta
 		for (int i=0; i < lines.length; i++)	{
 			int C_Tax_ID = lines[i].getC_Tax_ID();
+
+			// Empty lines have c_tax_id=0 
+			if (C_Tax_ID == 0)	{
+				continue;
+			}
 			MTax[] line_taxes = null;
 			
 			// Get taxes from cache 
