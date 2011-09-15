@@ -11,6 +11,7 @@ import org.compiere.model.MAccount;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MClient;
 import org.compiere.model.MInvoice;
+import org.compiere.model.MPayment;
 import org.compiere.model.ModelValidationEngine;
 import org.compiere.model.PO;
 import org.compiere.util.Env;
@@ -70,7 +71,13 @@ public class AllocationModelValidator implements IModelValidator, FactsValidator
 					// Get invoice lines		
 					if(docLine.getC_Invoice_ID()>0){
 						MInvoice invoice = new MInvoice(Env.getCtx(), docLine.getC_Invoice_ID(), null);
-						line.setDescription(line.getDescription()+","+Msg.translate(Env.getCtx(), "C_Invoice_ID")+" "+invoice.getDocumentNo());
+						//line.setDescription(line.getDescription()+","+Msg.translate(Env.getCtx(), "C_Invoice_ID")+" "+invoice.getDocumentNo());
+						line.setDescription("");
+						line.setDescription(Msg.translate(Env.getCtx(), "C_Invoice_ID")+" "+invoice.getDocumentNo());
+						if(docLine.getC_Payment_ID()>0){
+							MPayment pay = new MPayment(Env.getCtx(),docLine.getC_Payment_ID(),null);
+							line.setDescription(line.getDescription()+" - "+Msg.translate(Env.getCtx(), "C_Payment_ID")+" "+pay.getDocumentNo());
+						}
 					}
 
 				

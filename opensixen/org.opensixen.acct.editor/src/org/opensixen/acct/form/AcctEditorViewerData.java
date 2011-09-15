@@ -18,6 +18,7 @@ import org.compiere.model.MAcctSchema;
 import org.compiere.model.MAcctSchemaElement;
 import org.compiere.model.MFactAcct;
 import org.compiere.model.MLookupFactory;
+import org.compiere.model.MOrg;
 import org.compiere.model.MRefList;
 import org.compiere.report.core.RColumn;
 import org.compiere.report.core.RModel;
@@ -212,8 +213,10 @@ public class AcctEditorViewerData
 			PreparedStatement pstmt = DB.prepareStatement(sql, null);
 			pstmt.setInt(1, AD_Client_ID);
 			ResultSet rs = pstmt.executeQuery();
-			while (rs.next())
+			while (rs.next()){
 				cb.addItem(new KeyNamePair(rs.getInt(1), rs.getString(2)));
+
+			}
 			rs.close();
 			pstmt.close();
 		}
@@ -221,6 +224,8 @@ public class AcctEditorViewerData
 		{
 			log.log(Level.SEVERE, sql, e);
 		}
+		
+		cb.setSelectedItem(new KeyNamePair(Env.getAD_Org_ID(Env.getCtx()),new MOrg(Env.getCtx(),Env.getAD_Org_ID(Env.getCtx()),null).getName()));
 	}   //  fillOrg
 
 	/**
@@ -415,10 +420,15 @@ public class AcctEditorViewerData
 			if (column != null && column.startsWith("Date"))
 				rm.addColumn(new RColumn(ctx, column, DisplayType.Date));
 			else if (column != null && column.endsWith("_ID")){
-				if(!(whereClause.contains(column) && column.equals("Account_ID"))) 
+				if(!(whereClause.contains(column) && ( column.equals("Account_ID"))|| column.equals("AD_Org_ID"))) 
 					rm.addColumn(new RColumn(ctx, column, DisplayType.TableDir));
 			}
 		}
+		if(displayBalanceMode){
+			rm.addColumn(new RColumn(ctx, "AD_Table_ID", DisplayType.TableDir));
+			rm.addColumn(new RColumn(ctx, "Description", DisplayType.String));
+		}
+		
 		//  Main Info
 		rm.addColumn(new RColumn(ctx, "AmtAcctDr", DisplayType.Amount));
 		rm.addColumn(new RColumn(ctx, "AmtAcctCr", DisplayType.Amount));
@@ -449,7 +459,7 @@ public class AcctEditorViewerData
 			}
 			else if (column != null && column.endsWith("_ID")){
 				if(displayBalanceMode){
-					if(!column.equals("C_BPartner_ID") && !column.equals("M_Product_ID"))
+					if(!column.equals("C_BPartner_ID") && !column.equals("M_Product_ID") )
 						rm.addColumn(new RColumn(ctx, column, DisplayType.TableDir));
 				}else{	
 					if(!whereClause.contains(column)) 
@@ -471,10 +481,6 @@ public class AcctEditorViewerData
 		{
 			rm.addColumn(new RColumn(ctx, "AD_Table_ID", DisplayType.TableDir));
 			rm.addColumn(new RColumn(ctx, "Record_ID", DisplayType.ID));
-			rm.addColumn(new RColumn(ctx, "Description", DisplayType.String));
-		}
-		if(displayBalanceMode){
-			rm.addColumn(new RColumn(ctx, "AD_Table_ID", DisplayType.TableDir));
 			rm.addColumn(new RColumn(ctx, "Description", DisplayType.String));
 		}
 		
