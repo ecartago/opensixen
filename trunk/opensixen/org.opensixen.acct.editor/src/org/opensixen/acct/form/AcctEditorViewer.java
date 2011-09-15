@@ -156,6 +156,8 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 	private VLookup vpartner = null;
 	private CLabel laccount = new CLabel(Msg.getMsg(Env.getCtx(), "C_ElementValue_ID"));
 	private VLookup vaccount = null;
+	private CLabel lorg = new CLabel(Msg.getMsg(Env.getCtx(), "AD_Org_ID"));
+	private VLookup vorg = null;
 	
 	private CLabel lsel1 = new CLabel();
 	private CLabel lsel2 = new CLabel();
@@ -237,6 +239,11 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 		laccount.setText(Msg.translate(Env.getCtx(), "C_ElementValue_ID"));
 		laccount.setLabelFor(vaccount);
 		
+		MLookup orgL = MLookupFactory.get (Env.getCtx(), 0, 0, 528, DisplayType.TableDir);
+		vorg = new VLookup ("AD_Org_ID", false, true, true, orgL);
+		lorg.setText(Msg.translate(Env.getCtx(), "AD_Org_ID"));
+		lorg.setLabelFor(vorg);
+		
 		//  Display
 		displayBorder = new TitledBorder(BorderFactory.createEtchedBorder(
 			Color.white,new Color(148, 145, 140)), Msg.getMsg(Env.getCtx(),"Display"));
@@ -246,16 +253,19 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 		displaySourceAmt.setText(Msg.getMsg(Env.getCtx(), "DisplaySourceInfo"));
 		displayDocumentInfo.setText(Msg.getMsg(Env.getCtx(), "DisplayDocumentInfo"));
 		displayBalanceMode.setText(Msg.getMsg(Env.getCtx(), "DisplayBalanceMode"));
+		displayBalanceMode.setSelected(true);
 		lSort.setText(Msg.getMsg(Env.getCtx(), "SortBy"));
 		lGroup.setText(Msg.getMsg(Env.getCtx(), "GroupBy"));
+
+		
 		//
 		//displayPanel.add(displaySourceAmt,          new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
 		//	,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
-		displayPanel.add(displayDocumentInfo,        new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0
-			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
+	/*	displayPanel.add(displayDocumentInfo,        new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0
+			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));*/
 		displayPanel.add(displayBalanceMode,          new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
 					,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
-		displayPanel.add(lSort,       new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
+		/*displayPanel.add(lSort,       new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
 			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
 		displayPanel.add(sortBy1,       new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0
 			,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
@@ -276,20 +286,23 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 		displayPanel.add(sortBy4,  new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0
 			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
 		displayPanel.add(group4,  new GridBagConstraints(1, 8, 1, 1, 0.0, 0.0
-			,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
+			,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));*/
 		//
 		selectionPanel.add(lacctSchema,         new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 			,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
 		selectionPanel.add(selAcctSchema,        new GridBagConstraints(1, 0, 2, 1, 0.0, 0.0
 			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
 			
-		selectionPanel.add(selDocument,           new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-			,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 5, 10, 5), 0, 0));
-		selectionPanel.add(selTable,          new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-			,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 10, 5), 0, 0));
-		selectionPanel.add(selRecord,         new GridBagConstraints(2, 1, 2, 1, 0.0, 0.0
-			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 5, 10, 5), 0, 0));
-
+		//selectionPanel.add(selDocument,           new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+		//	,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 5, 10, 5), 0, 0));
+		//selectionPanel.add(selTable,          new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
+		//	,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 10, 5), 0, 0));
+		//selectionPanel.add(selRecord,         new GridBagConstraints(2, 1, 2, 1, 0.0, 0.0
+		//	,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 5, 10, 5), 0, 0));
+		selectionPanel.add(lOrg,         new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 0, 5), 0, 0));
+		selectionPanel.add(selOrg,         new GridBagConstraints(1, 1, 2, 1, 0.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
 		selectionPanel.add(lpostingType,         new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 			,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
 		selectionPanel.add(selPostingType,        new GridBagConstraints(1, 2, 2, 1, 0.0, 0.0
@@ -300,10 +313,7 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 			,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
 		selectionPanel.add(selDateTo,   new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0
 			,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
-		selectionPanel.add(lOrg,         new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
-			,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 0, 5), 0, 0));
-		selectionPanel.add(selOrg,         new GridBagConstraints(1, 4, 2, 1, 0.0, 0.0
-			,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
+		
 		selectionPanel.add(lAcct,         new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0
 			,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 0, 0));
 		selectionPanel.add(selAcct,         new GridBagConstraints(1, 5, 2, 1, 0.0, 0.0
@@ -352,10 +362,13 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 		mainresult.add(result,BorderLayout.CENTER);
 		
 		northresult.setLayout(new GridBagLayout());
-		northresult.add( lpartner,new GridBagConstraints( 0,0,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
-        northresult.add( vpartner,new GridBagConstraints( 1,0,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,10 ),0,0 ));
-        northresult.add( laccount,new GridBagConstraints( 0,1,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
-        northresult.add( vaccount,new GridBagConstraints( 1,1,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,10 ),0,0 ));
+		
+		northresult.add( lorg,new GridBagConstraints( 0,0,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
+        northresult.add( vorg,new GridBagConstraints( 1,0,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,10 ),0,0 ));
+		northresult.add( lpartner,new GridBagConstraints( 0,1,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
+        northresult.add( vpartner,new GridBagConstraints( 1,1,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,10 ),0,0 ));
+        northresult.add( laccount,new GridBagConstraints( 0,2,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets( 2,2,2,2 ),0,0 ));
+        northresult.add( vaccount,new GridBagConstraints( 1,2,1,1,0.3,0.0,GridBagConstraints.WEST,GridBagConstraints.BOTH,new Insets( 2,2,2,10 ),0,0 ));
 
         mainresult.add(northresult,BorderLayout.NORTH);
 		
@@ -428,7 +441,7 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 		selAcct.addActionListener(this);
 		selAcct.setText("");
 		selAcct.setIcon(m_iFind);
-
+		
 		//  Document Select
 		boolean haveDoc = AD_Table_ID != 0 && Record_ID != 0;
 		selDocument.setSelected (haveDoc);
@@ -603,8 +616,11 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 			m_data.DateTo = (Timestamp)selDateTo.getValue();
 			para.append(", DateTo=").append(m_data.DateTo);
 			kp = (KeyNamePair)selOrg.getSelectedItem();
-			if (kp != null)
+			if (kp != null){
 				m_data.AD_Org_ID = kp.getKey();
+
+				vorg.setValue(kp.getKey());
+			}
 			para.append(", AD_Org_ID=").append(m_data.AD_Org_ID);
 			//
 			Iterator it = m_data.whereInfo.values().iterator();
@@ -768,6 +784,7 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 		if(keyColumn.equals("Account_ID")){
 			vaccount.setValue(key.intValue());
 		}
+
 		//  Display Selection and resize
 		button.setText(m_data.getButtonText(tableName, lookupColumn, selectSQL));
 		pack();
