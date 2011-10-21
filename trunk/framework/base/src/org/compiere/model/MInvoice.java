@@ -2455,4 +2455,13 @@ public class MInvoice extends X_C_Invoice implements DocAction, DocWithAmounts
 			|| DOCSTATUS_Reversed.equals(ds);
 	}	//	isComplete
 
+	/**
+	 * Return grand total amount converted to base currency
+	 * @return
+	 */
+	public BigDecimal getConvertedGrandTotal()	{
+		return MConversionRate.convertBase(getCtx(), getGrandTotal(true),	//	CM adjusted
+				getC_Currency_ID(), getDateAcct(), getC_ConversionType_ID(), getAD_Client_ID(), getAD_Org_ID());
+	}
+	
 }	//	MInvoice

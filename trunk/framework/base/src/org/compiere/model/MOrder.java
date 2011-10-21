@@ -2571,5 +2571,13 @@ public class MOrder extends X_C_Order implements DocAction, DocWithAmounts
 		
 	}
 	
+	/**
+	 * Return grand total amount converted to base currency
+	 * @return
+	 */
+	public BigDecimal getConvertedGrandTotal()	{
+		return MConversionRate.convertBase(getCtx(), getGrandTotal(),	//	CM adjusted
+				getC_Currency_ID(), getDateAcct(), getC_ConversionType_ID(), getAD_Client_ID(), getAD_Org_ID());
+	}
 	
 }	//	MOrder

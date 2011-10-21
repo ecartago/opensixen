@@ -65,6 +65,7 @@ import org.compiere.model.GridTabVO;
 import org.compiere.model.MOrder;
 import org.compiere.model.MOrderLine;
 import org.compiere.util.Env;
+import org.opensixen.model.POFactory;
 
 /**
  * OrderTrxInfo 
@@ -79,7 +80,7 @@ public class OrderTrxInfo extends DocLineTrxInfo {
 	public String getTrxInfo(GridTabVO m_vo) {
 		
 		int C_Order_ID = Env.getContextAsInt(m_vo.ctx, m_vo.WindowNo, "C_Order_ID");
-		MOrder order = new MOrder(m_vo.ctx, C_Order_ID, null);
+		MOrder order = POFactory.get(m_vo.ctx, MOrder.class, C_Order_ID);
 		MOrderLine[] lines = order.getLines();
 		return extractTrxInfo(m_vo.ctx, order, lines, "OrderSummary");
 	}

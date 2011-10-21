@@ -131,9 +131,7 @@ public abstract class DocLineTrxInfo implements IStatusBarTrxInfo {
 		BigDecimal convTotalAmt = grandTotal;			
 		// If different currency
 		if (doc.getC_Currency_ID() != ctx_C_Currency_ID)	{		
-			// Delegate conversion to sql function
-			// currencyconvert(p_amount, p_curfrom_id , p_curto_id , p_convdate , p_conversiontype_id, p_client_id , p_org_id)
-			convTotalAmt = convertCurrency(doc, grandTotal);
+			convTotalAmt = doc.getConvertedGrandTotal();
 		}
 		
 		// Setup parameters
@@ -147,43 +145,6 @@ public abstract class DocLineTrxInfo implements IStatusBarTrxInfo {
 		return formatString(args, AD_Message );
 	}
 	
-	/**
-	 * Convert currency with pgsql procedure
-	 * @param doc
-	 * @param grandTotal
-	 * @return
-	 */
-	private BigDecimal convertCurrency (DocWithAmounts doc, BigDecimal grandTotal)	{
-		String sql = "select currencyconvert(?,?,?,?,?,?,?) as conv";
-		BigDecimal convTotalAmt = Env.ZERO;
-		try {
-			PreparedStatement psmt = DB.prepareStatement(sql, null);
-			psmt.setBigDecimal(1, grandTotal);
-			psmt.setInt(2, doc.getC_Currency_ID());
-			psmt.setInt(3, ctx_C_Currency_ID);
-			psmt.setTimestamp(4, doc.getDateAcct());
-			psmt.setInt(5, doc.getC_ConversionType_ID());
-			psmt.setInt(6, doc.getAD_Client_ID());
-			psmt.setInt(7, doc.getAD_Org_ID());
-			
-			ResultSet rs = psmt.executeQuery();
-			if (rs.next())	{
-				BigDecimal conv  = rs.getBigDecimal("conv");
-				if (conv != null)	{
-					convTotalAmt = conv;										
-				}
-			}
-			
-			rs.close();
-			psmt.close();
-			rs = null;
-			psmt = null;
-		}
-		catch (SQLException e)	{
-			log.log(Level.SEVERE, "Can't convert currency.", e);
-		}
-		return convTotalAmt;
-	}
 	
 	/**
 	 * Format String for Status Bar
