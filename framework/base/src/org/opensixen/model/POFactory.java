@@ -62,35 +62,18 @@
 package org.opensixen.model;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLData;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import org.adempiere.exceptions.DBException;
-import org.compiere.model.MRole;
 import org.compiere.model.MTable;
 import org.compiere.model.PO;
 import org.compiere.model.POInfo;
-import org.compiere.model.Query;
 import org.compiere.util.CLogger;
-import org.compiere.util.CPreparedStatement;
-import org.compiere.util.DB;
-import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
-import org.opensixen.util.NameObjectPair;
-
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 
 /**
  * POFactory
@@ -413,16 +396,58 @@ public class POFactory {
 	public static <T extends PO> T get(Properties ctx, Class<T> clazz, int id, String trxName)	{
         Constructor<T> po_constr;
 		try {
-			po_constr = clazz.getDeclaredConstructor(new Class[] { Properties.class, int.class, String.class });
-			T	po	=  po_constr.newInstance(new Object[] { ctx, 0, trxName });
+			Class<T> c = getCustomClass(clazz);
+			po_constr = c.getDeclaredConstructor(new Class[] { Properties.class, int.class, String.class });
+			T	po	=  po_constr.newInstance(new Object[] { ctx, id, trxName });
 			return po;
 		} catch (NoSuchMethodException e)	{throw new RuntimeException ("Error instanciando objetos.", e); }
 		catch (Exception e)	{ throw new RuntimeException(e);	}			
 	}
 
+	private static HashMap<Class<?>, Class<?>> scacheclasses = new HashMap<Class<?>, Class<?>>();
 	
+	
+	/**
+	 * Try to find custom models from parent clases via tableName
+	 *  
+	 * @param clazz
+	 * @return custom class or null if not find
+	 * 
+	 */
+	private static <T extends PO> Class<T> getCustomClass(Class<T> clazz) {
+		if (scacheclasses.containsKey(clazz)) {
+			return (Class<T>) scacheclasses.get(clazz);
+		}
+		// Try to get tableName via calling get_TableName from PO
+		try {
+			Field f = clazz.getField("Table_Name");			
+			String tableName = (String) f.get(null);
+			Class<T> derived = getClass(tableName);
+			scacheclasses.put(clazz, derived);
+			return derived;
+		} catch (Exception e) {
+			s_log.log(Level.SEVERE, "Can't get derived class", e);
+			scacheclasses.put(clazz, clazz);
+			return clazz;
+		}
+	}
+
+	/**
+	 * Return the model class for this AD_Table_ID
+	 * @param AD_Table_ID
+	 * @return
+	 */
 	public static <T extends PO> Class<T> getClass(int AD_Table_ID)	{
 		String tableName = MTable.getTableName(Env.getCtx(), AD_Table_ID);
+		return (Class<T>) MTable.getClass(tableName);
+	}
+	
+	/**
+	 * Return the model class for this table name
+	 * @param AD_Table_ID
+	 * @return
+	 */
+	public static <T extends PO> Class<T> getClass(String tableName)	{		
 		return (Class<T>) MTable.getClass(tableName);
 	}
 	
