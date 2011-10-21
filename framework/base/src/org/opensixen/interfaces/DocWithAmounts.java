@@ -89,6 +89,8 @@ public interface DocWithAmounts {
 	
 	public BigDecimal getGrandTotal();
 	
+	public BigDecimal getConvertedGrandTotal();
+	
 	public boolean isSOTrx();
 	
 	public boolean isTaxIncluded();

@@ -64,6 +64,7 @@ import org.compiere.model.GridTabVO;
 import org.compiere.model.MInvoice;
 import org.compiere.model.MInvoiceLine;
 import org.compiere.util.Env;
+import org.opensixen.model.POFactory;
 
 /**
  * InvoiceTrxInfo 
@@ -76,9 +77,9 @@ public class InvoiceTrxInfo extends DocLineTrxInfo{
 	@Override
 	public String getTrxInfo(GridTabVO m_vo) {
 		
-		int C_Invoice_ID = Env.getContextAsInt(m_vo.ctx, m_vo.WindowNo, "C_Invoice_ID");
-		MInvoice invoice = new MInvoice(m_vo.ctx, C_Invoice_ID, null);
-		MInvoiceLine[] lines = invoice.getLines();
+		int C_Invoice_ID = Env.getContextAsInt(m_vo.ctx, m_vo.WindowNo, "C_Invoice_ID");	
+		MInvoice invoice = POFactory.get(m_vo.ctx, MInvoice.class, C_Invoice_ID);
+		MInvoiceLine[] lines = invoice.getLines();		
 		
 		return extractTrxInfo(m_vo.ctx, invoice, lines, "OrderSummary");
 	}
