@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -32,6 +33,9 @@ import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Util;
 import org.opensixen.osgi.BundleProxyClassLoader;
+import org.opensixen.osgi.Service;
+import org.opensixen.osgi.interfaces.IModelFactory;
+import org.opensixen.osgi.interfaces.IResourceFinder;
 
 /**
  *	Persistent Table Model
@@ -151,6 +155,7 @@ public class MTable extends X_AD_Table
 	/**	Cache						*/
 	private static CCache<Integer,MTable> s_cache = new CCache<Integer,MTable>("AD_Table", 20);
 	private static CCache<String,Class<?>> s_classCache = new CCache<String,Class<?>>("PO_Class", 20);
+	private static List<IModelFactory> s_modelFactoryCache;
 	
 	/**	Static Logger	*/
 	private static CLogger	s_log	= CLogger.getCLogger (MTable.class);
@@ -202,6 +207,20 @@ public class MTable extends X_AD_Table
 				return cache;
 		}
 
+		// Try osgi factories
+		if (s_modelFactoryCache == null)	{
+			s_modelFactoryCache = Service.list(IModelFactory.class);
+		}
+		
+		for (IModelFactory factory:s_modelFactoryCache)	{
+			Class<?> clazz = factory.getClass(tableName);
+			if (clazz != null)	{
+				s_classCache.put(tableName, clazz);
+				return clazz;
+			}
+		}
+		
+		
 		MTable table = MTable.get(Env.getCtx(), tableName);
 		String entityType = table.getEntityType();
 		
