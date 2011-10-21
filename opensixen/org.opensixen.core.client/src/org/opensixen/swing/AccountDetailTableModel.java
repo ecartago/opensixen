@@ -64,11 +64,15 @@ package org.opensixen.swing;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.Properties;
 
+import org.compiere.model.MCurrency;
 import org.compiere.model.MQuery;
 import org.compiere.model.PO;
+import org.compiere.util.Env;
+import org.compiere.util.Formater;
 import org.opensixen.model.ColumnDefinition;
 import org.opensixen.model.GroupDefinition;
 import org.opensixen.model.GroupVariable;
@@ -101,9 +105,46 @@ public class AccountDetailTableModel extends POTableModel {
 		this.from = from;
 		this.to = to;
 		
-		initTableModel();		
+		// Add custom cell renders
+		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, new DebitCellRender());
+		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, new CreditCellRender());
+		
+		initTableModel();			
 	}
 
+	class DebitCellRender implements CustomCellRender {		
+		@Override
+		public Object render(PO po) {
+			I_V_Fact_Acct fact = (I_V_Fact_Acct) po;
+			if (fact.getAmtAcctDr().equals(fact.getAmtSourceDr()) == false)	{
+				StringBuffer sb = new StringBuffer();
+				sb.append(Formater.formatAmt(fact.getAmtAcctDr()));
+				sb.append(" (").append(Formater.formatAmt(fact.getAmtSourceDr(), fact.getC_Currency_ID())).append(")");
+				return sb.toString();
+			}
+			else 
+			return Formater.formatAmt(fact.getAmtAcctDr());
+		}
+		
+	}
+	
+	class CreditCellRender implements CustomCellRender {		
+		@Override
+		public Object render(PO po) {
+			I_V_Fact_Acct fact = (I_V_Fact_Acct) po;
+			if (fact.getAmtAcctCr().equals(fact.getAmtSourceCr()) == false)	{
+				StringBuffer sb = new StringBuffer();
+				sb.append(Formater.formatAmt(fact.getAmtAcctCr()));				
+				sb.append(" (").append(Formater.formatAmt(fact.getAmtSourceCr(), fact.getC_Currency_ID())).append(")");
+				return sb.toString();
+			}
+			else 
+			return Formater.formatAmt(fact.getAmtAcctCr());
+		}
+		
+	}
+	
+	
 	/* (non-Javadoc)
 	 * @see org.opensixen.interfaces.OTableModel#getColumnDefinitions()
 	 */
@@ -117,8 +158,8 @@ public class AccountDetailTableModel extends POTableModel {
 				//new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Description, "Descripcion", String.class),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_TR_TableName, "Documento", String.class),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_DocumentNo, "Doc. No", String.class),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Debe, "Debe", BigDecimal.class),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Haber, "Haber", BigDecimal.class) };
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, "Debe", String.class),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, "Haber", String.class) };
 		return cols;
 	}
 	
@@ -136,8 +177,8 @@ public class AccountDetailTableModel extends POTableModel {
 		GroupDefinition def = new GroupDefinition();
 		String[] columns = { I_V_Fact_Acct.COLUMNNAME_C_ElementValue_ID };
 		GroupVariable[] footer = {
-				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_Debe, GroupVariable.SUM),
-				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_Haber,GroupVariable.SUM) };
+				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, GroupVariable.SUM),
+				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr,GroupVariable.SUM) };
 		def.setGroupColumns(columns);
 		def.setFooterVariables(footer);
 		definitions.add(def);
@@ -155,5 +196,5 @@ public class AccountDetailTableModel extends POTableModel {
 		List<MVFactAcct> list = POFactory.getList(ctx, MVFactAcct.class, params , order, null);		
 		
 		return list.toArray(new PO[list.size()]);
-	}
+	}		
 }

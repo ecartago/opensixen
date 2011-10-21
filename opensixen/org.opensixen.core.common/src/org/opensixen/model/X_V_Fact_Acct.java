@@ -34,7 +34,7 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20100820L;
+	private static final long serialVersionUID = 20111021L;
 
     /** Standard Constructor */
     public X_V_Fact_Acct (Properties ctx, int V_Fact_Acct_ID, String trxName)
@@ -72,6 +72,114 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
         .append(get_ID()).append("]");
       return sb.toString();
     }
+
+	public org.compiere.model.I_AD_Table getAD_Table() throws RuntimeException
+    {
+		return (org.compiere.model.I_AD_Table)MTable.get(getCtx(), org.compiere.model.I_AD_Table.Table_Name)
+			.getPO(getAD_Table_ID(), get_TrxName());	}
+
+	/** Set Table.
+		@param AD_Table_ID 
+		Database Table information
+	  */
+	public void setAD_Table_ID (int AD_Table_ID)
+	{
+		if (AD_Table_ID < 1) 
+			set_ValueNoCheck (COLUMNNAME_AD_Table_ID, null);
+		else 
+			set_ValueNoCheck (COLUMNNAME_AD_Table_ID, Integer.valueOf(AD_Table_ID));
+	}
+
+	/** Get Table.
+		@return Database Table information
+	  */
+	public int getAD_Table_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_AD_Table_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	/** Set Accounted Credit.
+		@param AmtAcctCr 
+		Accounted Credit Amount
+	  */
+	public void setAmtAcctCr (BigDecimal AmtAcctCr)
+	{
+		set_ValueNoCheck (COLUMNNAME_AmtAcctCr, AmtAcctCr);
+	}
+
+	/** Get Accounted Credit.
+		@return Accounted Credit Amount
+	  */
+	public BigDecimal getAmtAcctCr () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_AmtAcctCr);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
+	/** Set Accounted Debit.
+		@param AmtAcctDr 
+		Accounted Debit Amount
+	  */
+	public void setAmtAcctDr (BigDecimal AmtAcctDr)
+	{
+		set_ValueNoCheck (COLUMNNAME_AmtAcctDr, AmtAcctDr);
+	}
+
+	/** Get Accounted Debit.
+		@return Accounted Debit Amount
+	  */
+	public BigDecimal getAmtAcctDr () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_AmtAcctDr);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
+	/** Set Source Credit.
+		@param AmtSourceCr 
+		Source Credit Amount
+	  */
+	public void setAmtSourceCr (BigDecimal AmtSourceCr)
+	{
+		set_ValueNoCheck (COLUMNNAME_AmtSourceCr, AmtSourceCr);
+	}
+
+	/** Get Source Credit.
+		@return Source Credit Amount
+	  */
+	public BigDecimal getAmtSourceCr () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_AmtSourceCr);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
+	/** Set Source Debit.
+		@param AmtSourceDr 
+		Source Debit Amount
+	  */
+	public void setAmtSourceDr (BigDecimal AmtSourceDr)
+	{
+		set_ValueNoCheck (COLUMNNAME_AmtSourceDr, AmtSourceDr);
+	}
+
+	/** Get Source Debit.
+		@return Source Debit Amount
+	  */
+	public BigDecimal getAmtSourceDr () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_AmtSourceDr);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
 
 	public org.compiere.model.I_C_AcctSchema getC_AcctSchema() throws RuntimeException
     {
@@ -124,6 +232,34 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
 	public int getC_BPartner_ID () 
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_C_BPartner_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public org.compiere.model.I_C_Currency getC_Currency() throws RuntimeException
+    {
+		return (org.compiere.model.I_C_Currency)MTable.get(getCtx(), org.compiere.model.I_C_Currency.Table_Name)
+			.getPO(getC_Currency_ID(), get_TrxName());	}
+
+	/** Set Currency.
+		@param C_Currency_ID 
+		The Currency for this record
+	  */
+	public void setC_Currency_ID (int C_Currency_ID)
+	{
+		if (C_Currency_ID < 1) 
+			set_Value (COLUMNNAME_C_Currency_ID, null);
+		else 
+			set_Value (COLUMNNAME_C_Currency_ID, Integer.valueOf(C_Currency_ID));
+	}
+
+	/** Get Currency.
+		@return The Currency for this record
+	  */
+	public int getC_Currency_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_C_Currency_ID);
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
@@ -195,7 +331,7 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
 		@param Debe Debe	  */
 	public void setDebe (BigDecimal Debe)
 	{
-		set_ValueNoCheck (COLUMNNAME_Debe, Debe);
+		set_Value (COLUMNNAME_Debe, Debe);
 	}
 
 	/** Get Debe.
@@ -242,11 +378,31 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
 		return (String)get_Value(COLUMNNAME_DocumentNo);
 	}
 
+	/** Set Accounting Fact.
+		@param Fact_Acct_ID Accounting Fact	  */
+	public void setFact_Acct_ID (int Fact_Acct_ID)
+	{
+		if (Fact_Acct_ID < 1) 
+			set_ValueNoCheck (COLUMNNAME_Fact_Acct_ID, null);
+		else 
+			set_ValueNoCheck (COLUMNNAME_Fact_Acct_ID, Integer.valueOf(Fact_Acct_ID));
+	}
+
+	/** Get Accounting Fact.
+		@return Accounting Fact	  */
+	public int getFact_Acct_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_Fact_Acct_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
 	/** Set Haber.
 		@param Haber Haber	  */
 	public void setHaber (BigDecimal Haber)
 	{
-		set_ValueNoCheck (COLUMNNAME_Haber, Haber);
+		set_Value (COLUMNNAME_Haber, Haber);
 	}
 
 	/** Get Haber.
