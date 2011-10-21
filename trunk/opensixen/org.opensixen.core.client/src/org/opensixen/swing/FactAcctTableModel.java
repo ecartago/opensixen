@@ -72,6 +72,7 @@ import org.compiere.model.MQuery;
 import org.compiere.model.PO;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
+import org.compiere.util.Formater;
 import org.opensixen.model.ColumnDefinition;
 import org.opensixen.model.GroupDefinition;
 import org.opensixen.model.GroupVariable;
@@ -79,6 +80,8 @@ import org.opensixen.model.I_V_Fact_Acct;
 import org.opensixen.model.MVFactAcct;
 import org.opensixen.model.POFactory;
 import org.opensixen.model.QParam;
+import org.opensixen.swing.AccountDetailTableModel.CreditCellRender;
+import org.opensixen.swing.AccountDetailTableModel.DebitCellRender;
 
 /**
  * 
@@ -98,8 +101,47 @@ public class FactAcctTableModel extends POTableModel {
 	 */
 	public FactAcctTableModel(Properties ctx, MQuery query) {
 		super(ctx, query);
+		
+		// Add custom cell renders
+		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, new DebitCellRender());
+		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, new CreditCellRender());
+	
 	}
 
+	
+	class DebitCellRender implements CustomCellRender {		
+		@Override
+		public Object render(PO po) {
+			I_V_Fact_Acct fact = (I_V_Fact_Acct) po;
+			if (fact.getAmtAcctDr().equals(fact.getAmtSourceDr()) == false)	{
+				StringBuffer sb = new StringBuffer();
+				sb.append(Formater.formatAmt(fact.getAmtAcctDr()));
+				sb.append(" (").append(Formater.formatAmt(fact.getAmtSourceDr(), fact.getC_Currency_ID())).append(")");
+				return sb.toString();
+			}
+			else 
+			return Formater.formatAmt(fact.getAmtAcctDr());
+		}
+		
+	}
+	
+	class CreditCellRender implements CustomCellRender {		
+		@Override
+		public Object render(PO po) {
+			I_V_Fact_Acct fact = (I_V_Fact_Acct) po;
+			if (fact.getAmtAcctCr().equals(fact.getAmtSourceCr()) == false)	{
+				StringBuffer sb = new StringBuffer();
+				sb.append(Formater.formatAmt(fact.getAmtAcctCr()));
+				sb.append(" (").append(Formater.formatAmt(fact.getAmtSourceCr(), fact.getC_Currency_ID())).append(")");
+				return sb.toString();
+			}
+			else 
+			return Formater.formatAmt(fact.getAmtAcctCr());
+		}
+		
+	}
+
+	
 	/* (non-Javadoc)
 	 * @see org.opensixen.interfaces.OTableModel#getColumnDefinitions()
 	 */
@@ -111,8 +153,8 @@ public class FactAcctTableModel extends POTableModel {
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Value, "Cuenta" ,  String.class),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Name, "Nombre", String.class),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Description, "Descripcion", String.class),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Debe, "Debe", BigDecimal.class),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Haber, "Haber", BigDecimal.class) };
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, "Debe", String.class),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, "Haber", String.class) };
 		return cols;
 	}
 	
@@ -130,8 +172,8 @@ public class FactAcctTableModel extends POTableModel {
 		GroupDefinition def = new GroupDefinition();
 		String[] columns = { I_V_Fact_Acct.COLUMNNAME_JournalNo };
 		GroupVariable[] footer = {
-				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_Debe, GroupVariable.SUM),
-				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_Haber,GroupVariable.SUM) };
+				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtSourceDr, GroupVariable.SUM),
+				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtSourceCr,GroupVariable.SUM) };
 		def.setGroupColumns(columns);
 		def.setFooterVariables(footer);
 		definitions.add(def);

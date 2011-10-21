@@ -63,6 +63,73 @@ public interface I_V_Fact_Acct
 	  */
 	public int getAD_Org_ID();
 
+    /** Column name AD_Table_ID */
+    public static final String COLUMNNAME_AD_Table_ID = "AD_Table_ID";
+
+	/** Set Table.
+	  * Database Table information
+	  */
+	public void setAD_Table_ID (int AD_Table_ID);
+
+	/** Get Table.
+	  * Database Table information
+	  */
+	public int getAD_Table_ID();
+
+	public org.compiere.model.I_AD_Table getAD_Table() throws RuntimeException;
+
+    /** Column name AmtAcctCr */
+    public static final String COLUMNNAME_AmtAcctCr = "AmtAcctCr";
+
+	/** Set Accounted Credit.
+	  * Accounted Credit Amount
+	  */
+	public void setAmtAcctCr (BigDecimal AmtAcctCr);
+
+	/** Get Accounted Credit.
+	  * Accounted Credit Amount
+	  */
+	public BigDecimal getAmtAcctCr();
+
+    /** Column name AmtAcctDr */
+    public static final String COLUMNNAME_AmtAcctDr = "AmtAcctDr";
+
+	/** Set Accounted Debit.
+	  * Accounted Debit Amount
+	  */
+	public void setAmtAcctDr (BigDecimal AmtAcctDr);
+
+	/** Get Accounted Debit.
+	  * Accounted Debit Amount
+	  */
+	public BigDecimal getAmtAcctDr();
+
+    /** Column name AmtSourceCr */
+    public static final String COLUMNNAME_AmtSourceCr = "AmtSourceCr";
+
+	/** Set Source Credit.
+	  * Source Credit Amount
+	  */
+	public void setAmtSourceCr (BigDecimal AmtSourceCr);
+
+	/** Get Source Credit.
+	  * Source Credit Amount
+	  */
+	public BigDecimal getAmtSourceCr();
+
+    /** Column name AmtSourceDr */
+    public static final String COLUMNNAME_AmtSourceDr = "AmtSourceDr";
+
+	/** Set Source Debit.
+	  * Source Debit Amount
+	  */
+	public void setAmtSourceDr (BigDecimal AmtSourceDr);
+
+	/** Get Source Debit.
+	  * Source Debit Amount
+	  */
+	public BigDecimal getAmtSourceDr();
+
     /** Column name C_AcctSchema_ID */
     public static final String COLUMNNAME_C_AcctSchema_ID = "C_AcctSchema_ID";
 
@@ -92,6 +159,21 @@ public interface I_V_Fact_Acct
 	public int getC_BPartner_ID();
 
 	public org.compiere.model.I_C_BPartner getC_BPartner() throws RuntimeException;
+
+    /** Column name C_Currency_ID */
+    public static final String COLUMNNAME_C_Currency_ID = "C_Currency_ID";
+
+	/** Set Currency.
+	  * The Currency for this record
+	  */
+	public void setC_Currency_ID (int C_Currency_ID);
+
+	/** Get Currency.
+	  * The Currency for this record
+	  */
+	public int getC_Currency_ID();
+
+	public org.compiere.model.I_C_Currency getC_Currency() throws RuntimeException;
 
     /** Column name C_ElementValue_ID */
     public static final String COLUMNNAME_C_ElementValue_ID = "C_ElementValue_ID";
@@ -184,6 +266,15 @@ public interface I_V_Fact_Acct
 	  * Document sequence number of the document
 	  */
 	public String getDocumentNo();
+
+    /** Column name Fact_Acct_ID */
+    public static final String COLUMNNAME_Fact_Acct_ID = "Fact_Acct_ID";
+
+	/** Set Accounting Fact	  */
+	public void setFact_Acct_ID (int Fact_Acct_ID);
+
+	/** Get Accounting Fact	  */
+	public int getFact_Acct_ID();
 
     /** Column name Haber */
     public static final String COLUMNNAME_Haber = "Haber";
