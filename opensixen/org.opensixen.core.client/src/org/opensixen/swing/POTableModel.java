@@ -69,9 +69,7 @@ import java.util.Properties;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
-import org.compiere.apps.search.Info_Column;
 import org.compiere.model.MColumn;
 import org.compiere.model.MQuery;
 import org.compiere.model.MTable;
@@ -81,7 +79,6 @@ import org.opensixen.interfaces.OTableModel;
 import org.opensixen.model.ColumnDefinition;
 import org.opensixen.model.GroupDefinition;
 import org.opensixen.model.GroupVariable;
-import org.opensixen.model.QParam;
 
 /**
  * 
@@ -101,6 +98,9 @@ public abstract class POTableModel extends DefaultTableModel implements OTableMo
 
 	/** Index map	*/
 	HashMap<Integer, GroupIndex> groupIndexMap;
+	
+	/** Custom cell renders	*/
+	HashMap<String, CustomCellRender> cellRenders = new HashMap<String, CustomCellRender>();
 	
 	private MQuery query;
 	
@@ -158,6 +158,25 @@ public abstract class POTableModel extends DefaultTableModel implements OTableMo
 	
 	protected MQuery getQuery()	{
 		return query;
+	}
+	
+	/**
+	 * Add a CustomCellRender
+	 * @param column
+	 * @param render
+	 */
+	public void addCustomCellRender(String column, CustomCellRender render)	{
+		cellRenders.put(column, render);
+	}
+	
+	/**
+	 * Remove a CustomCellRender
+	 * @param column
+	 */
+	public void removeCustomCellRender(String column)	{
+		if (cellRenders.containsKey(column))	{
+			cellRenders.remove(column);
+		}
 	}
 	
 	public void reload()	{
@@ -233,6 +252,11 @@ public abstract class POTableModel extends DefaultTableModel implements OTableMo
 		PO po = model[rowIndex];
 		String colName = columnDefinitions[columnIndex].getName();
 		if (po != null)	{		
+			// If this column have a custom cell render use it
+			if (cellRenders.containsKey(colName))	{
+				return cellRenders.get(colName).render(po);
+			}
+			// Else, get value 
 			return po.get_Value(colName);
 		}
 		
