@@ -1634,7 +1634,7 @@ public abstract class PO extends OsxPO
 	/**
 	 * 	Set Key Info (IDs and KeyColumns).
 	 */
-	private void setKeyInfo()
+	protected void setKeyInfo()
 	{
 		//	Search for Primary Key
 		for (int i = 0; i < p_info.getColumnCount(); i++)
