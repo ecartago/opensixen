@@ -103,11 +103,16 @@ public class Login
 		String jVersion = System.getProperty("java.version");
 		if (jVersion.startsWith("1.5.0"))
 			return true;
-                //vpj-cd e-evolution support to java 6
-                if (jVersion.startsWith("1.6.0"))
+		// vpj-cd e-evolution support to java 6
+		if (jVersion.startsWith("1.6.0"))
 			return true;
-                //end
-		//  Warning
+		// end
+		
+		if (jVersion.startsWith("1.7.0"))
+			return true;
+		// end
+		
+		// Warning
 		boolean ok = false;
 	//	if (jVersion.startsWith("1.4")
 	//		|| jVersion.startsWith("1.5.1"))	//  later/earlier release
