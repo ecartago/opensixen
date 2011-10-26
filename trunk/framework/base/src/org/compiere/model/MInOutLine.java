@@ -608,6 +608,8 @@ public class MInOutLine extends X_M_InOutLine
 	{
 		if (getParent().getDocStatus().equals(MInOut.DOCSTATUS_Drafted))
 			return true;
+		if (getParent().getDocStatus().equals(MInOut.DOCSTATUS_Invalid))
+			return true;
 		log.saveError("Error", Msg.getMsg(getCtx(), "CannotDelete"));
 		return false;
 	}	//	beforeDelete
