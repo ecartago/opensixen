@@ -259,6 +259,9 @@ public class CalloutPayment extends CalloutEngine
 				if (inv.isSOTrx () != dt.isSOTrx ())
 					return "PaymentDocTypeInvoiceInconsistent";
 			}
+			
+			// Set Tender Type
+			mTab.setValue(MPayment.COLUMNNAME_TenderType, inv.getPaymentRule());
 		}
 		// globalqss - Allow prepayment to Purchase Orders
 		// Order Waiting Payment (can only be SO)
@@ -273,6 +276,9 @@ public class CalloutPayment extends CalloutEngine
 				if (ord.isSOTrx () != dt.isSOTrx ())
 					return "PaymentDocTypeInvoiceInconsistent";
 			}
+
+			// Set Tender Type
+			mTab.setValue(MPayment.COLUMNNAME_TenderType, ord.getPaymentRule());
 		}
 		return "";
 	} // docType
