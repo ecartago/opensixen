@@ -90,7 +90,7 @@ import org.opensixen.swing.AccountDetailTableModel.DebitCellRender;
  * Indeos Consultoria http://www.indeos.es
  *
  */
-public class FactAcctTableModel extends POTableModel {
+public class FactAcctTableModel extends POTableModel<MVFactAcct> {
 	
 	List<MVFactAcct> list;
 	private CLogger log = CLogger.getCLogger(getClass());
@@ -100,7 +100,7 @@ public class FactAcctTableModel extends POTableModel {
 	 * @param query
 	 */
 	public FactAcctTableModel(Properties ctx, MQuery query) {
-		super(ctx, query);
+		super(ctx,MVFactAcct.class, query);
 		
 		// Add custom cell renders
 		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, new DebitCellRender());

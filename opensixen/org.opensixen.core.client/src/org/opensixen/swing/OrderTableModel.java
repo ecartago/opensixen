@@ -94,7 +94,7 @@ public class OrderTableModel extends POTableModel {
 	 * @param ctx
 	 */
 	public OrderTableModel(Properties ctx, MQuery query) {
-		super(ctx, query);
+		super(ctx, X_C_Order_Header_v.class, query);
 	}
 
 	/* (non-Javadoc)
