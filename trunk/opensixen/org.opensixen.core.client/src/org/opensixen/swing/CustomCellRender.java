@@ -69,7 +69,19 @@ import org.compiere.model.PO;
  * Indeos Consultoria http://www.indeos.es
  */
 public interface CustomCellRender {
+
+	/**
+	 * Render value for current fields
+	 * @param row current row data object
+	 * @return 
+	 */
+	public Object render(Object row);
 	
-	public Object render(PO po);
+	/**
+	 * Render value for footer group variable
+	 * @param value
+	 * @return
+	 */
+	public Object renderFooter(Object value);
 
 }
