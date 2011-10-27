@@ -79,6 +79,7 @@ import org.opensixen.interfaces.OTableModel;
 import org.opensixen.model.ColumnDefinition;
 import org.opensixen.model.GroupDefinition;
 import org.opensixen.model.GroupVariable;
+import org.opensixen.model.POFactory;
 
 /**
  * 
@@ -86,16 +87,20 @@ import org.opensixen.model.GroupVariable;
  * 
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
+ * @param <T>
  *
  */
-public abstract class POTableModel extends DefaultTableModel implements OTableModel {
+public abstract class POTableModel<T extends PO> extends DefaultTableModel implements OTableModel {
+
+	private static final long serialVersionUID = 1L;
 
 	protected Properties ctx;
 	
 	private PO[] model;
 	private ColumnDefinition[] columnDefinitions;
 	private List<GroupDefinition> groupDefinitions;
-
+	private Class<T> clazz;
+	
 	/** Index map	*/
 	HashMap<Integer, GroupIndex> groupIndexMap;
 	
@@ -108,17 +113,18 @@ public abstract class POTableModel extends DefaultTableModel implements OTableMo
 	 * Real constructor
 	 * @param ctx
 	 */
-	public POTableModel(Properties ctx) {
+	public POTableModel(Properties ctx, Class<T> clazz) {
 		super();
 		this.ctx = ctx;
+		this.clazz = clazz;
 		
 		this.columnDefinitions =  getColumnDefinitions();
 		this.groupDefinitions = getGroupDefinitions();
 	}
 	
 	
-	public POTableModel(Properties ctx, MQuery query) {
-		this(ctx);
+	public POTableModel(Properties ctx, Class<T> clazz, MQuery query) {
+		this(ctx, clazz);
 		this.query = query;
 		initTableModel();
 	}
@@ -134,12 +140,8 @@ public abstract class POTableModel extends DefaultTableModel implements OTableMo
 			indexGroups();
 		}
 		
-		// if model is void, not inspect
-		if (model == null || model.length == 0)	{
-			return;
-		}
-		PO po = model[0];
-		MTable mtable = MTable.get(ctx, po.get_Table_ID());
+		//PO po = model[0];
+		MTable mtable = MTable.get(ctx, POFactory.getTableName(clazz));
 		
 		// Check columns title
 		for (int i=0; i < columnDefinitions.length; i++)	{

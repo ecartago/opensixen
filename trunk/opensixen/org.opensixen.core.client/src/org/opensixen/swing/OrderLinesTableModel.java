@@ -85,7 +85,7 @@ import org.opensixen.model.X_C_Order_LineTax_v;
  * Indeos Consultoria http://www.indeos.es
  *
  */
-public class OrderLinesTableModel extends POTableModel {
+public class OrderLinesTableModel extends POTableModel<X_C_Order_LineTax_v> {
 
 	//PO[] lines;
 	
@@ -96,7 +96,7 @@ public class OrderLinesTableModel extends POTableModel {
 	 * @param query
 	 */
 	public OrderLinesTableModel(Properties ctx, MQuery query) {
-		super(ctx, query);
+		super(ctx, X_C_Order_LineTax_v.class, query);
 	}
 
 	/* (non-Javadoc)

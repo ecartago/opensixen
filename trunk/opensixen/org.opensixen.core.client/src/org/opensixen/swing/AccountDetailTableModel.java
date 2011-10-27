@@ -88,23 +88,16 @@ import org.opensixen.model.QParam;
  * Indeos Consultoria http://www.indeos.es
  *
  */
-public class AccountDetailTableModel extends POTableModel {
-
-	private int C_ElementValue_ID;
-	private Timestamp from, to;
-	
+public class AccountDetailTableModel extends POTableModel<MVFactAcct> {	
 	//private Properties ctx;
+	
+	private QParam[] m_params = null;
 	
 	/**
 	 * @param ctx
 	 */
-	public AccountDetailTableModel(Properties ctx, int C_ElementValue_ID, Timestamp from, Timestamp to) {
-		super(ctx);
-		
-		this.C_ElementValue_ID = C_ElementValue_ID;
-		this.from = from;
-		this.to = to;
-		
+	public AccountDetailTableModel(Properties ctx) {
+		super(ctx, MVFactAcct.class);
 		// Add custom cell renders
 		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, new DebitCellRender());
 		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, new CreditCellRender());
@@ -190,11 +183,17 @@ public class AccountDetailTableModel extends POTableModel {
 	 * @see org.opensixen.swing.POTableModel#getModel(org.compiere.model.MQuery)
 	 */
 	@Override
-	protected PO[] getModel() {		
-		QParam[] params = { new QParam(MVFactAcct.COLUMNNAME_C_ElementValue_ID, C_ElementValue_ID)		};
+	protected PO[] getModel() {	
+		if (m_params == null)	{
+			return new PO[0];			
+		}				
 		String[] order = {MVFactAcct.COLUMNNAME_DateAcct + " desc", MVFactAcct.COLUMNNAME_JournalNo + " desc"};
-		List<MVFactAcct> list = POFactory.getList(ctx, MVFactAcct.class, params , order, null);		
-		
+		List<MVFactAcct> list = POFactory.getList(ctx, MVFactAcct.class, m_params , order, null);				
 		return list.toArray(new PO[list.size()]);
-	}		
+	}	
+	
+	
+	public void setParams(QParam[] params)	{	
+		this.m_params = params;
+	}
 }
