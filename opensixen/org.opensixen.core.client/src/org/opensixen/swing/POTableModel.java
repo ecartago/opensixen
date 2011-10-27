@@ -265,7 +265,11 @@ public abstract class POTableModel<T extends PO> extends DefaultTableModel imple
 		if (groupIndexMap.containsKey(rowIndex))	{
 			GroupIndex group = groupIndexMap.get(rowIndex);
 			if (group.containsFooterVariableValue(colName))	{
-				return group.getFooterVariableValue(colName);
+				Object value = group.getFooterVariableValue(colName);
+				if (cellRenders.containsKey(colName))	{
+					return cellRenders.get(colName).renderFooter(value);
+				}
+				return value;
 			}
 			return null;
 		}

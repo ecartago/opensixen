@@ -111,7 +111,7 @@ public class FactAcctTableModel extends POTableModel<MVFactAcct> {
 	
 	class DebitCellRender implements CustomCellRender {		
 		@Override
-		public Object render(PO po) {
+		public Object render(Object po) {
 			I_V_Fact_Acct fact = (I_V_Fact_Acct) po;
 			if (fact.getAmtAcctDr().equals(fact.getAmtSourceDr()) == false)	{
 				StringBuffer sb = new StringBuffer();
@@ -122,12 +122,18 @@ public class FactAcctTableModel extends POTableModel<MVFactAcct> {
 			else 
 			return Formater.formatAmt(fact.getAmtAcctDr());
 		}
+	
+		@Override
+		public Object renderFooter(Object value) {
+			BigDecimal amt = (BigDecimal) value;
+			return Formater.formatAmt(amt);
+		}
 		
 	}
 	
 	class CreditCellRender implements CustomCellRender {		
 		@Override
-		public Object render(PO po) {
+		public Object render(Object po) {
 			I_V_Fact_Acct fact = (I_V_Fact_Acct) po;
 			if (fact.getAmtAcctCr().equals(fact.getAmtSourceCr()) == false)	{
 				StringBuffer sb = new StringBuffer();
@@ -138,7 +144,12 @@ public class FactAcctTableModel extends POTableModel<MVFactAcct> {
 			else 
 			return Formater.formatAmt(fact.getAmtAcctCr());
 		}
-		
+		@Override
+		public Object renderFooter(Object value) {
+			BigDecimal amt = (BigDecimal) value;
+			return Formater.formatAmt(amt);
+		}
+
 	}
 
 	
