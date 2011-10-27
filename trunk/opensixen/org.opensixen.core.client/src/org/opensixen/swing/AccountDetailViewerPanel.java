@@ -58,59 +58,51 @@
  * lo gobiernan,  GPL 2.0/CDDL 1.0/EPL 1.0.
  *
  * ***** END LICENSE BLOCK ***** */
-
 package org.opensixen.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
-import java.sql.Timestamp;
 import java.util.Properties;
 
-import org.compiere.swing.CFrame;
 import org.compiere.swing.CPanel;
-
-import org.compiere.util.Env;
-import org.compiere.util.Msg;
-import org.opensixen.model.MVFactAcct;
+import org.compiere.swing.CScrollPane;
 import org.opensixen.model.QParam;
 
 /**
- * 
- * 
+ * AccountDetailViewerPanel 
+ *
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
- *
  */
-public class AccountDetailViewer extends CFrame {
-
-	private int C_ElementValue_ID;
-	private Timestamp from, to;
-	
+public class AccountDetailViewerPanel extends CPanel {
+	private static final long serialVersionUID = 1L;
 	private Properties ctx;
-	
-	public AccountDetailViewer (Properties ctx, int C_ElementValue_ID, Timestamp from, Timestamp to )	{
-		super(Msg.getMsg(Env.getCtx(), "AcctFacts"));
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		this.C_ElementValue_ID = C_ElementValue_ID;
-		this.from = from;
-		this.to = to;
+	private OTable table;
+	private AccountDetailTableModel tableModel;
+
+	public AccountDetailViewerPanel(Properties ctx)	{
+		super();
 		this.ctx = ctx;
-		setMinimumSize(new Dimension(500,400));
 		jbInit();
-		pack();
-		setVisible(true);
 	}
 	
-	private void jbInit() {		
-		AccountDetailViewerPanel container = new AccountDetailViewerPanel(ctx);
-		 
-		QParam[] params = {new QParam(MVFactAcct.COLUMNNAME_C_ElementValue_ID, C_ElementValue_ID)};
-		container.setParams(params);
-		//container.setLayout(new BorderLayout(5, 5));
-		this.getContentPane().add(container);		
+	private void jbInit()	{
+		// Create main table
+		table = new OTable(ctx);
+		tableModel = new AccountDetailTableModel(ctx);
+		table.setModel(tableModel);
+		table.setupTable();
+		table.setFillsViewportHeight(true);
+		table.setPreferredScrollableViewportSize(new Dimension(800, 500));
+		table.packAll();	
+		CScrollPane scrollPane = new CScrollPane(table);
+		add(scrollPane, BorderLayout.CENTER);
 	}
-	
-	
+		
+	public void setParams(QParam[] params)	{		
+		tableModel.setParams(params);
+		tableModel.reload();
+		table.packAll();
+	}
 	
 }
