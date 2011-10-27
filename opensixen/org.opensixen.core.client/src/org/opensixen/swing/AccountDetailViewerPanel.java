@@ -59,12 +59,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 package org.opensixen.swing;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.Properties;
 
-import org.compiere.swing.CPanel;
+import javax.swing.JTable;
 import org.compiere.swing.CScrollPane;
 import org.opensixen.model.QParam;
 
@@ -74,7 +71,7 @@ import org.opensixen.model.QParam;
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
  */
-public class AccountDetailViewerPanel extends CPanel {
+public class AccountDetailViewerPanel extends CScrollPane {
 	private static final long serialVersionUID = 1L;
 	private Properties ctx;
 	private OTable table;
@@ -92,11 +89,10 @@ public class AccountDetailViewerPanel extends CPanel {
 		tableModel = new AccountDetailTableModel(ctx);
 		table.setModel(tableModel);
 		table.setupTable();
-		table.setFillsViewportHeight(true);
-		table.setPreferredScrollableViewportSize(new Dimension(800, 500));
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		table.setFillsViewportHeight(true);		
 		table.packAll();	
-		CScrollPane scrollPane = new CScrollPane(table);
-		add(scrollPane, BorderLayout.CENTER);
+		setViewportView(table);		
 	}
 		
 	public void setParams(QParam[] params)	{		

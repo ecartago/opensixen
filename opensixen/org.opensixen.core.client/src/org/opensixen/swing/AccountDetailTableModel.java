@@ -64,14 +64,9 @@ package org.opensixen.swing;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 import java.util.Properties;
-
-import org.compiere.model.MCurrency;
-import org.compiere.model.MQuery;
 import org.compiere.model.PO;
-import org.compiere.util.Env;
 import org.compiere.util.Formater;
 import org.opensixen.model.ColumnDefinition;
 import org.opensixen.model.GroupDefinition;
@@ -99,15 +94,38 @@ public class AccountDetailTableModel extends POTableModel<MVFactAcct> {
 	public AccountDetailTableModel(Properties ctx) {
 		super(ctx, MVFactAcct.class);
 		// Add custom cell renders
+		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_DateAcct, new DateCellRender());
 		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, new DebitCellRender());
 		addCustomCellRender(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, new CreditCellRender());
 		
 		initTableModel();			
 	}
+	
+	class DateCellRender implements CustomCellRender {
 
+		/* (non-Javadoc)
+		 * @see org.opensixen.swing.CustomCellRender#render(org.compiere.model.PO)
+		 */
+		@Override
+		public Object render(Object po) {
+			I_V_Fact_Acct fact = (I_V_Fact_Acct) po;
+			return Formater.formatDate(fact.getDateAcct());
+		}
+
+		@Override
+		public Object renderFooter(Object value) {		
+			return value;
+		}
+		
+	}
+	
+	/**
+	 * Print source amount if exist
+	 * DebitCellRender 	
+	 */
 	class DebitCellRender implements CustomCellRender {		
 		@Override
-		public Object render(PO po) {
+		public Object render(Object po) {
 			I_V_Fact_Acct fact = (I_V_Fact_Acct) po;
 			if (fact.getAmtAcctDr().equals(fact.getAmtSourceDr()) == false)	{
 				StringBuffer sb = new StringBuffer();
@@ -118,12 +136,21 @@ public class AccountDetailTableModel extends POTableModel<MVFactAcct> {
 			else 
 			return Formater.formatAmt(fact.getAmtAcctDr());
 		}
-		
+		@Override
+		public Object renderFooter(Object value) {
+			BigDecimal amt = (BigDecimal) value;
+			return Formater.formatAmt(amt);
+		}
+
 	}
 	
+	/**
+	 * Print source amount if exist
+	 * CreditCellRender 
+	 */
 	class CreditCellRender implements CustomCellRender {		
 		@Override
-		public Object render(PO po) {
+		public Object render(Object po) {
 			I_V_Fact_Acct fact = (I_V_Fact_Acct) po;
 			if (fact.getAmtAcctCr().equals(fact.getAmtSourceCr()) == false)	{
 				StringBuffer sb = new StringBuffer();
@@ -134,6 +161,12 @@ public class AccountDetailTableModel extends POTableModel<MVFactAcct> {
 			else 
 			return Formater.formatAmt(fact.getAmtAcctCr());
 		}
+		@Override
+		public Object renderFooter(Object value) {
+			BigDecimal amt = (BigDecimal) value;
+			return Formater.formatAmt(amt);
+		}
+
 		
 	}
 	
@@ -144,7 +177,7 @@ public class AccountDetailTableModel extends POTableModel<MVFactAcct> {
 	@Override
 	public ColumnDefinition[] getColumnDefinitions() {
 		ColumnDefinition[] cols = {				
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_DateAcct, "Fecha", Timestamp.class ),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_DateAcct, "Fecha", String.class ),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_JournalNo, "Asiento", Integer.class),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Value, "Cuenta" ,  String.class),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Name, "Nombre", String.class),
