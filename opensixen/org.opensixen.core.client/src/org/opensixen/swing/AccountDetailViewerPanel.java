@@ -59,10 +59,23 @@
  *
  * ***** END LICENSE BLOCK ***** */
 package org.opensixen.swing;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Properties;
 
 import javax.swing.JTable;
+
+import net.miginfocom.swing.MigLayout;
+
+import org.compiere.apps.AEnv;
+import org.compiere.swing.CButton;
+import org.compiere.swing.CPanel;
 import org.compiere.swing.CScrollPane;
+import org.compiere.util.Msg;
+import org.opensixen.model.MVFactAcct;
 import org.opensixen.model.QParam;
 
 /**
@@ -71,11 +84,14 @@ import org.opensixen.model.QParam;
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
  */
-public class AccountDetailViewerPanel extends CScrollPane {
+public class AccountDetailViewerPanel extends CPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private Properties ctx;
 	private OTable table;
 	private AccountDetailTableModel tableModel;
+	private CButton btnZoomDoc= new CButton();
+	private CButton btnZoomFact= new CButton();
+	private MVFactAcct selectedFact;
 
 	public AccountDetailViewerPanel(Properties ctx)	{
 		super();
@@ -85,20 +101,100 @@ public class AccountDetailViewerPanel extends CScrollPane {
 	
 	private void jbInit()	{
 		// Create main table
+		setLayout(new MigLayout("", "[grow]", "[shrink 0]"));
+		
+		CPanel btnPanel = new CPanel();
+		
+		btnZoomDoc = new CButton(Msg.translate(ctx, "Open document"));		
+		btnZoomDoc.addActionListener(this);
+		btnZoomFact = new CButton(Msg.translate(ctx, "Open fact"));
+		btnZoomFact.addActionListener(this);
+		
+		// Disabled by default
+		btnZoomDoc.setEnabled(false);
+		btnZoomFact.setEnabled(false);
+		
+		btnPanel.add(btnZoomDoc);
+		btnPanel.add(btnZoomFact);
+		add(btnPanel, "wrap");
+		
 		table = new OTable(ctx);
 		tableModel = new AccountDetailTableModel(ctx);
 		table.setModel(tableModel);
 		table.setupTable();
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		table.setFillsViewportHeight(true);		
-		table.packAll();	
-		setViewportView(table);		
-	}
+		table.packAll();
+		table.addMouseListener(new MouseListener() {			
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			@Override
+			public void mousePressed(MouseEvent e) {}			
+			@Override
+			public void mouseExited(MouseEvent e) {}			
+			@Override
+			public void mouseEntered(MouseEvent e) {}			
+			@Override
+			public void mouseClicked(MouseEvent e) {				
+					int index = table.rowAtPoint(e.getPoint());
+					MVFactAcct fact = (MVFactAcct) tableModel.getValueAt(index);
+					setSelectedFact(fact);
+			}
+		});
 		
-	public void setParams(QParam[] params)	{		
+		add(new CScrollPane(table), "wrap, growx");		
+	}
+			
+	/**
+	 * Setup params for table viewer
+	 * @param params
+	 */
+	public void setParams(QParam[] params)	{
+		setSelectedFact(null);
 		tableModel.setParams(params);
 		tableModel.reload();
 		table.packAll();
+	}
+
+	/**
+	 * Set selectedFact and enable buttons
+	 * @param fact
+	 */
+	private void setSelectedFact(MVFactAcct fact)	{
+		selectedFact = fact;
+		boolean status = fact != null;				
+		btnZoomDoc.setEnabled(status);
+		btnZoomFact.setEnabled(status);
+	}
+	
+	/**
+	 * Open a new windows with the doc
+	 *  for the fact
+	 */
+	private void zoomDoc()	{
+		AEnv.zoom(selectedFact.getAD_Table_ID(), selectedFact.getRecord_ID());
+	}
+	
+	/**
+	 * Open a new windows with the Accouont Viewer
+	 */
+	private void zoomFact()	{
+		AccountViewer viewer = new AccountViewer();
+		viewer.view(selectedFact.getAD_Client_ID(), selectedFact.getAD_Table_ID(), selectedFact.getRecord_ID());
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(btnZoomFact))	{
+			zoomFact();
+		}
+		else if (e.getSource().equals(btnZoomDoc))	{
+			zoomDoc();
+		}
+		
 	}
 	
 }
