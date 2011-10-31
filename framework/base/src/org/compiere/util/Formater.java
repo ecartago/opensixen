@@ -83,10 +83,12 @@ import org.compiere.model.MLocation;
  */
 public class Formater {
 
+	private static Locale s_locale = new Locale(Env.getAD_Language(Env.getCtx())); 
+	
 	private static HashMap<Integer, MCurrency> s_cacheCurrency = new HashMap<Integer, MCurrency>();
 	
 	public static String formatQty(BigDecimal qty) {		
-		return formatQty(new Locale(Env.LANGUAGE), qty);
+		return formatQty(s_locale, qty);
 	}
 	
 	public static String formatQty(Locale locale, BigDecimal qty) {
@@ -96,7 +98,7 @@ public class Formater {
 	}
 	
 	public static String formatAmt(BigDecimal amount, String isoCode) {
-		return formatAmt(new Locale(Env.LANGUAGE), amount, isoCode);
+		return formatAmt(s_locale, amount, isoCode);
 	}
 	
 	public static String formatAmt(BigDecimal amount, int C_Currency_ID) {
@@ -109,11 +111,11 @@ public class Formater {
 			s_cacheCurrency.put(C_Currency_ID, currency);
 			isoCode = currency.getISO_Code();
 		}
-		return formatAmt(new Locale(Env.LANGUAGE), amount, isoCode);
+		return formatAmt(s_locale, amount, isoCode);
 	}
 	
 	public static String formatAmt(BigDecimal amount) {
-		return formatAmt(new Locale(Env.LANGUAGE), amount, null);
+		return formatAmt(s_locale, amount, null);
 	}
 	
 	public static String formatAmt(Locale locale, BigDecimal amount, String isoCode) {
@@ -124,8 +126,11 @@ public class Formater {
 		}
 		return formater.format(amount);				
 	}
-
 	
+	public static String formatDate(Timestamp date) {
+		return formatDate(s_locale, date);
+	}
+
 	
 	public static String formatDate(Locale locale, Timestamp date) {
 		DateFormat df = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, locale);
