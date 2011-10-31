@@ -63,6 +63,7 @@ package org.opensixen.model;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -360,6 +361,31 @@ public class POFactory {
 	public static <T extends PO> List<T> getList(Properties ctx, Class<T> clazz, QParam[] param, String trxName)	{
 		return getList(ctx, clazz, param, null, trxName);
 	}
+
+	/**
+	 * Get record with this ID and this AD_Table_ID
+	 * @param AD_Table_ID
+	 * @param id
+	 * @param trxName
+	 * @return
+	 */
+	public static <T extends PO> T get(int AD_Table_ID, int id, String trxName)	{
+		Class<T> clazz = getClass(AD_Table_ID);
+		return get(Env.getCtx(), clazz, id, trxName);
+	}
+	
+	/**
+	 * Get record with for this resulset
+	 * @param AD_Table_ID
+	 * @param rs
+	 * @param trxName
+	 * @return
+	 */
+	public static <T extends PO> T get(int AD_Table_ID, ResultSet rs, String trxName)	{
+		Class<T> clazz = getClass(AD_Table_ID);
+		return get(Env.getCtx(), clazz, rs, trxName);
+	}
+	
 	
 	/**
 	 * Get record with this ID
@@ -403,6 +429,26 @@ public class POFactory {
 		} catch (NoSuchMethodException e)	{throw new RuntimeException ("Error instanciando objetos.", e); }
 		catch (Exception e)	{ throw new RuntimeException(e);	}			
 	}
+	
+	/**
+	 * Get model for this resulset
+	 * @param ctx
+	 * @param clazz
+	 * @param rs
+	 * @param trxName
+	 * @return
+	 */
+	public static <T extends PO> T get(Properties ctx, Class<T> clazz, ResultSet rs, String trxName)	{
+        Constructor<T> po_constr;
+		try {
+			Class<T> c = getCustomClass(clazz);
+			po_constr = c.getDeclaredConstructor(new Class[] { Properties.class, ResultSet.class, String.class });
+			T	po	=  po_constr.newInstance(new Object[] { ctx, rs, trxName });
+			return po;
+		} catch (NoSuchMethodException e)	{throw new RuntimeException ("Error instanciando objetos.", e); }
+		catch (Exception e)	{ throw new RuntimeException(e);	}			
+	}
+
 
 	private static HashMap<Class<?>, Class<?>> scacheclasses = new HashMap<Class<?>, Class<?>>();
 	
@@ -420,8 +466,7 @@ public class POFactory {
 		}
 		// Try to get tableName via calling get_TableName from PO
 		try {
-			Field f = clazz.getField("Table_Name");			
-			String tableName = (String) f.get(null);
+			String tableName = getTableName(clazz);
 			Class<T> derived = getClass(tableName);
 			scacheclasses.put(clazz, derived);
 			return derived;
@@ -432,6 +477,17 @@ public class POFactory {
 		}
 	}
 
+	public static <T extends PO> String getTableName(Class<T> clazz)	{		
+		try {
+			Field f = clazz.getField("Table_Name");
+			return (String) f.get(null);
+		} catch (Exception  e) {
+			s_log.log(Level.SEVERE, "Can't find Table_Name field");
+			return null;
+		}					
+	}
+	
+	
 	/**
 	 * Return the model class for this AD_Table_ID
 	 * @param AD_Table_ID
