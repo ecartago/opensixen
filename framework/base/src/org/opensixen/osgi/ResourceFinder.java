@@ -60,13 +60,14 @@
  * ***** END LICENSE BLOCK ***** */
 package org.opensixen.osgi;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import org.compiere.Adempiere;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.FileLocator;
 import org.opensixen.osgi.interfaces.IResourceFinder;
+import org.osgi.framework.Bundle;
 
 /**
  * 
@@ -88,6 +89,12 @@ public class ResourceFinder {
 		}
 		return null;
 	
+	}
+	
+	public static File getFile(String name) throws IOException	{	
+		URL url = getResource(name);
+		String filename = FileLocator.toFileURL(url).getFile();
+		return new File(filename);
 	}
 
 }
