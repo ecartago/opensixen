@@ -19,8 +19,12 @@ package org.compiere.util;
 import java.awt.Color;
 import java.awt.font.TextAttribute;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -682,5 +686,35 @@ public class Util
 		return sb.toString();
 		/* */
 	}
-
+	
+	/**
+	 * Return Timestamp representation of now
+	 * @return
+	 */
+	public static Timestamp now()	{
+		return new Timestamp(System.currentTimeMillis());
+	}
+	
+	/**
+	 * Return the timestamp representation 
+	 * of the first day in the current year
+	 * @return
+	 */
+	public static Timestamp firstDayInYear()	{	
+		return firstDayInYearOf(now());
+	}
+	
+	
+	/**
+	 * Return the string timestamp representation
+	 * of the first day in the year of the given date
+	 * @param now
+	 * @return
+	 */
+	public static Timestamp firstDayInYearOf(Timestamp now)	{
+		Calendar cal = new GregorianCalendar();
+		cal.setTimeInMillis(now.getTime());
+		cal.set(Calendar.DAY_OF_YEAR, 1);
+		return new Timestamp(cal.getTimeInMillis());
+	}	
 }   //  Util
