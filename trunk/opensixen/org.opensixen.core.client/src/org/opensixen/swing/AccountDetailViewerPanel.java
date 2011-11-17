@@ -156,6 +156,13 @@ public class AccountDetailViewerPanel extends CPanel implements ActionListener {
 		table.packAll();
 	}
 
+	public void clear()	{
+		QParam[] params = {new QParam("1=0")};
+		tableModel.setParams(params);
+		tableModel.reload();
+		table.packAll();
+	}
+	
 	/**
 	 * Set selectedFact and enable buttons
 	 * @param fact
