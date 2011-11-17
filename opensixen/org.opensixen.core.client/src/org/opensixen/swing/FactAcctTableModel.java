@@ -183,8 +183,8 @@ public class FactAcctTableModel extends POTableModel<MVFactAcct> {
 		GroupDefinition def = new GroupDefinition();
 		String[] columns = { I_V_Fact_Acct.COLUMNNAME_JournalNo };
 		GroupVariable[] footer = {
-				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtSourceDr, GroupVariable.SUM),
-				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtSourceCr,GroupVariable.SUM) };
+				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, GroupVariable.SUM),
+				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr,GroupVariable.SUM) };
 		def.setGroupColumns(columns);
 		def.setFooterVariables(footer);
 		definitions.add(def);
