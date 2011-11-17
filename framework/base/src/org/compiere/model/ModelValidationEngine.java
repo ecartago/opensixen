@@ -648,7 +648,7 @@ public class ModelValidationEngine
 	 * @param po
 	 * @return error message or null
 	 */
-	public String fireFactsValidate (MAcctSchema schema, List<Fact> facts, PO po)
+	public String fireFactsValidate (MAcctSchema schema, List<Fact> facts, PO po, int factsTiming)
 	{
 		if (schema == null || facts == null || po == null || m_factsValidateListeners.size() == 0)
 			return null;
@@ -658,7 +658,7 @@ public class ModelValidationEngine
 		if (list != null)
 		{
 			//ad_entitytype.modelvalidationclasses
-			String error = fireFactsValidate(schema, facts, po, list);
+			String error = fireFactsValidate(schema, facts, po, list, factsTiming);
 			if (error != null && error.length() > 0)
 				return error;
 		}
@@ -668,7 +668,7 @@ public class ModelValidationEngine
 		if (list != null)
 		{
 			//ad_client.modelvalidationclasses
-			String error = fireFactsValidate(schema, facts, po, list);
+			String error = fireFactsValidate(schema, facts, po, list, factsTiming);
 			if (error != null && error.length() > 0)
 				return error;
 		}
@@ -676,7 +676,7 @@ public class ModelValidationEngine
 		return null;
 	}	//	fireFactsValidate
 	
-	private String fireFactsValidate(MAcctSchema schema, List<Fact> facts, PO po,  ArrayList<FactsValidator> list)
+	private String fireFactsValidate(MAcctSchema schema, List<Fact> facts, PO po,  ArrayList<FactsValidator> list, int factsTiming)
 	{
 		for (int i = 0; i < list.size(); i++)
 		{
@@ -687,7 +687,7 @@ public class ModelValidationEngine
 				if (validator.getAD_Client_ID() == po.getAD_Client_ID()
 						|| m_globalValidators.contains(validator))
 				{
-					String error = validator.factsValidate(schema, facts, po);
+					String error = validator.factsValidate(schema, facts, po, factsTiming);
 					if (error != null && error.length() > 0)
 					{
 						if (log.isLoggable(Level.FINE))

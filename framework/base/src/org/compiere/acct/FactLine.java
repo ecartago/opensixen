@@ -55,7 +55,7 @@ import org.compiere.util.Env;
  *				https://sourceforge.net/tracker/?func=detail&atid=879335&aid=2819081&group_id=176962
  *  
  */
-public final class FactLine extends X_Fact_Acct
+public class FactLine extends X_Fact_Acct
 {
 	/**
 	 * 

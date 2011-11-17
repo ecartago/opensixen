@@ -44,7 +44,7 @@ public interface ModelValidator
 	public static final int	TYPE_DELETE = 3;
 	public static final int	CHANGETYPE_DELETE = 3;			// Compatibility with Compiere 260c
 	public static final int	TYPE_AFTER_DELETE = 6;			// teo_sarca [ 1675490 ]
-	public static final int	TYPE_BEFORE_DELETE_REPLICATION = 9; // @Trifon 
+	public static final int	TYPE_BEFORE_DELETE_REPLICATION = 9; // @Trifon	
 	
 	// Correlation between constant events and list of event script model validators
 	public static String[] tableEventValidators = new String[] {
@@ -95,6 +95,9 @@ public interface ModelValidator
 	/** Called after document is posted */
 	public static final int TIMING_AFTER_POST = 16;
 	
+	/** Facts Timing */
+	public static final int TIMING_BEFORE_FACTS = 97;	
+	public static final int TIMING_AFTER_FACTS = 98;
 	// Correlation between constant events and list of event script model validators
 	public static String[] documentEventValidators = new String[] {
 		"", // 0

@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -46,6 +47,9 @@ import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.compiere.util.Trx;
+import org.opensixen.model.POFactory;
+import org.opensixen.osgi.Service;
+import org.opensixen.osgi.interfaces.IDocFactory;
 
 /**
  *  Posting Document Root.
@@ -205,6 +209,18 @@ public abstract class Doc
 	 */
 	public static Doc get (MAcctSchema[] ass, int AD_Table_ID, int Record_ID, String trxName)
 	{
+		// Fist, try OSGI IDocFactory
+		List<IDocFactory> factories = Service.list(IDocFactory.class);
+		if (factories.size() > 0)	{
+			PO po = POFactory.get(AD_Table_ID, Record_ID, trxName);
+			for (IDocFactory factory:factories)	{
+				Doc doc = factory.getDocument(ass, po, trxName);
+				if (doc != null)	{
+					return doc;
+				}
+			}
+		}
+		
 		String TableName = null;
 		for (int i = 0; i < getDocumentsTableID().length; i++)
 		{
@@ -263,7 +279,18 @@ public abstract class Doc
 	public static Doc get (MAcctSchema[] ass, int AD_Table_ID, ResultSet rs, String trxName) throws AdempiereUserError
 	{
 		Doc doc = null;
-		
+		// Fist, try OSGI IDocFactory
+		List<IDocFactory> factories = Service.list(IDocFactory.class);
+		if (factories.size() > 0)	{
+			PO po = POFactory.get(AD_Table_ID, rs, trxName);
+			for (IDocFactory factory:factories)	{
+				Doc custom_doc = factory.getDocument(ass, po, trxName);
+				if (custom_doc != null)	{
+					return custom_doc;
+				}
+			}
+		}
+
 		/* Classname of the Doc class follows this convention:
 		 * if the prefix (letters before the first underscore _) is 1 character, then the class is Doc_TableWithoutPrefixWithoutUnderscores
 		 * otherwise Doc_WholeTableWithoutUnderscores
@@ -361,6 +388,24 @@ public abstract class Doc
 	private boolean m_manageLocalTrx;
 
 	
+	/**
+	 * Model constructor
+	 * @param ass
+	 * @param po
+	 * @param defaultDocumentType
+	 * @param trxName
+	 */
+	public Doc (MAcctSchema[] ass, PO po ,String defaultDocumentType, String trxName)	{
+		p_Status = STATUS_Error;
+		m_ass = ass;
+		m_ctx = new Properties(m_ass[0].getCtx());
+		m_ctx.setProperty("#AD_Client_ID", String.valueOf(m_ass[0].getAD_Client_ID()));		
+		p_po = po;
+		
+		init(defaultDocumentType, trxName);
+	}
+	
+	
 	/**************************************************************************
 	 *  Constructor
 	 * 	@param ass accounting schemata
@@ -389,7 +434,11 @@ public abstract class Doc
 			log.severe(msg);
 			throw new IllegalArgumentException(msg);
 		}
+		init(defaultDocumentType, trxName);
 		
+	}   //  Doc
+
+	private void init(String defaultDocumentType, String trxName)	{
 		//	DocStatus
 		int index = p_po.get_ColumnIndex("DocStatus");
 		if (index != -1)
@@ -410,8 +459,9 @@ public abstract class Doc
 		m_Amounts[1] = Env.ZERO;
 		m_Amounts[2] = Env.ZERO;
 		m_Amounts[3] = Env.ZERO;
-	}   //  Doc
-
+	}
+	
+	
 	/** Accounting Schema Array     */
 	private MAcctSchema[]    	m_ass = null;
 	/** Properties					*/
@@ -761,7 +811,7 @@ public abstract class Doc
 			return STATUS_Error;
 		
 		// call modelValidator
-		String validatorMsg = ModelValidationEngine.get().fireFactsValidate(m_ass[index], facts, getPO());
+		String validatorMsg = ModelValidationEngine.get().fireFactsValidate(m_ass[index], facts, getPO(), ModelValidator.TIMING_BEFORE_FACTS);
 		if (validatorMsg != null) {
 			p_Error = validatorMsg;
 			return STATUS_Error;
@@ -809,6 +859,14 @@ public abstract class Doc
 			}
 			
 		}	//	for all facts
+		
+		// call modelValidator
+		validatorMsg = ModelValidationEngine.get().fireFactsValidate(m_ass[index], facts, getPO(), ModelValidator.TIMING_AFTER_FACTS);
+		if (validatorMsg != null) {
+			p_Error = validatorMsg;
+			return STATUS_Error;
+		}
+
 		
 		return STATUS_Posted;
 	}   //  postLogic

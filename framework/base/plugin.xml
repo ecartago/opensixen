@@ -15,5 +15,6 @@
    <extension-point id="org.opensixen.osgi.interfaces.ITaxFactory" name="org.opensixen.osgi.interfaces.ITaxFactory" schema="schema/org.opensixen.osgi.interfaces.ITaxFactory.exsd"/>
    <extension-point id="org.opensixen.osgi.interfaces.IStatusBarTrxInfo" name="org.opensixen.osgi.interfaces.IStatusBarTrxInfo" schema="schema/org.opensixen.osgi.interfaces.IStatusBarTrxInfo.exsd"/>
    <extension-point id="org.opensixen.osgi.interfaces.IModelFactory" name="org.opensixen.osgi.interfaces.IModelFactory" schema="schema/org.opensixen.osgi.interfaces.IModelFactory.exsd"/>
+   <extension-point id="org.opensixen.osgi.interfaces.IDocFactory" name="org.opensixen.osgi.interfaces.IDocFactory" schema="schema/org.opensixen.osgi.interfaces.IDocFactory.exsd"/>
 
 </plugin>
