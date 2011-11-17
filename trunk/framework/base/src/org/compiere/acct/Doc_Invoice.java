@@ -33,6 +33,7 @@ import org.compiere.model.MInvoice;
 import org.compiere.model.MInvoiceLine;
 import org.compiere.model.MLandedCostAllocation;
 import org.compiere.model.MTax;
+import org.compiere.model.PO;
 import org.compiere.model.ProductCost;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
@@ -62,14 +63,25 @@ public class Doc_Invoice extends Doc
 		super (ass, MInvoice.class, rs, null, trxName);
 	}	//	Doc_Invoice
 
+	/**
+	 * Model constructor
+	 * @param ass
+	 * @param po
+	 * @param trxName
+	 */
+	public Doc_Invoice(MAcctSchema[] ass, PO po, String trxName) {
+		super(ass, po, null, trxName);
+	}
+	
+	
 	/** Contained Optional Tax Lines    */
-	private DocTax[]        m_taxes = null;
+	protected DocTax[]        m_taxes = null;
 	/** Currency Precision				*/
-	private int				m_precision = -1;
+	protected int				m_precision = -1;
 	/** All lines are Service			*/
-	private boolean			m_allLinesService = true;
+	protected boolean			m_allLinesService = true;
 	/** All lines are product item		*/
-	private boolean			m_allLinesItem = true;
+	protected boolean			m_allLinesItem = true;
 
 	/**
 	 *  Load Specific Document Details
@@ -808,7 +820,7 @@ public class Doc_Invoice extends Doc
 	 *	@param dr DR entry (normal api)
 	 *	@return true if landed costs were created
 	 */
-	private boolean landedCost (MAcctSchema as, Fact fact, DocLine line, boolean dr) 
+	protected boolean landedCost (MAcctSchema as, Fact fact, DocLine line, boolean dr) 
 	{
 		int C_InvoiceLine_ID = line.get_ID();
 		MLandedCostAllocation[] lcas = MLandedCostAllocation.getOfInvoiceLine(
@@ -880,7 +892,7 @@ public class Doc_Invoice extends Doc
 	 * 	Update ProductPO PriceLastInv
 	 *	@param as accounting schema
 	 */
-	private void updateProductPO (MAcctSchema as)
+	protected void updateProductPO (MAcctSchema as)
 	{
 		MClientInfo ci = MClientInfo.get(getCtx(), as.getAD_Client_ID());
 		if (ci.getC_AcctSchema1_ID() != as.getC_AcctSchema_ID())
@@ -925,7 +937,7 @@ public class Doc_Invoice extends Doc
 	 *  @param C_AcctSchema_ID accounting schema
 	 *  @deprecated old costing
 	 */
-	private void updateProductInfo (int C_AcctSchema_ID)
+	protected void updateProductInfo (int C_AcctSchema_ID)
 	{
 		log.fine("C_Invoice_ID=" + get_ID());
 

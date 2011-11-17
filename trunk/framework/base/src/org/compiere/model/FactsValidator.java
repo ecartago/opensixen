@@ -19,5 +19,5 @@ public interface FactsValidator {
 	 * @return error message or null - 
      * if not null, the pocument will be marked as Invalid.
 	 */
-	public String factsValidate(MAcctSchema schema, List<Fact> facts, PO po);
+	public String factsValidate(MAcctSchema schema, List<Fact> facts, PO po, int factsTiming);
 }

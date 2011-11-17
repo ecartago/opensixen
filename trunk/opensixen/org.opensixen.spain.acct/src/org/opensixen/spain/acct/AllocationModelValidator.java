@@ -140,9 +140,12 @@ public class AllocationModelValidator extends GlobalFacctModelValidator implemen
 	 * @see org.compiere.model.FactsValidator#factsValidate(org.compiere.model.MAcctSchema, java.util.List, org.compiere.model.PO)
 	 */
 	@Override
-	public String factsValidate(MAcctSchema schema, List<Fact> facts, PO po) {
+	public String factsValidate(MAcctSchema schema, List<Fact> facts, PO po, int factTiming) {
+		if (factTiming != IModelValidator.TIMING_BEFORE_FACTS)	{
+			return null;
+		}
 		// Do globalValidator code
-		String superStr = super.factsValidate(schema, facts, po);
+		String superStr = super.factsValidate(schema, facts, po, factTiming);
 		if (superStr != null)	{
 			return superStr;
 		}
