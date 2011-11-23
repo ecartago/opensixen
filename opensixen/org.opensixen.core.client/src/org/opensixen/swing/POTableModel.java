@@ -351,6 +351,10 @@ public abstract class POTableModel<T extends PO> extends DefaultTableModel imple
 			for (GroupDefinition definitions:groupDefinitions)	{							
 				for (String column:definitions.getGroupColumns())	{
 					Object current = po.get_Value(column);
+					// If current index is null, set dummy value  
+					if (current == null)	{
+						current = "===null===";
+					}
 					
 					// If index not contain this column, is first ocurrence
 					if (!currentIndex.containsKey(column))	{
@@ -359,8 +363,7 @@ public abstract class POTableModel<T extends PO> extends DefaultTableModel imple
 						i.groupVariableValue = current;
 						currentIndex.put(column, i);
 					}
-					
-					
+														
 					// If not change, calc the values to the the footer or header varaibles
 					if (current.equals(currentIndex.get(column).groupVariableValue)) {
 						// Calc footer variables
