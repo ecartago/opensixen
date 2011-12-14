@@ -73,6 +73,7 @@ import org.compiere.model.MRefTable;
 import org.compiere.model.MTable;
 import org.compiere.model.PO;
 import org.compiere.util.DisplayType;
+import org.compiere.util.Env;
 import org.opensixen.model.ColumnDefinition;
 import org.opensixen.model.POFactory;
 import org.opensixen.model.QParam;
@@ -113,10 +114,7 @@ public abstract class AbstractPODynamicReport extends
 	 */
 	@Override
 	protected void initReport() {
-		// Creamos un objeto vacio para obtener la tabla
-		PO po = POFactory.get(getReportClass(), 0);
-
-		table = MTable.get(getCtx(), po.get_TableName());
+		table = MTable.get(Env.getCtx(), POFactory.getTableName(getReportClass()));
 	}
 
 	@Override
