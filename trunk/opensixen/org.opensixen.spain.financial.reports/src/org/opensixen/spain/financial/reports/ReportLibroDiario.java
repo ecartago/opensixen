@@ -114,8 +114,8 @@ public class ReportLibroDiario extends AbstractPODynamicReport
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Value, 80),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Name, 240),
 				//new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Description, 300),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Debe, 100),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Haber, 100) };
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, 100),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, 100) };
 		return cols;
 	}
 
@@ -176,8 +176,8 @@ public class ReportLibroDiario extends AbstractPODynamicReport
 		GroupDefinition def = new GroupDefinition();
 		String[] columns = { I_V_Fact_Acct.COLUMNNAME_JournalNo };
 		GroupVariable[] footer = {
-				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_Debe, GroupVariable.SUM),
-				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_Haber,GroupVariable.SUM) };
+				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, GroupVariable.SUM),
+				new GroupVariable(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr,GroupVariable.SUM) };
 		def.setGroupColumns(columns);
 		def.setFooterVariables(footer);
 		definitions.add(def);
