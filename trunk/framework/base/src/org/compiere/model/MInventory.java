@@ -940,7 +940,7 @@ public class MInventory extends X_M_Inventory implements DocAction
 	 * @param Qty
 	 * @return an EMPTY String on success otherwise an ERROR message
 	 */
-	private String createCostDetail(MInventoryLine line, int M_AttributeSetInstance_ID, BigDecimal qty)
+	public String createCostDetail(MInventoryLine line, int M_AttributeSetInstance_ID, BigDecimal qty)
 	{
 		// Get Account Schemas to create MCostDetail
 		MAcctSchema[] acctschemas = MAcctSchema.getClientAcctSchema(getCtx(), getAD_Client_ID());
