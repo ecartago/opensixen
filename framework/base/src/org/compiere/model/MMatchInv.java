@@ -331,7 +331,7 @@ public class MMatchInv extends X_M_MatchInv
 	
 
 	// Elaine 2008/6/20	
-	private String createMatchInvCostDetail()
+	public String createMatchInvCostDetail()
 	{
 		MInvoiceLine invoiceLine = new MInvoiceLine (getCtx(), getC_InvoiceLine_ID(), get_TrxName());
 		

@@ -854,7 +854,7 @@ public class MMatchPO extends X_M_MatchPO
 	}	//	consolidate
 	
 	// Elaine 2008/6/20	
-	private String createMatchPOCostDetail()
+	public String createMatchPOCostDetail()
 	{
 		if (getM_InOutLine_ID() != 0)
 		{
