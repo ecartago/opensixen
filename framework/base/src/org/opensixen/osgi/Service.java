@@ -16,6 +16,7 @@
  *****************************************************************************/
 package org.opensixen.osgi;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.opensixen.osgi.interfaces.IService;
@@ -45,7 +46,25 @@ public class Service {
 		}
 		return theLocator;
 	}
-
+	
+	private static HashMap<Class<?>, ServiceQuery> customServices = new HashMap<Class<?>, ServiceQuery>();
+	
+	/**
+	 * Add a custom query to be used when the system look up for a service
+	 * 
+	 * Custom queries are added in the bundle Activator
+	 * Currently only applied in locate(class)
+	 * @deprecated This system is not fully functional. May change soon.
+	 * @param service
+	 * @param query
+	 */
+	public static <T extends IService> void addCustomQuery(Class<T> service, ServiceQuery query)		{
+		if (customServices.containsKey(service))	{
+			throw new UnsupportedOperationException("Service " + service + " has custom query. Can't reasign");
+		}		
+		customServices.put(service, query);
+	}
+		
 	private static IServiceLocator createServiceLocator() {
 		String className = System.getProperty(LOCATOR_CLASS);
 		if (className==null)
@@ -61,8 +80,19 @@ public class Service {
 		}
 	}
 
+	/**
+	 * Locate a service
+	 * If custom services are configured for this type, add custom query
+	 * @param type
+	 * @return
+	 */
 	public static <T extends IService> T locate(Class<T> type) {
-		return locator().locate(type);
+		if (customServices.containsKey(type))	{		
+			return locator().locate(type, customServices.get(type));
+		}
+		else {
+			return locator().locate(type);
+		}
 	}
 
 	public static <T extends IService> T locate(Class<T> type, ServiceQuery query) {
