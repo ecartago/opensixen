@@ -83,7 +83,7 @@ private ReportLibroDiario report;
 	@Override
 	public void prepare() {
 		report = new ReportLibroDiario();
-		report.prepare();
+		report.prepare(getParameter());
 	}
 
 	/* (non-Javadoc)

@@ -61,10 +61,14 @@
 
 package org.opensixen.spain.financial.reports;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 
+import org.compiere.model.MFactAcct;
+import org.compiere.process.ProcessInfoParameter;
 import org.compiere.util.Env;
 import org.opensixen.model.ColumnDefinition;
 import org.opensixen.model.GroupDefinition;
@@ -83,8 +87,14 @@ import org.opensixen.report.AbstractPODynamicReport;
  * @author Eloy Gomez
  * Indeos Consultoria http://www.indeos.es
  */
-public class ReportLibroDiario extends AbstractPODynamicReport
-		implements ICommand {
+public class ReportLibroDiario extends AbstractPODynamicReport {
+
+	private int p_C_BPartner_ID;
+	private Timestamp p_DateFrom;
+	private Timestamp p_DateTo;
+	private int p_C_ElementValue_ID;
+	private int p_M_Product_ID;
+
 
 	/**
 	 * @param ctx
@@ -113,7 +123,7 @@ public class ReportLibroDiario extends AbstractPODynamicReport
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_DateAcct, 100 ),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Value, 80),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Name, 240),
-				//new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Description, 300),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Description, 300),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, 100),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, 100) };
 		return cols;
@@ -147,8 +157,21 @@ public class ReportLibroDiario extends AbstractPODynamicReport
 	 */
 	@Override
 	protected QParam[] getQParams() {
-		QParam[] params = {new QParam(MVFactAcct.COLUMNNAME_AD_Client_ID, Env.getAD_Client_ID(getCtx()))};
-		return params;
+		ArrayList<QParam> params = new ArrayList<QParam>();
+		params.add(new QParam(MVFactAcct.COLUMNNAME_AD_Client_ID, Env.getAD_Client_ID(getCtx())));
+		if (p_DateFrom != null)	{
+			String cond = MVFactAcct.COLUMNNAME_DateAcct +" between '" + p_DateFrom + "' and '" + p_DateTo +"'";
+			params.add(new QParam(cond));
+		}
+		if (p_C_ElementValue_ID > 0) {
+			params.add(new QParam(MVFactAcct.COLUMNNAME_C_ElementValue_ID, p_C_ElementValue_ID));
+		}
+		
+		if (p_C_BPartner_ID > 0)	{
+			params.add(new QParam(MVFactAcct.COLUMNNAME_C_BPartner_ID, p_C_BPartner_ID));
+		}
+		QParam[] p = new QParam[params.size()];		
+		return params.toArray(p);
 	}
 
 
@@ -199,9 +222,31 @@ public class ReportLibroDiario extends AbstractPODynamicReport
 	/* (non-Javadoc)
 	 * @see org.opensixen.osgi.interfaces.ICommand#prepare()
 	 */
-	@Override
-	public void prepare() {
-		// TODO Auto-generated method stub
+	public void prepare(ProcessInfoParameter[] para) {
+		
+		for (int i = 0; i < para.length; i++)
+		{
+			String name = para[i].getParameterName();
+			if (para[i].getParameter() == null) {
+				;
+			}
+			else if (name.equals("C_ElementValue_ID")) {
+				p_C_ElementValue_ID = para[i].getParameterAsInt();
+			}
+			else if (name.equals("DateAcct")) {
+				p_DateFrom = (Timestamp)para[i].getParameter();
+				p_DateTo = (Timestamp)para[i].getParameter_To();
+			}
+			else if (name.equals("C_BPartner_ID")) {
+				p_C_BPartner_ID = para[i].getParameterAsInt();
+			}
+			else if (name.equals("M_Product_ID")) {
+				p_M_Product_ID = para[i].getParameterAsInt();
+			}
+			else {
+				//log.log(Level.SEVERE, "Unknown Parameter: " + name);
+			}
+		}
 		
 	}
 
@@ -209,7 +254,6 @@ public class ReportLibroDiario extends AbstractPODynamicReport
 	/* (non-Javadoc)
 	 * @see org.opensixen.osgi.interfaces.ICommand#doIt()
 	 */
-	@Override
 	public String doIt() throws Exception {
 		initReport();
 		viewReport();
