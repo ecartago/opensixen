@@ -74,13 +74,14 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import org.compiere.util.CLogger;
-import org.compiere.util.DB;
-import org.compiere.util.Env;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+
+import org.compiere.process.ProcessInfoParameter;
+import org.compiere.util.CLogger;
+import org.compiere.util.DB;
+import org.compiere.util.Env;
 
 /**
  * 
@@ -100,12 +101,6 @@ public class SumasYSaldosJasperDataSource implements JRDataSource {
 	private Timestamp	p_DateAcct_From = null;
 	/** Date Acct To			*/
 	private Timestamp	p_DateAcct_To = null;
-	
-	/** Date Trx Document From			*/
-	private Timestamp	p_DateTrx_From = null;
-	/** Date Trx Document To			*/
-	private Timestamp	p_DateTrx_To = null;
-	// APLICADO-PRODUCCION contabilidad version20090712
 	
 	/** Esqueme contable		*/
 	private int p_C_AcctSchema_ID = 0;
@@ -133,58 +128,40 @@ public class SumasYSaldosJasperDataSource implements JRDataSource {
 	HashMap<String, M_SaldoAcumulado> m_saldosAcumulados;
 	HashMap<String, M_SumasYSaldos> m_saldosCuentas;
 	
-	/** Usamos la fecha de transaccion como la correcta??	*/
-	private boolean trxDate = false;
-	
-	
-	public SumasYSaldosJasperDataSource(Properties ctx)	{
+	private int p_C_BPartner_ID;
+	private int p_M_Product_ID;
+		
+	public SumasYSaldosJasperDataSource (Properties ctx, ProcessInfoParameter[] para)	{
 		this.p_ctx = ctx;
 		p_C_AcctSchema_ID = Env.getContextAsInt(ctx, "$C_AcctSchema_ID");
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(new Date());
 		
-		cal.set(cal.MONTH, cal.DECEMBER);
-		cal.set(cal.DAY_OF_MONTH, 31);
-		p_DateAcct_To = new Timestamp(cal.getTimeInMillis());
-		p_DateTrx_To = new Timestamp(cal.getTimeInMillis());
-		
-		cal.set(cal.MONTH, cal.JANUARY);
-		cal.set(cal.DAY_OF_MONTH, 1);
-		
-		p_DateAcct_From = new Timestamp(cal.getTimeInMillis());
-		p_DateTrx_From = new Timestamp(cal.getTimeInMillis());
-		
-		
+		for (int i = 0; i < para.length; i++)
+		{
+			String name = para[i].getParameterName();
+			if (para[i].getParameter() == null) {
+				;
+			}
+			else if (name.equals("C_ElementValue_ID")) {
+				p_1_ElementValue_ID = para[i].getParameterAsInt();
+				p_2_ElementValue_ID = para[i].getParameter_ToAsInt();
+			}
+			else if (name.equals("DateAcct")) {
+				p_DateAcct_From = (Timestamp)para[i].getParameter();
+				p_DateAcct_To = (Timestamp)para[i].getParameter_To();
+			}
+			else if (name.equals("C_BPartner_ID")) {
+				p_C_BPartner_ID = para[i].getParameterAsInt();
+			}
+			else if (name.equals("M_Product_ID")) {
+				p_M_Product_ID = para[i].getParameterAsInt();
+			}
+			else {
+				//log.log(Level.SEVERE, "Unknown Parameter: " + name);
+			}
+		}				
 	}
 	
-	
-	public SumasYSaldosJasperDataSource (Properties ctx, Timestamp dateFrom, Timestamp dateTo, int elementFrom_ID, int elementTo_ID, int C_AcctSchema_ID)	{
-		init(ctx, dateFrom, dateTo, elementFrom_ID, elementTo_ID, C_AcctSchema_ID);
 		
-		//loadData();
-	}
-	
-	
-	public void init (Properties ctx, Timestamp dateFrom, Timestamp dateTo, int elementFrom_ID, int elementTo_ID, int C_AcctSchema_ID)	{
-		p_ctx = ctx;
-		
-		p_DateAcct_From = dateFrom;
-		p_DateAcct_To = dateTo;
-		
-		p_DateTrx_From = dateFrom;
-		p_DateTrx_To = dateTo;
-	
-		
-		p_1_ElementValue_ID = elementFrom_ID;
-		p_2_ElementValue_ID = elementTo_ID;
-		
-		
-		p_C_AcctSchema_ID  = C_AcctSchema_ID;
-		
-		//loadData();
-	}
-	
-	
 	private String  getSQLData(boolean saldosIniciales)	{
 		return getSQLData(saldosIniciales, false);
 	}
@@ -223,59 +200,28 @@ public class SumasYSaldosJasperDataSource implements JRDataSource {
 
 			// Los saldos se leen desde el dia 1 de enero del año dado como de inicio.
 			GregorianCalendar cal = new GregorianCalendar();
-		
-			if (trxDate)	{
-				cal.setTimeInMillis(p_DateTrx_From.getTime());				
-			}
-			else {
-				cal.setTimeInMillis(p_DateAcct_From.getTime());
-			}
-			
+			cal.setTimeInMillis(p_DateAcct_From.getTime());
+						
 			cal.set(Calendar.DAY_OF_YEAR, 1);
 			Timestamp beginSaldos = new Timestamp(cal.getTimeInMillis());
 			
 			// Hasta la fecha anterior a la de inicio del informe
-			
-			
-			if (trxDate)	{
-				cal.setTimeInMillis(p_DateTrx_From.getTime());
-			}
-			else {
-				cal.setTimeInMillis(p_DateAcct_From.getTime());	
-			}
-
+			cal.setTimeInMillis(p_DateAcct_From.getTime());			
 			cal.add(Calendar.DATE, -1);
 			Timestamp endSaldos = new Timestamp(cal.getTimeInMillis());
 			
 			
 			// Si la fecha de inicio del reporte es la misma que la de inicio de los saldos acumulados,
 			// Ignoramos 
-
-			if ((trxDate && !p_DateTrx_From.equals(beginSaldos)) || (!trxDate && !p_DateAcct_From.equals(beginSaldos)))	{
-
+			if (p_DateAcct_From.equals(beginSaldos))	{
 				return null;
 			}
 			
-
-			if (trxDate)	{
-				sql.append(" AND fa.DateTrx BETWEEN ").append(DB.TO_DATE(beginSaldos)).append(" AND ").append(DB.TO_DATE(endSaldos));
-			}
-			else {
-				sql.append(" AND fa.DateAcct BETWEEN ").append(DB.TO_DATE(beginSaldos)).append(" AND ").append(DB.TO_DATE(endSaldos));
-			}
-			
-			
+			sql.append(" AND fa.DateAcct BETWEEN ").append(DB.TO_DATE(beginSaldos)).append(" AND ").append(DB.TO_DATE(endSaldos));									
 			sql.append(" and ev.accountsign='N' and ev.accounttype='A' ");
 		}
 		else {
-
-			if (trxDate)	{
-				sql.append(" AND fa.DateTrx BETWEEN ").append(DB.TO_DATE(p_DateTrx_From)).append(" AND ").append(DB.TO_DATE(p_DateTrx_To));
-			}
-			else {
-				sql.append(" AND fa.DateAcct BETWEEN ").append(DB.TO_DATE(p_DateAcct_From)).append(" AND ").append(DB.TO_DATE(p_DateAcct_To));
-			}
-
+			sql.append(" AND fa.DateAcct BETWEEN ").append(DB.TO_DATE(p_DateAcct_From)).append(" AND ").append(DB.TO_DATE(p_DateAcct_To));
 		}
 
 		// Si solo queremos saldos iniciales, mostraremos solo los del asiento de apertura 
@@ -286,7 +232,6 @@ public class SumasYSaldosJasperDataSource implements JRDataSource {
 			sql.append(" and (gl.journaltype != 'O' or gl.journaltype is null) ");
 		}					
 		
-
 		// Obtenemos la clausula de las cuentas basandonos en el nombre.
 		if (p_1_ElementValue_ID > 0  && p_2_ElementValue_ID > 0)	{
 
@@ -298,9 +243,17 @@ public class SumasYSaldosJasperDataSource implements JRDataSource {
 		else if (p_1_ElementValue_ID > 0)	{
 			sql.append("AND C_ElementValue_ID = ").append(p_1_ElementValue_ID);
 		}
+		if (p_C_BPartner_ID > 0)	{
+			sql.append("AND C_BPartner_ID = ").append(p_C_BPartner_ID);	
+		}
+		
+		if (p_M_Product_ID > 0)	{
+			sql.append("AND M_Product_ID = ").append(p_M_Product_ID);
+		}
 		
 		if (groupAccounts)	{
-			sql.append(" GROUP BY rollup(substr(ev.name,0,4)) ORDER BY name ");
+			//sql.append(" GROUP BY rollup(substr(ev.name,0,4)) ORDER BY name ");
+			sql.append(" GROUP BY substr(ev.name,0,4) ORDER BY name ");
 		}
 		else {
 			sql.append(" GROUP BY fa.account_id, ev.name, ev.AccountType, ev.AccountSign ORDER BY ev.Name");
@@ -406,8 +359,7 @@ public class SumasYSaldosJasperDataSource implements JRDataSource {
 		}
 		catch (SQLException e)	{
 			throw new RuntimeException("No se puede ejecutar la consulta para crear las lineas del informe.");
-		}
-	
+		}	
 	}
 	
 	
@@ -424,13 +376,7 @@ public class SumasYSaldosJasperDataSource implements JRDataSource {
 		// Añadimos restricciones
 		sql.append( " AND fa.AD_Client_ID=").append(Env.getAD_Client_ID(p_ctx));
 		sql.append( " AND  fa.C_AcctSchema_ID=").append(p_C_AcctSchema_ID);
-
-		if (trxDate)	{
-			sql.append(" AND fa.DateTrx BETWEEN ").append(DB.TO_DATE(p_DateTrx_From)).append(" AND ").append(DB.TO_DATE(p_DateTrx_To));
-		}
-		else {
-			sql.append(" AND fa.DateAcct BETWEEN ").append(DB.TO_DATE(p_DateAcct_From)).append(" AND ").append(DB.TO_DATE(p_DateAcct_To));			
-		}
+		sql.append(" AND fa.DateAcct BETWEEN ").append(DB.TO_DATE(p_DateAcct_From)).append(" AND ").append(DB.TO_DATE(p_DateAcct_To));
 		
 		sql.append(" GROUP BY fa.account_id, ev.name, ev.value ORDER BY ev.value");
 		log.info("SQL: " + sql.toString());
@@ -475,9 +421,7 @@ public class SumasYSaldosJasperDataSource implements JRDataSource {
 		catch (SQLException e)	{
 			throw new RuntimeException("No se puede ejecutar la consulta para crear las lineas del informe.");
 		}
-	
-		
-		
+			
 		// Guardamos la lista en m_reportLines
 		m_reportLines = new M_SumasYSaldos[list.size()];
 		list.toArray(m_reportLines);
@@ -515,7 +459,7 @@ public class SumasYSaldosJasperDataSource implements JRDataSource {
 		}
 		else if (name.toUpperCase().equals("GROUPNAME4"))	{
 			return m_reportLines[m_currentRecord].getGroupName4();
-		}
+		}		
 		else {
 			throw new JRException("No se ha podidod obtener el valor de la columna " + name);
 		}
@@ -651,8 +595,6 @@ class M_SumasYSaldos	{
 	public void setSaldoAcumulado(M_SaldoAcumulado saldoAcumulado) {
 		SaldoAcumulado = saldoAcumulado;
 	}
-
-
 
 	/**
 	 * @return the accountType
