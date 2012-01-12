@@ -34,7 +34,7 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20111021L;
+	private static final long serialVersionUID = 20120112L;
 
     /** Standard Constructor */
     public X_V_Fact_Acct (Properties ctx, int V_Fact_Acct_ID, String trxName)
@@ -179,6 +179,20 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
 		if (bd == null)
 			 return Env.ZERO;
 		return bd;
+	}
+
+	/** Set BP_name.
+		@param BP_name BP_name	  */
+	public void setBP_name (String BP_name)
+	{
+		set_ValueNoCheck (COLUMNNAME_BP_name, BP_name);
+	}
+
+	/** Get BP_name.
+		@return BP_name	  */
+	public String getBP_name () 
+	{
+		return (String)get_Value(COLUMNNAME_BP_name);
 	}
 
 	public org.compiere.model.I_C_AcctSchema getC_AcctSchema() throws RuntimeException
@@ -327,23 +341,6 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
 		return (Timestamp)get_Value(COLUMNNAME_DateDoc);
 	}
 
-	/** Set Debe.
-		@param Debe Debe	  */
-	public void setDebe (BigDecimal Debe)
-	{
-		set_Value (COLUMNNAME_Debe, Debe);
-	}
-
-	/** Get Debe.
-		@return Debe	  */
-	public BigDecimal getDebe () 
-	{
-		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_Debe);
-		if (bd == null)
-			 return Env.ZERO;
-		return bd;
-	}
-
 	/** Set Description.
 		@param Description 
 		Optional short description of the record
@@ -398,23 +395,6 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
 		return ii.intValue();
 	}
 
-	/** Set Haber.
-		@param Haber Haber	  */
-	public void setHaber (BigDecimal Haber)
-	{
-		set_Value (COLUMNNAME_Haber, Haber);
-	}
-
-	/** Get Haber.
-		@return Haber	  */
-	public BigDecimal getHaber () 
-	{
-		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_Haber);
-		if (bd == null)
-			 return Env.ZERO;
-		return bd;
-	}
-
 	/** Set JournalNo.
 		@param JournalNo JournalNo	  */
 	public void setJournalNo (int JournalNo)
@@ -427,6 +407,34 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
 	public int getJournalNo () 
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_JournalNo);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public org.compiere.model.I_M_Product getM_Product() throws RuntimeException
+    {
+		return (org.compiere.model.I_M_Product)MTable.get(getCtx(), org.compiere.model.I_M_Product.Table_Name)
+			.getPO(getM_Product_ID(), get_TrxName());	}
+
+	/** Set Product.
+		@param M_Product_ID 
+		Product, Service, Item
+	  */
+	public void setM_Product_ID (int M_Product_ID)
+	{
+		if (M_Product_ID < 1) 
+			set_ValueNoCheck (COLUMNNAME_M_Product_ID, null);
+		else 
+			set_ValueNoCheck (COLUMNNAME_M_Product_ID, Integer.valueOf(M_Product_ID));
+	}
+
+	/** Get Product.
+		@return Product, Service, Item
+	  */
+	public int getM_Product_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_M_Product_ID);
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
@@ -456,6 +464,20 @@ public class X_V_Fact_Acct extends PO implements I_V_Fact_Acct, I_Persistent
     {
         return new KeyNamePair(get_ID(), getName());
     }
+
+	/** Set Product_name.
+		@param Product_name Product_name	  */
+	public void setProduct_name (String Product_name)
+	{
+		set_ValueNoCheck (COLUMNNAME_Product_name, Product_name);
+	}
+
+	/** Get Product_name.
+		@return Product_name	  */
+	public String getProduct_name () 
+	{
+		return (String)get_Value(COLUMNNAME_Product_name);
+	}
 
 	/** Set Record ID.
 		@param Record_ID 

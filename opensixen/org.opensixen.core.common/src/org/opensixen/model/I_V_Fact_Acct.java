@@ -130,6 +130,15 @@ public interface I_V_Fact_Acct
 	  */
 	public BigDecimal getAmtSourceDr();
 
+    /** Column name BP_name */
+    public static final String COLUMNNAME_BP_name = "BP_name";
+
+	/** Set BP_name	  */
+	public void setBP_name (String BP_name);
+
+	/** Get BP_name	  */
+	public String getBP_name();
+
     /** Column name C_AcctSchema_ID */
     public static final String COLUMNNAME_C_AcctSchema_ID = "C_AcctSchema_ID";
 
@@ -232,15 +241,6 @@ public interface I_V_Fact_Acct
 	  */
 	public Timestamp getDateDoc();
 
-    /** Column name Debe */
-    public static final String COLUMNNAME_Debe = "Debe";
-
-	/** Set Debe	  */
-	public void setDebe (BigDecimal Debe);
-
-	/** Get Debe	  */
-	public BigDecimal getDebe();
-
     /** Column name Description */
     public static final String COLUMNNAME_Description = "Description";
 
@@ -276,15 +276,6 @@ public interface I_V_Fact_Acct
 	/** Get Accounting Fact	  */
 	public int getFact_Acct_ID();
 
-    /** Column name Haber */
-    public static final String COLUMNNAME_Haber = "Haber";
-
-	/** Set Haber	  */
-	public void setHaber (BigDecimal Haber);
-
-	/** Get Haber	  */
-	public BigDecimal getHaber();
-
     /** Column name JournalNo */
     public static final String COLUMNNAME_JournalNo = "JournalNo";
 
@@ -293,6 +284,21 @@ public interface I_V_Fact_Acct
 
 	/** Get JournalNo	  */
 	public int getJournalNo();
+
+    /** Column name M_Product_ID */
+    public static final String COLUMNNAME_M_Product_ID = "M_Product_ID";
+
+	/** Set Product.
+	  * Product, Service, Item
+	  */
+	public void setM_Product_ID (int M_Product_ID);
+
+	/** Get Product.
+	  * Product, Service, Item
+	  */
+	public int getM_Product_ID();
+
+	public org.compiere.model.I_M_Product getM_Product() throws RuntimeException;
 
     /** Column name Name */
     public static final String COLUMNNAME_Name = "Name";
@@ -306,6 +312,15 @@ public interface I_V_Fact_Acct
 	  * Alphanumeric identifier of the entity
 	  */
 	public String getName();
+
+    /** Column name Product_name */
+    public static final String COLUMNNAME_Product_name = "Product_name";
+
+	/** Set Product_name	  */
+	public void setProduct_name (String Product_name);
+
+	/** Get Product_name	  */
+	public String getProduct_name();
 
     /** Column name Record_ID */
     public static final String COLUMNNAME_Record_ID = "Record_ID";
