@@ -170,6 +170,11 @@ public class ReportLibroDiario extends AbstractPODynamicReport {
 		if (p_C_BPartner_ID > 0)	{
 			params.add(new QParam(MVFactAcct.COLUMNNAME_C_BPartner_ID, p_C_BPartner_ID));
 		}
+		
+		if (p_M_Product_ID > 0)	{
+			params.add(new QParam(MVFactAcct.COLUMNNAME_M_Product_ID, p_M_Product_ID));
+		}
+				
 		QParam[] p = new QParam[params.size()];		
 		return params.toArray(p);
 	}
