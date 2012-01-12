@@ -82,7 +82,7 @@ public class LaunchSumasYSaldos extends SvrProcess implements ICommand{
 	@Override
 	public void prepare() {
 		report = new ReportSumasYSaldos();
-		report.prepare();
+		report.prepare(getParameter());
 		
 	}
 
