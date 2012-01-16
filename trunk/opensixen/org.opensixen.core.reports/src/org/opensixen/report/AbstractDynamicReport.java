@@ -67,14 +67,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import org.opensixen.model.ColumnDefinition;
-import org.opensixen.model.GroupDefinition;
-import org.opensixen.model.GroupVariable;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
 
+import org.opensixen.model.ColumnDefinition;
+import org.opensixen.model.GroupDefinition;
+import org.opensixen.model.GroupVariable;
 
 import ar.com.fdvs.dj.core.DynamicJasperHelper;
 import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
@@ -88,6 +87,7 @@ import ar.com.fdvs.dj.domain.builders.GroupBuilder;
 import ar.com.fdvs.dj.domain.constants.Border;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
+import ar.com.fdvs.dj.domain.constants.Page;
 import ar.com.fdvs.dj.domain.constants.Transparency;
 import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 import ar.com.fdvs.dj.domain.entities.DJGroup;
@@ -116,6 +116,7 @@ public abstract class AbstractDynamicReport  {
 
 	private Properties ctx;
 
+	private Page page = Page.Page_A4_Portrait();
 
 	public static Style detailStyle;
 
@@ -140,7 +141,7 @@ public abstract class AbstractDynamicReport  {
 
 	public static Style detailLeftStyle;
 	
-	
+ 	
 	static	{
 		detailStyle = new Style("detail");
 		detailStyle.setFont(Font.ARIAL_SMALL);
@@ -233,7 +234,9 @@ public abstract class AbstractDynamicReport  {
 		.setPrintBackgroundOnOddRows(true)
 		.setGrandTotalLegend("Total")
 		.setGrandTotalLegendStyle(headerVariables)
-		.setOddRowBackgroundStyle(oddRowStyle);
+		.setOddRowBackgroundStyle(oddRowStyle)
+		.setUseFullPageWidth(true)
+		.setPageSizeAndOrientation(page);				
 		
 		for (ColumnDefinition coldef:getColumns())	{
 			AbstractColumn col = createColumn(coldef);
@@ -358,4 +361,8 @@ public abstract class AbstractDynamicReport  {
 		return null;
 	}
 	
+	
+	public void setPage(Page page) {
+		this.page = page;
+	}
 }
