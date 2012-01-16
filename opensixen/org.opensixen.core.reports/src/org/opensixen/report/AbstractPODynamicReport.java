@@ -135,10 +135,7 @@ public abstract class AbstractPODynamicReport extends
 			definition.setPattern("dd/MM/yy");
 		}
 		
-		
-
 		return super.createColumn(definition);
-
 	}
 	
 	protected QParam[] getQParams()	{
