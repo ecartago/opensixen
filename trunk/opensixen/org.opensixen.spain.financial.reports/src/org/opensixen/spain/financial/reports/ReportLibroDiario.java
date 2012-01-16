@@ -79,6 +79,8 @@ import org.opensixen.model.QParam;
 import org.opensixen.osgi.interfaces.ICommand;
 import org.opensixen.report.AbstractPODynamicReport;
 
+import ar.com.fdvs.dj.domain.constants.Page;
+
 
 /**
  * 
@@ -119,13 +121,17 @@ public class ReportLibroDiario extends AbstractPODynamicReport {
 	@Override
 	protected ColumnDefinition[] getColumns() {
 		ColumnDefinition[] cols = {
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_JournalNo, 80),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_DateAcct, 100 ),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_JournalNo, 60),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_DateAcct, 80 ),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_BP_name, 100), 
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Product_name, 100),
 				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Value, 80),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Name, 240),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Description, 300),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, 100),
-				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, 100) };
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Name, 200),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_Description, 200),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctDr, 80),
+				new ColumnDefinition(I_V_Fact_Acct.COLUMNNAME_AmtAcctCr, 80)
+				
+		};	
 		return cols;
 	}
 
@@ -260,8 +266,9 @@ public class ReportLibroDiario extends AbstractPODynamicReport {
 	 * @see org.opensixen.osgi.interfaces.ICommand#doIt()
 	 */
 	public String doIt() throws Exception {
+		setPage(Page.Page_A4_Landscape());
 		initReport();
-		viewReport();
+		viewReport();		
 		return null;
 	}
 
