@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Properties;
+import org.compiere.model.*;
 import org.compiere.util.Env;
 import org.compiere.util.KeyNamePair;
 
@@ -33,7 +34,7 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20100614L;
+	private static final long serialVersionUID = 20120217L;
 
     /** Standard Constructor */
     public X_C_Tax (Properties ctx, int C_Tax_ID, String trxName)
@@ -41,6 +42,7 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
       super (ctx, C_Tax_ID, trxName);
       /** if (C_Tax_ID == 0)
         {
+			setArea (null);
 			setC_TaxCategory_ID (0);
 			setC_Tax_ID (0);
 			setIsDefault (false);
@@ -86,9 +88,9 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
       return sb.toString();
     }
 
-	public I_AD_Rule getAD_Rule() throws RuntimeException
+	public org.compiere.model.I_AD_Rule getAD_Rule() throws RuntimeException
     {
-		return (I_AD_Rule)MTable.get(getCtx(), I_AD_Rule.Table_Name)
+		return (org.compiere.model.I_AD_Rule)MTable.get(getCtx(), org.compiere.model.I_AD_Rule.Table_Name)
 			.getPO(getAD_Rule_ID(), get_TrxName());	}
 
 	/** Set Rule.
@@ -109,6 +111,29 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
+	}
+
+	/** Area AD_Reference_ID=150018 */
+	public static final int AREA_AD_Reference_ID=150018;
+	/** European Union = E */
+	public static final String AREA_EuropeanUnion = "E";
+	/** Outside UE = I */
+	public static final String AREA_OutsideUE = "I";
+	/** Spain = S */
+	public static final String AREA_Spain = "S";
+	/** Set Area.
+		@param Area Area	  */
+	public void setArea (String Area)
+	{
+
+		set_Value (COLUMNNAME_Area, Area);
+	}
+
+	/** Get Area.
+		@return Area	  */
+	public String getArea () 
+	{
+		return (String)get_Value(COLUMNNAME_Area);
 	}
 
 	/** Set Country.
@@ -134,9 +159,9 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
 		return ii.intValue();
 	}
 
-	public I_C_Region getC_Region() throws RuntimeException
+	public org.compiere.model.I_C_Region getC_Region() throws RuntimeException
     {
-		return (I_C_Region)MTable.get(getCtx(), I_C_Region.Table_Name)
+		return (org.compiere.model.I_C_Region)MTable.get(getCtx(), org.compiere.model.I_C_Region.Table_Name)
 			.getPO(getC_Region_ID(), get_TrxName());	}
 
 	/** Set Region.
@@ -162,9 +187,9 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
 		return ii.intValue();
 	}
 
-	public I_C_TaxCategory getC_TaxCategory() throws RuntimeException
+	public org.compiere.model.I_C_TaxCategory getC_TaxCategory() throws RuntimeException
     {
-		return (I_C_TaxCategory)MTable.get(getCtx(), I_C_TaxCategory.Table_Name)
+		return (org.compiere.model.I_C_TaxCategory)MTable.get(getCtx(), org.compiere.model.I_C_TaxCategory.Table_Name)
 			.getPO(getC_TaxCategory_ID(), get_TrxName());	}
 
 	/** Set Tax Category.
@@ -375,9 +400,9 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
         return new KeyNamePair(get_ID(), getName());
     }
 
-	public I_C_Tax getParent_Tax() throws RuntimeException
+	public org.compiere.model.I_C_Tax getParent_Tax() throws RuntimeException
     {
-		return (I_C_Tax)MTable.get(getCtx(), I_C_Tax.Table_Name)
+		return (org.compiere.model.I_C_Tax)MTable.get(getCtx(), org.compiere.model.I_C_Tax.Table_Name)
 			.getPO(getParent_Tax_ID(), get_TrxName());	}
 
 	/** Set Parent Tax.
@@ -473,6 +498,31 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
 		return (String)get_Value(COLUMNNAME_SOPOType);
 	}
 
+	/** Target AD_Reference_ID=150019 */
+	public static final int TARGET_AD_Reference_ID=150019;
+	/** Bienes de inversion = I */
+	public static final String TARGET_BienesDeInversion = "I";
+	/** Bienes = B */
+	public static final String TARGET_Bienes = "B";
+	/** Servicios = S */
+	public static final String TARGET_Servicios = "S";
+	/** Arrendamientos = A */
+	public static final String TARGET_Arrendamientos = "A";
+	/** Set Target.
+		@param Target Target	  */
+	public void setTarget (String Target)
+	{
+
+		set_Value (COLUMNNAME_Target, Target);
+	}
+
+	/** Get Target.
+		@return Target	  */
+	public String getTarget () 
+	{
+		return (String)get_Value(COLUMNNAME_Target);
+	}
+
 	/** Set Tax Indicator.
 		@param TaxIndicator 
 		Short form for Tax to be printed on documents
@@ -513,9 +563,9 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
 		return ii.intValue();
 	}
 
-	public I_C_Region getTo_Region() throws RuntimeException
+	public org.compiere.model.I_C_Region getTo_Region() throws RuntimeException
     {
-		return (I_C_Region)MTable.get(getCtx(), I_C_Region.Table_Name)
+		return (org.compiere.model.I_C_Region)MTable.get(getCtx(), org.compiere.model.I_C_Region.Table_Name)
 			.getPO(getTo_Region_ID(), get_TrxName());	}
 
 	/** Set To.
