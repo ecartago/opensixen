@@ -34,7 +34,7 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20120217L;
+	private static final long serialVersionUID = 20120228L;
 
     /** Standard Constructor */
     public X_C_Tax (Properties ctx, int C_Tax_ID, String trxName)
@@ -47,6 +47,8 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
 			setC_Tax_ID (0);
 			setIsDefault (false);
 			setIsDocumentLevel (false);
+			setIsRE (false);
+// 'N'
 			setIsSalesTax (false);
 // N
 			setIsSummary (false);
@@ -294,6 +296,27 @@ public class X_C_Tax extends PO implements I_C_Tax, I_Persistent
 	public boolean isDocumentLevel () 
 	{
 		Object oo = get_Value(COLUMNNAME_IsDocumentLevel);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	/** Set IsRE.
+		@param IsRE IsRE	  */
+	public void setIsRE (boolean IsRE)
+	{
+		set_Value (COLUMNNAME_IsRE, Boolean.valueOf(IsRE));
+	}
+
+	/** Get IsRE.
+		@return IsRE	  */
+	public boolean isRE () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsRE);
 		if (oo != null) 
 		{
 			 if (oo instanceof Boolean) 
