@@ -207,6 +207,15 @@ public interface I_C_Tax
 	  */
 	public boolean isDocumentLevel();
 
+    /** Column name IsRE */
+    public static final String COLUMNNAME_IsRE = "IsRE";
+
+	/** Set IsRE	  */
+	public void setIsRE (boolean IsRE);
+
+	/** Get IsRE	  */
+	public boolean isRE();
+
     /** Column name IsSalesTax */
     public static final String COLUMNNAME_IsSalesTax = "IsSalesTax";
 
