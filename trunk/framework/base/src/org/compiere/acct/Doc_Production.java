@@ -97,6 +97,7 @@ public class Doc_Production extends Doc
 			while (rsPP.next())
 			{
 				int M_Product_ID = rsPP.getInt("M_Product_ID");
+				BigDecimal productionQty = rsPP.getBigDecimal("ProductionQty");
 				int M_ProductionPlan_ID = rsPP.getInt("M_ProductionPlan_ID");
 				//
 				try
@@ -114,15 +115,14 @@ public class Doc_Production extends Doc
 						}
 						DocLine docLine = new DocLine (line, this);
 						docLine.setQty (line.getMovementQty(), false);
-						//	Identify finished BOM Product
-						boolean isProductBoom = false;
-						if (prod.isReverted())	{
-							isProductBoom = line.getMovementQty().compareTo(Env.ZERO) == -1 && line.getM_Product_ID() == M_Product_ID;
-						}
-						else {
-							isProductBoom = line.getMovementQty().compareTo(Env.ZERO) == 1 && line.getM_Product_ID() == M_Product_ID;
-						}						 
-						docLine.setProductionBOM(isProductBoom);
+
+						// Identify finished BOM Product
+						// Product bom should be the same product with the same qty sign						
+						if (line.getM_Product_ID() == M_Product_ID
+								&& line.getMovementQty().compareTo(Env.ZERO) == productionQty.compareTo(Env.ZERO)) {
+							docLine.setProductionBOM(true);
+						}												 
+												
 						//
 						log.fine(docLine.toString());
 						list.add (docLine);
