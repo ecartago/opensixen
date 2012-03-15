@@ -213,7 +213,7 @@ public class M_Production_Run extends SvrProcess {
 			 
 			 /* Immediate accounting */
 			 if (MClient.isClientAccountingImmediate()) {
-				 String ignoreError = DocumentEngine.postImmediate(getCtx(), getAD_Client_ID(), production.get_Table_ID(), production.get_ID(), true, get_TrxName());						
+				 DocumentEngine.postImmediate(getCtx(), production.getAD_Client_ID(), production.get_Table_ID(), production.get_ID(), true, get_TrxName());						
 			 }
 			 
 		}
