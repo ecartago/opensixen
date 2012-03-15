@@ -18,6 +18,7 @@ package org.compiere.model;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import org.compiere.model.*;
 import org.compiere.util.KeyNamePair;
 
 /** Generated Interface for M_Production
@@ -75,6 +76,21 @@ public interface I_M_Production
 	  */
 	public int getAD_OrgTrx_ID();
 
+    /** Column name AD_User_ID */
+    public static final String COLUMNNAME_AD_User_ID = "AD_User_ID";
+
+	/** Set Supervisor.
+	  * User within the system - Internal or Business Partner Contact
+	  */
+	public void setAD_User_ID (int AD_User_ID);
+
+	/** Get Supervisor.
+	  * User within the system - Internal or Business Partner Contact
+	  */
+	public int getAD_User_ID();
+
+	public org.compiere.model.I_AD_User getAD_User() throws RuntimeException;
+
     /** Column name C_Activity_ID */
     public static final String COLUMNNAME_C_Activity_ID = "C_Activity_ID";
 
@@ -88,7 +104,7 @@ public interface I_M_Production
 	  */
 	public int getC_Activity_ID();
 
-	public I_C_Activity getC_Activity() throws RuntimeException;
+	public org.compiere.model.I_C_Activity getC_Activity() throws RuntimeException;
 
     /** Column name C_Campaign_ID */
     public static final String COLUMNNAME_C_Campaign_ID = "C_Campaign_ID";
@@ -103,7 +119,7 @@ public interface I_M_Production
 	  */
 	public int getC_Campaign_ID();
 
-	public I_C_Campaign getC_Campaign() throws RuntimeException;
+	public org.compiere.model.I_C_Campaign getC_Campaign() throws RuntimeException;
 
     /** Column name C_Project_ID */
     public static final String COLUMNNAME_C_Project_ID = "C_Project_ID";
@@ -118,7 +134,7 @@ public interface I_M_Production
 	  */
 	public int getC_Project_ID();
 
-	public I_C_Project getC_Project() throws RuntimeException;
+	public org.compiere.model.I_C_Project getC_Project() throws RuntimeException;
 
     /** Column name Created */
     public static final String COLUMNNAME_Created = "Created";
@@ -149,6 +165,19 @@ public interface I_M_Production
 	  */
 	public String getDescription();
 
+    /** Column name DocumentNo */
+    public static final String COLUMNNAME_DocumentNo = "DocumentNo";
+
+	/** Set Document No.
+	  * Document sequence number of the document
+	  */
+	public void setDocumentNo (String DocumentNo);
+
+	/** Get Document No.
+	  * Document sequence number of the document
+	  */
+	public String getDocumentNo();
+
     /** Column name IsActive */
     public static final String COLUMNNAME_IsActive = "IsActive";
 
@@ -170,6 +199,28 @@ public interface I_M_Production
 
 	/** Get Records created	  */
 	public boolean isCreated();
+
+    /** Column name IsCustomization */
+    public static final String COLUMNNAME_IsCustomization = "IsCustomization";
+
+	/** Set Customization.
+	  * The change is a customization of the data dictionary and can be applied after Migration
+	  */
+	public void setIsCustomization (boolean IsCustomization);
+
+	/** Get Customization.
+	  * The change is a customization of the data dictionary and can be applied after Migration
+	  */
+	public boolean isCustomization();
+
+    /** Column name IsReverted */
+    public static final String COLUMNNAME_IsReverted = "IsReverted";
+
+	/** Set IsReverted	  */
+	public void setIsReverted (boolean IsReverted);
+
+	/** Get IsReverted	  */
+	public boolean isReverted();
 
     /** Column name MovementDate */
     public static final String COLUMNNAME_MovementDate = "MovementDate";
@@ -258,6 +309,15 @@ public interface I_M_Production
 	/** Get Process Now	  */
 	public boolean isProcessing();
 
+    /** Column name Reverting */
+    public static final String COLUMNNAME_Reverting = "Reverting";
+
+	/** Set Reverting	  */
+	public void setReverting (String Reverting);
+
+	/** Get Reverting	  */
+	public String getReverting();
+
     /** Column name Updated */
     public static final String COLUMNNAME_Updated = "Updated";
 
@@ -287,7 +347,7 @@ public interface I_M_Production
 	  */
 	public int getUser1_ID();
 
-	public I_C_ElementValue getUser1() throws RuntimeException;
+	public org.compiere.model.I_C_ElementValue getUser1() throws RuntimeException;
 
     /** Column name User2_ID */
     public static final String COLUMNNAME_User2_ID = "User2_ID";
@@ -302,5 +362,5 @@ public interface I_M_Production
 	  */
 	public int getUser2_ID();
 
-	public I_C_ElementValue getUser2() throws RuntimeException;
+	public org.compiere.model.I_C_ElementValue getUser2() throws RuntimeException;
 }

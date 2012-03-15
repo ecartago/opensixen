@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Properties;
+import org.compiere.model.*;
 import org.compiere.util.Env;
 import org.compiere.util.KeyNamePair;
 
@@ -33,7 +34,7 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20100614L;
+	private static final long serialVersionUID = 20120315L;
 
     /** Standard Constructor */
     public X_M_Production (Properties ctx, int M_Production_ID, String trxName)
@@ -41,7 +42,10 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
       super (ctx, M_Production_ID, trxName);
       /** if (M_Production_ID == 0)
         {
+			setAD_User_ID (0);
+			setDocumentNo (null);
 			setIsCreated (false);
+			setIsCustomization (false);
 			setMovementDate (new Timestamp( System.currentTimeMillis() ));
 // @#Date@
 			setM_Production_ID (0);
@@ -102,9 +106,37 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
 		return ii.intValue();
 	}
 
-	public I_C_Activity getC_Activity() throws RuntimeException
+	public org.compiere.model.I_AD_User getAD_User() throws RuntimeException
     {
-		return (I_C_Activity)MTable.get(getCtx(), I_C_Activity.Table_Name)
+		return (org.compiere.model.I_AD_User)MTable.get(getCtx(), org.compiere.model.I_AD_User.Table_Name)
+			.getPO(getAD_User_ID(), get_TrxName());	}
+
+	/** Set Supervisor.
+		@param AD_User_ID 
+		User within the system - Internal or Business Partner Contact
+	  */
+	public void setAD_User_ID (int AD_User_ID)
+	{
+		if (AD_User_ID < 1) 
+			set_Value (COLUMNNAME_AD_User_ID, null);
+		else 
+			set_Value (COLUMNNAME_AD_User_ID, Integer.valueOf(AD_User_ID));
+	}
+
+	/** Get Supervisor.
+		@return User within the system - Internal or Business Partner Contact
+	  */
+	public int getAD_User_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_AD_User_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public org.compiere.model.I_C_Activity getC_Activity() throws RuntimeException
+    {
+		return (org.compiere.model.I_C_Activity)MTable.get(getCtx(), org.compiere.model.I_C_Activity.Table_Name)
 			.getPO(getC_Activity_ID(), get_TrxName());	}
 
 	/** Set Activity.
@@ -130,9 +162,9 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
 		return ii.intValue();
 	}
 
-	public I_C_Campaign getC_Campaign() throws RuntimeException
+	public org.compiere.model.I_C_Campaign getC_Campaign() throws RuntimeException
     {
-		return (I_C_Campaign)MTable.get(getCtx(), I_C_Campaign.Table_Name)
+		return (org.compiere.model.I_C_Campaign)MTable.get(getCtx(), org.compiere.model.I_C_Campaign.Table_Name)
 			.getPO(getC_Campaign_ID(), get_TrxName());	}
 
 	/** Set Campaign.
@@ -158,9 +190,9 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
 		return ii.intValue();
 	}
 
-	public I_C_Project getC_Project() throws RuntimeException
+	public org.compiere.model.I_C_Project getC_Project() throws RuntimeException
     {
-		return (I_C_Project)MTable.get(getCtx(), I_C_Project.Table_Name)
+		return (org.compiere.model.I_C_Project)MTable.get(getCtx(), org.compiere.model.I_C_Project.Table_Name)
 			.getPO(getC_Project_ID(), get_TrxName());	}
 
 	/** Set Project.
@@ -203,6 +235,31 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
 		return (String)get_Value(COLUMNNAME_Description);
 	}
 
+	/** Set Document No.
+		@param DocumentNo 
+		Document sequence number of the document
+	  */
+	public void setDocumentNo (String DocumentNo)
+	{
+		set_ValueNoCheck (COLUMNNAME_DocumentNo, DocumentNo);
+	}
+
+	/** Get Document No.
+		@return Document sequence number of the document
+	  */
+	public String getDocumentNo () 
+	{
+		return (String)get_Value(COLUMNNAME_DocumentNo);
+	}
+
+    /** Get Record ID/ColumnName
+        @return ID/ColumnName pair
+      */
+    public KeyNamePair getKeyNamePair() 
+    {
+        return new KeyNamePair(get_ID(), getDocumentNo());
+    }
+
 	/** Set Records created.
 		@param IsCreated Records created	  */
 	public void setIsCreated (boolean IsCreated)
@@ -215,6 +272,51 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
 	public boolean isCreated () 
 	{
 		Object oo = get_Value(COLUMNNAME_IsCreated);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	/** Set Customization.
+		@param IsCustomization 
+		The change is a customization of the data dictionary and can be applied after Migration
+	  */
+	public void setIsCustomization (boolean IsCustomization)
+	{
+		set_Value (COLUMNNAME_IsCustomization, Boolean.valueOf(IsCustomization));
+	}
+
+	/** Get Customization.
+		@return The change is a customization of the data dictionary and can be applied after Migration
+	  */
+	public boolean isCustomization () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsCustomization);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	/** Set IsReverted.
+		@param IsReverted IsReverted	  */
+	public void setIsReverted (boolean IsReverted)
+	{
+		set_Value (COLUMNNAME_IsReverted, Boolean.valueOf(IsReverted));
+	}
+
+	/** Get IsReverted.
+		@return IsReverted	  */
+	public boolean isReverted () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsReverted);
 		if (oo != null) 
 		{
 			 if (oo instanceof Boolean) 
@@ -280,14 +382,6 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
 	{
 		return (String)get_Value(COLUMNNAME_Name);
 	}
-
-    /** Get Record ID/ColumnName
-        @return ID/ColumnName pair
-      */
-    public KeyNamePair getKeyNamePair() 
-    {
-        return new KeyNamePair(get_ID(), getName());
-    }
 
 	/** Set Posted.
 		@param Posted 
@@ -378,9 +472,23 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
 		return false;
 	}
 
-	public I_C_ElementValue getUser1() throws RuntimeException
+	/** Set Reverting.
+		@param Reverting Reverting	  */
+	public void setReverting (String Reverting)
+	{
+		set_Value (COLUMNNAME_Reverting, Reverting);
+	}
+
+	/** Get Reverting.
+		@return Reverting	  */
+	public String getReverting () 
+	{
+		return (String)get_Value(COLUMNNAME_Reverting);
+	}
+
+	public org.compiere.model.I_C_ElementValue getUser1() throws RuntimeException
     {
-		return (I_C_ElementValue)MTable.get(getCtx(), I_C_ElementValue.Table_Name)
+		return (org.compiere.model.I_C_ElementValue)MTable.get(getCtx(), org.compiere.model.I_C_ElementValue.Table_Name)
 			.getPO(getUser1_ID(), get_TrxName());	}
 
 	/** Set User List 1.
@@ -406,9 +514,9 @@ public class X_M_Production extends PO implements I_M_Production, I_Persistent
 		return ii.intValue();
 	}
 
-	public I_C_ElementValue getUser2() throws RuntimeException
+	public org.compiere.model.I_C_ElementValue getUser2() throws RuntimeException
     {
-		return (I_C_ElementValue)MTable.get(getCtx(), I_C_ElementValue.Table_Name)
+		return (org.compiere.model.I_C_ElementValue)MTable.get(getCtx(), org.compiere.model.I_C_ElementValue.Table_Name)
 			.getPO(getUser2_ID(), get_TrxName());	}
 
 	/** Set User List 2.
