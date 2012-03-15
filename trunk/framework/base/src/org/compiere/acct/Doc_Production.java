@@ -115,7 +115,13 @@ public class Doc_Production extends Doc
 						DocLine docLine = new DocLine (line, this);
 						docLine.setQty (line.getMovementQty(), false);
 						//	Identify finished BOM Product
-						boolean isProductBoom = line.getMovementQty().compareTo(Env.ZERO) == 1 && line.getM_Product_ID() == M_Product_ID;
+						boolean isProductBoom = false;
+						if (prod.isReverted())	{
+							isProductBoom = line.getMovementQty().compareTo(Env.ZERO) == -1 && line.getM_Product_ID() == M_Product_ID;
+						}
+						else {
+							isProductBoom = line.getMovementQty().compareTo(Env.ZERO) == 1 && line.getM_Product_ID() == M_Product_ID;
+						}						 
 						docLine.setProductionBOM(isProductBoom);
 						//
 						log.fine(docLine.toString());
