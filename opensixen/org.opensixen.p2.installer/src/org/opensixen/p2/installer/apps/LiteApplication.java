@@ -76,7 +76,7 @@ import org.opensixen.p2.applications.InstallableApplication;
 public class LiteApplication extends InstallableApplication {
 
 	public final static String IU_LITE = "OpensixenLite"; //$NON-NLS-1$  
-	public final static URI URI_LITE= URI.create("http://dev.opensixen.org/updates"); //$NON-NLS-1$
+	public final static URI URI_LITE= URI.create("http://osx.indeos.es/updates"); //$NON-NLS-1$
 	public final static String PROFILE_LITE = "OpensixenLite";
 	
 	/**
