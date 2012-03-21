@@ -80,7 +80,7 @@ public class ServerApplication extends InstallableApplication {
 	private Logger log = Logger.getLogger(getClass());
 	
 	public final static String IU_SERVER = "OpensixenServer"; //$NON-NLS-1$
-	public final static URI URL_SERVER = URI.create("http://dev.opensixen.org/updates"); //$NON-NLS-1$	
+	public final static URI URL_SERVER = URI.create("http://osx.indeos.es/updates"); //$NON-NLS-1$	
 			
 	private PlatformProvider provider;	
 	
