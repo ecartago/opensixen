@@ -21,7 +21,7 @@ import org.compiere.model.MLookupFactory;
 import org.compiere.model.MOrg;
 import org.compiere.model.MRefList;
 import org.compiere.report.core.RColumn;
-import org.compiere.report.core.RModel;
+
 import org.compiere.util.CLogger;
 import org.compiere.util.DB;
 import org.compiere.util.DisplayType;
@@ -30,6 +30,7 @@ import org.compiere.util.KeyNamePair;
 import org.compiere.util.Language;
 import org.compiere.util.Msg;
 import org.compiere.util.ValueNamePair;
+import org.opensixen.acct.grid.RModel;
 
 public class AcctEditorViewerData
 {
@@ -385,9 +386,9 @@ public class AcctEditorViewerData
 			rm.setGroup(sortBy4);
 
 		//  Totals
-		rm.setFunction("AmtAcctDr", RModel.FUNCTION_SUM);
-		rm.setFunction("AmtAcctCr", RModel.FUNCTION_SUM);
-		rm.setFunction("AmtAcctDr-AmtAcctCr", RModel.FUNCTION_SUM);
+		//rm.setFunction("AmtAcctDr", RModel.FUNCTION_SUM);
+		//rm.setFunction("AmtAcctCr", RModel.FUNCTION_SUM);
+		//rm.setFunction("AmtAcctDr-AmtAcctCr", RModel.FUNCTION_SUM);
 		rm.query (Env.getCtx(), whereClause.toString(), orderClause.toString());
 
 		return rm;
@@ -433,6 +434,7 @@ public class AcctEditorViewerData
 		rm.addColumn(new RColumn(ctx, "AmtAcctDr", DisplayType.Amount));
 		rm.addColumn(new RColumn(ctx, "AmtAcctCr", DisplayType.Amount));
 		rm.addColumn(new RColumn(ctx, "AmtAcctDr-AmtAcctCr", DisplayType.Amount));
+
 		if (displaySourceAmt)
 		{
 			if (!keys.contains("DateTrx"))

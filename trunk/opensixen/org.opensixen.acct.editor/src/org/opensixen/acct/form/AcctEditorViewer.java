@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -31,9 +32,9 @@ import org.compiere.model.MAcctSchemaElement;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
 import org.compiere.model.X_C_AcctSchema_Element;
-import org.compiere.report.core.RModel;
+
 import org.compiere.report.core.RModelExcelExporter;
-import org.compiere.report.core.ResultTable;
+
 import org.compiere.swing.CButton;
 import org.compiere.swing.CCheckBox;
 import org.compiere.swing.CComboBox;
@@ -50,6 +51,8 @@ import org.compiere.util.Ini;
 import org.compiere.util.KeyNamePair;
 import org.compiere.util.Msg;
 import org.compiere.util.ValueNamePair;
+import org.opensixen.acct.grid.RModel;
+import org.opensixen.acct.grid.ResultTable;
 import org.opensixen.osgi.ResourceFinder;
 import org.opensixen.osgi.interfaces.IAccountViewer;
 
@@ -661,11 +664,33 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 
 		//  Set TableModel with Query
 		table.setModel(m_data.query());
-
-
+		if(this.displayBalanceMode.isSelected()){
+			displayrealbalance(table);
+			System.out.println("Valor de columna  en 0 de mas y menos="+table.getValueAt(0, 4));
+			System.out.println("Valor de columna  en 1 de mas y menos="+table.getValueAt(1, 4));
+		}
 		bQuery.setEnabled(true);
 		statusLine.setText(" " + Msg.getMsg(Env.getCtx(), "ViewerOptions"));
 	}   //  actionQuery
+
+	
+	/**
+	 * Cambia la columna de saldo para que sume o reste en función de las filas anteriores
+	 * @param table2
+	 */
+	private void displayrealbalance(ResultTable table) {
+		BigDecimal prevalue=BigDecimal.ZERO;
+		BigDecimal actualvalue=BigDecimal.ZERO;
+		for(int i=0;i<table.getRowCount();i++){
+			actualvalue=(BigDecimal)table.getValueAt(i, 4);
+			if(i==0)
+				prevalue=(BigDecimal)table.getValueAt(i, 4);
+			else{
+				prevalue=(BigDecimal)table.getValueAt(i-1, 4);
+				table.setValueAt(prevalue.add(actualvalue), i, 4);
+			}
+		}
+	}
 
 	/**
 	 *  Document selection
@@ -819,7 +844,7 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 	 * Export to Excel
 	 */
 	private void exportExcel() {
-		RModel model = table.getRModel();
+	/*	RModel model = table.getRModel();
 		if (model == null) {
 			return;
 		}
@@ -830,7 +855,7 @@ public class AcctEditorViewer extends CFrame implements ActionListener,ChangeLis
 		catch (Exception e) {
 			ADialog.error(0, this, "Error", e.getLocalizedMessage());
 			if (CLogMgt.isLevelFinest()) e.printStackTrace();
-		}
+		}*/
 	}
 
 }
