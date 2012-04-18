@@ -90,7 +90,6 @@ import org.compiere.util.Msg;
 import org.opensixen.acct.grid.ElementsTable;
 import org.opensixen.acct.grid.TableAccount;
 import org.opensixen.acct.utils.AcctEditorMouseAdapter;
-import org.opensixen.swing.AccountViewer;
 
 /**
  * 

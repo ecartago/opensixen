@@ -78,7 +78,6 @@ import javax.swing.JPanel;
 import org.compiere.grid.ed.VDate;
 import org.compiere.grid.ed.VLookup;
 import org.compiere.grid.ed.VNumber;
-import org.compiere.minigrid.IDColumn;
 import org.compiere.model.MClientInfo;
 import org.compiere.model.MConversionType;
 import org.compiere.model.MCurrency;
@@ -96,8 +95,6 @@ import org.compiere.util.Msg;
 import org.opensixen.acct.grid.TableAccount;
 import org.opensixen.model.POFactory;
 import org.opensixen.model.QParam;
-import org.opensixen.swing.AccountDetailViewer;
-
 /**
  * 
  * AcctEditorDefaults 
