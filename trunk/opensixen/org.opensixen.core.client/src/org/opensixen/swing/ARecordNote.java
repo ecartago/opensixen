@@ -67,17 +67,18 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.util.Properties;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import org.compiere.apps.ConfirmPanel;
 import org.compiere.model.MTable;
-import org.compiere.swing.CButton;
 import org.compiere.swing.CDialog;
 import org.compiere.swing.CLabel;
 import org.compiere.swing.CPanel;
 import org.compiere.util.CLogger;
-import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.opensixen.model.MRecordNote;
 
-import com.hexidec.ekit.EkitCore;
 
 /**
  * ARecordNote 
@@ -95,11 +96,10 @@ public class ARecordNote extends CDialog {
 	
 	private MRecordNote note;
 	
-	private EkitCore ekit;
+	private JTextArea theText;
 	
 	private Properties ctx;
-	private CButton saveBtn;
-	private CButton cancelBtn;
+	private ConfirmPanel confirmPanelSel = new ConfirmPanel(true);
 	
 	public ARecordNote(Properties ctx, Frame frame,MRecordNote note, int AD_Table_ID, int Record_ID) throws HeadlessException {
 		super(frame, Msg.getMsg(ctx, "Record Note"), true);
@@ -126,58 +126,70 @@ public class ARecordNote extends CDialog {
 		CLabel info = new CLabel(table.getTableName() + ": " + Record_ID);
 		header.add(info);
 		
-		// Ekit 
 		CPanel editorPanel = new CPanel();
 		editorPanel.setLayout(new BorderLayout());
-		
-		ekit = new EkitCore(true, null, null, true, false, true, true, Env.getAD_Language(ctx), "es", false, false, false, EKIT_OSX_TOOLBAR, true);
-		
-		editorPanel.add(ekit, BorderLayout.CENTER);
-		editorPanel.add(ekit.getToolBar(true), BorderLayout.NORTH);
-		
+
+		theText = new JTextArea(5, 20);
+		JScrollPane scrollPane = new JScrollPane(theText);
+		editorPanel.add(scrollPane, BorderLayout.CENTER);
+
 		panel.add(editorPanel, BorderLayout.CENTER);
 		
 		// Load Msg
 		if (note != null)	{
-			ekit.setDocumentText(note.getTextMsg());			
+			theText.setText(note.getTextMsg());
 		}
 				
 		CPanel btnPanel = new CPanel();
 		panel.add(btnPanel, BorderLayout.SOUTH);
 		btnPanel.setLayout(new FlowLayout());
-		saveBtn = new CButton(Msg.getMsg(ctx, "Save"));
-		saveBtn.addActionListener(this);
-		btnPanel.add(saveBtn);
-		
-		cancelBtn = new CButton(Msg.getMsg(ctx, "Cancel"));
-		cancelBtn.addActionListener(this);
-		btnPanel.add(cancelBtn);
+		btnPanel.add(confirmPanelSel, BorderLayout.SOUTH);
+		confirmPanelSel.addActionListener(this);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.compiere.swing.CDialog#actionPerformed(java.awt.event.ActionEvent)
+	
+	/**
+	 *	Action Listener
+	 *  @param e event
 	 */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(cancelBtn))	{
+	public void actionPerformed (ActionEvent e)
+	{
+		log.info("Cmd=" + e.getActionCommand());
+		//
+		if (e.getActionCommand().equals(ConfirmPanel.A_CANCEL))
+		{
+			dispose();
+			return;
+		}
+		else {  //Button OK pressed
+			save();
 			dispose();
 		}
-		
-		if (e.getSource().equals(saveBtn))	{
-			save();
-		}
-	}
-
+	}	//	actionPerformed
+	
+	
+	
+	
 	private boolean save()	{
-		if (note == null)	{
-			note = new MRecordNote(ctx, 0, null);
-			note.setAD_Table_ID(AD_Table_ID);
-			note.setRecord_ID(Record_ID);
-		}
-		note.setTextMsg(ekit.getDocumentText());
+		boolean bSavedOK = true;
 		
-		return note.save();
+		if (theText.getText() != null) {
+			String trimmedText = theText.getText().trim();
+			if ("".equals(trimmedText)) {
+				if (note != null)
+					note.delete(false);
+			}
+			else {
+				if (note == null) {
+					note = new MRecordNote(ctx, 0, null);
+					note.setAD_Table_ID(AD_Table_ID);
+					note.setRecord_ID(Record_ID);
+				}
+				note.setTextMsg(trimmedText);
+				bSavedOK = note.save();
+			}
+		}
+		return bSavedOK;
 	}
 	
 	public MRecordNote getRecordNote()	{

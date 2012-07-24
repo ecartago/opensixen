@@ -60,6 +60,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.opensixen.core.client;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -83,7 +84,7 @@ import org.opensixen.swing.ARecordNote;
  */
 public class RecordNoteAppsAction implements IAppsAction, ActionListener {
 
-	private AppsAction recordNote;
+	private AppsAction appsAction;
 	private GridTab gridTab;
 	private Frame frame;
 	private MRecordNote m_recordNote;
@@ -99,16 +100,19 @@ public class RecordNoteAppsAction implements IAppsAction, ActionListener {
 	public void addAppsAction(JToolBar toolBar, GridTab gridTab, Frame frame) {
 		this.gridTab = gridTab;	
 		this.frame = frame;
-		recordNote = new AppsAction("RecordNote", null, true);
-		recordNote.setDelegate(this);
+		appsAction = new AppsAction("RecordNote", null, true);
+		appsAction.setDelegate(this);
 		
 		m_recordNote = MRecordNote.getRecordNote(gridTab.getAD_Table_ID(), gridTab.getRecord_ID());
-		
-		if ( m_recordNote != null)	{
-			recordNote.setPressed(true);
+				
+		if (gridTab.getRecord_ID() == -1)
+			appsAction.setEnabled(false);
+		else {
+			appsAction.setEnabled(true);
+			appsAction.setPressed(m_recordNote != null);
 		}
 		
-		toolBar.add(recordNote.getButton());
+		toolBar.add(appsAction.getButton());
 		
 		// Look for records
 		
@@ -120,12 +124,14 @@ public class RecordNoteAppsAction implements IAppsAction, ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		ARecordNote note = new ARecordNote(Env.getCtx(), frame, m_recordNote, gridTab.getAD_Table_ID(), gridTab.getRecord_ID());
-		recordNote.setPressed(true);
-		AEnv.showCenterWindow(frame, note);
-		
-		if (note.getRecordNote() == null)	{
-			recordNote.setPressed(false);
+		appsAction.setPressed(false);
+		if (gridTab.getRecord_ID() != -1) {  //The record has been already saved
+			ARecordNote noteWindow = new ARecordNote(Env.getCtx(), frame, m_recordNote, gridTab.getAD_Table_ID(), gridTab.getRecord_ID());
+			noteWindow.setPreferredSize(new Dimension(1000,600));
+			AEnv.showCenterWindow(frame, noteWindow);
+			
+			m_recordNote = MRecordNote.getRecordNote(gridTab.getAD_Table_ID(), gridTab.getRecord_ID());
+			appsAction.setPressed(m_recordNote != null);
 		}
 		
 	}
@@ -138,7 +144,12 @@ public class RecordNoteAppsAction implements IAppsAction, ActionListener {
 	public void dataStatusChanged(DataStatusEvent e) {		
 		m_recordNote = MRecordNote.getRecordNote(gridTab.getAD_Table_ID(), gridTab.getRecord_ID());
 		
-		recordNote.setPressed(m_recordNote != null);
+		if (gridTab.getRecord_ID() == -1)
+			appsAction.setEnabled(false);
+		else {
+			appsAction.setEnabled(true);
+			appsAction.setPressed(m_recordNote != null);
+		}
 	}
 	
 }
