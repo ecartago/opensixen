@@ -170,6 +170,7 @@ public class Doc_BankStatement extends Doc
 		{
 			DocLine_Bank line = (DocLine_Bank)p_lines[i];
 			int C_BPartner_ID = line.getC_BPartner_ID();
+			int C_Activity_ID = line.getC_Activity_ID();
 			
 			// Avoid usage of clearing accounts
 			// If both accounts BankAsset and BankInTransit are equal
@@ -195,6 +196,8 @@ public class Doc_BankStatement extends Doc
 						fl.setAD_Org_ID(AD_Org_ID);
 					if (fl != null && C_BPartner_ID != 0)
 						fl.setC_BPartner_ID(C_BPartner_ID);
+					if (fl != null && C_Activity_ID != 0)
+						fl.setC_Activity_ID(C_Activity_ID);
 					
 				}
 				
@@ -210,6 +213,8 @@ public class Doc_BankStatement extends Doc
 					fl.setAD_Org_ID(AD_Org_ID);
 				if (fl != null && C_BPartner_ID != 0)
 					fl.setC_BPartner_ID(C_BPartner_ID);
+				if (fl != null && C_Activity_ID != 0)
+					fl.setC_Activity_ID(C_Activity_ID);
 				
 				//  BankInTransit   DR      CR              (Payment)
 				fl = fact.createLine(line,
@@ -219,6 +224,8 @@ public class Doc_BankStatement extends Doc
 				{
 					if (C_BPartner_ID != 0)
 						fl.setC_BPartner_ID(C_BPartner_ID);
+					if (fl != null && C_Activity_ID != 0)
+						fl.setC_Activity_ID(C_Activity_ID);
 					if (AD_Org_ID != 0)
 						fl.setAD_Org_ID(AD_Org_ID);
 					else
@@ -240,6 +247,8 @@ public class Doc_BankStatement extends Doc
 			}
 			if (fl != null && C_BPartner_ID != 0)
 				fl.setC_BPartner_ID(C_BPartner_ID);
+			if (fl != null && C_Activity_ID != 0)
+				fl.setC_Activity_ID(C_Activity_ID);
 
 			//  Interest        DR      CR  (Interest)
 			if (line.getInterestAmt().signum() < 0)
@@ -252,6 +261,8 @@ public class Doc_BankStatement extends Doc
 					line.getC_Currency_ID(), line.getInterestAmt().negate());
 			if (fl != null && C_BPartner_ID != 0)
 				fl.setC_BPartner_ID(C_BPartner_ID);
+			if (fl != null && C_Activity_ID != 0)
+				fl.setC_Activity_ID(C_Activity_ID);
 			//
 		//	fact.createTaxCorrection();
 		}
