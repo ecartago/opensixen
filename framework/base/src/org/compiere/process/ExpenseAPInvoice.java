@@ -157,11 +157,22 @@ public class ExpenseAPInvoice extends SvrProcess
 
 					//	Update Header info
 					if (line.getC_Activity_ID() != 0 && line.getC_Activity_ID() != invoice.getC_Activity_ID())
-						invoice.setC_Activity_ID(line.getC_Activity_ID());
+						invoice.setC_Activity_ID(line.getC_Activity_ID());				
 					if (line.getC_Campaign_ID() != 0 && line.getC_Campaign_ID() != invoice.getC_Campaign_ID())
 						invoice.setC_Campaign_ID(line.getC_Campaign_ID());
 					if (line.getC_Project_ID() != 0 && line.getC_Project_ID() != invoice.getC_Project_ID())
 						invoice.setC_Project_ID(line.getC_Project_ID());
+					
+					//Enrique Cartagena (Monteloeder s.l.) <Start>
+					int User1_ID = line.get_ValueAsInt(line.get_ColumnIndex("user1_id"));					
+					if (User1_ID != 0 && User1_ID != invoice.getUser1_ID())
+						invoice.setUser1_ID(User1_ID);
+					
+					int User2_ID = line.get_ValueAsInt(line.get_ColumnIndex("user2_id"));
+					if (User2_ID != 0 && User2_ID != invoice.getUser2_ID())
+						invoice.setUser2_ID(User2_ID);
+					//Enrique Cartagena (Monteloeder s.l.) <End>
+					
 					if (!invoice.save())
 						new IllegalStateException("Cannot save Invoice");
 					
@@ -178,6 +189,14 @@ public class ExpenseAPInvoice extends SvrProcess
 					il.setC_ProjectTask_ID(line.getC_ProjectTask_ID());
 					il.setC_Activity_ID(line.getC_Activity_ID());
 					il.setC_Campaign_ID(line.getC_Campaign_ID());
+					
+					//Enrique Cartagena (Monteloeder s.l.) <Start>
+					il.setUser1_ID(User1_ID);
+					il.setUser2_ID(User2_ID);
+					//Enrique Cartagena (Monteloeder s.l.) <End>
+					
+					
+					
 					//
 				//	il.setPrice();	//	not really a list/limit price for reimbursements
 					il.setPrice(line.getPriceReimbursed());	//
