@@ -131,7 +131,7 @@ public class HtmlDashboard extends JPanel implements MouseListener,
 		    case PAGE_LOGO:
 		    	result += "</head><body class=\"header\">"
 		    			 + "<table width=\"100%\"><tr><td>"
-		    			 + "<img src=\"" +  ResourceFinder.getResource("logo_ad.png") +"\">"
+		    			 + "<img src=\"" +  ResourceFinder.getResource("images/logo_ad.png") +"\">"
 		    			 + "</td><td></td><td width=\"290\">"
 		    			 //+ "<img src=\"res:at/freecom/apps/images/logo_fc.png\">"
 		    			 + "</td></tr></table>"
