@@ -99,6 +99,8 @@ public class Login
 	 */
 	public static boolean isJavaOK (boolean isClient)
 	{
+		return true; //Don't check for java OK anymore. Enrique Cartagena (Monteloeder s.l.)
+		/* //Don't check for java OK anymore. Enrique Cartagena (Monteloeder s.l.)
 		//	Java System version check
 		String jVersion = System.getProperty("java.version");
 		if (jVersion.startsWith("1.5.0"))
@@ -132,6 +134,7 @@ public class Login
 		else
 			log.severe(msg.toString());
 		return ok;
+		*/ //Don't check for java OK anymore. Enrique Cartagena (Monteloeder s.l.)
 	}   //  isJavaOK
 
 	
