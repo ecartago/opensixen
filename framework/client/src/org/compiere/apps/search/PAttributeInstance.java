@@ -173,6 +173,7 @@ public class PAttributeInstance extends CDialog
 	private static ColumnInfo[] s_layout = new ColumnInfo[] 
 	{
 		new ColumnInfo(" ", "asi.M_AttributeSetInstance_ID", IDColumn.class),
+		new ColumnInfo(Msg.translate(Env.getCtx(), "specscode"), "spec.value", String.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "Description"), "asi.Description", String.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "Lot"), "asi.Lot", String.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "SerNo"), "asi.SerNo", String.class), 
@@ -195,6 +196,7 @@ public class PAttributeInstance extends CDialog
 		+ " LEFT OUTER JOIN M_Locator l ON (s.M_Locator_ID=l.M_Locator_ID)"
 		+ " LEFT OUTER JOIN M_Product p ON (s.M_Product_ID=p.M_Product_ID)"
 		+ " LEFT OUTER JOIN M_Product pr ON (asi.M_AttributeSet_ID = pr.M_AttributeSet_ID)"
+		+ " LEFT OUTER JOIN C_specification spec ON (asi.c_specification_id = spec.c_specification_id)" 
 	;
 	/** Where Clause						*/ 
 	private static String s_sqlWhereWithoutWarehouse = " (pr.M_Product_ID=? AND p.M_Product_ID=?)";	// egomez: Cambiamos clausula OR por AND porque salian registros duplicados y no le encontre sentido
