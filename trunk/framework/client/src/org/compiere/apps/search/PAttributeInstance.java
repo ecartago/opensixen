@@ -174,6 +174,7 @@ public class PAttributeInstance extends CDialog
 	{
 		new ColumnInfo(" ", "asi.M_AttributeSetInstance_ID", IDColumn.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "specscode"), "spec.value", String.class),
+		new ColumnInfo(Msg.translate(Env.getCtx(), "specsname"), "spec.name", String.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "Description"), "asi.Description", String.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "Lot"), "asi.Lot", String.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "SerNo"), "asi.SerNo", String.class), 
