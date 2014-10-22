@@ -137,19 +137,50 @@ public class M_Production_Run extends SvrProcess {
 																  .setParameters(pp.getM_ProductionPlan_ID())
 																  .setOrderBy("Line")
 															  .list();
-					
+						Integer warehouseId = null;
+						boolean foundPP = false;
 						for (X_M_ProductionLine pline : production_lines)
 						{
 							MLocator locator = MLocator.get(getCtx(), pline.getM_Locator_ID());
 							String MovementType = MTransaction.MOVEMENTTYPE_ProductionPlus;					
 							BigDecimal MovementQty = pline.getMovementQty();
 							
-							// Check attributes 
 							I_M_Product product = pline.getM_Product();
+
+							// Check quantity precision
+							int precision = product.getC_UOM().getStdPrecision();
+							if (precision < getNumberOfDecimalPlace(pline.getMovementQty())) {
+								log.severe("Invalid Precision: "+product.getValue()+" - "+product.getName());
+								raiseError("@LinesInvalidPrecision@: " + product.getName(), "");
+							}
+
+							// Check all lines are in same warehouse
+							if (warehouseId == null) {
+								warehouseId = locator.getM_Warehouse_ID();
+							} else if (warehouseId != locator.getM_Warehouse_ID()) {
+								log.severe("Invalid Warehouse: "+product.getValue()+" - "+product.getName());
+								raiseError("@LinesNotAllInSameWarehouse@: " + product.getName(), "");
+							}
+							
+							// Check attributes 
 							if (product.getM_AttributeSet_ID() != 0
 									&& product.getM_AttributeSet().getMandatoryType().equals(X_M_AttributeSet.MANDATORYTYPE_WhenShipping))	{
 								if (pline.getM_AttributeSetInstance_ID() == 0)	{
 									raiseError("@LinesWithoutProductAttribute@: " + product.getName(), "");
+								}
+							}
+							
+							// Check negative quantity and production product
+							if (pp.getM_Product_ID() == product.getM_Product_ID()) {
+								foundPP =  true;
+								if (pline.getMovementQty().compareTo(pp.getProductionQty()) != 0) {
+									log.severe("Production Product invalid quantity: "+product.getValue()+" - "+product.getName());
+									raiseError("@ProductionProductInvalidQuantity@: " + product.getName(), "");
+								}
+							} else {
+								if (pline.getMovementQty().doubleValue() > 0) {
+									log.severe("Product invalid quantity: "+product.getValue()+" - "+product.getName());
+									raiseError("@LinesProductInvalidQuantity@: " + product.getName(), "");									
 								}
 							}
 							
@@ -195,7 +226,10 @@ public class M_Production_Run extends SvrProcess {
 							pline.setProcessed(true);
 							pline.saveEx();
 						} // Production Line
-
+						if (!foundPP) {
+							log.severe("Production Product not found: "+pp.getM_Product().getValue()+" - "+pp.getM_Product().getName());
+							raiseError("@ProductionProductNotFound@: " + pp.getM_Product().getName(), "");
+						}
 				 pp.setProcessed(true);
 				 pp.saveEx();
 				} 	
@@ -221,6 +255,30 @@ public class M_Production_Run extends SvrProcess {
 		return "@OK@";
 
 	} 
+
+	/**
+	 * Determine a decimal place of number
+	 * 
+	 * @param bdValue Number
+	 * @return Decimal places
+	 */
+	private static int getNumberOfDecimalPlace(BigDecimal bdValue) {
+		String value = bdValue.toString();
+		final int index = value.indexOf('.');
+	    if (index < 0) {
+	        return 0;
+	    }
+	    value = value.substring(index+1);
+	    boolean found = false;
+	    for (int i = value.length() - 1; i >= 0; i--) {
+	    	if (value.charAt(i) != '0') {
+	    		found = true;
+	    		value = value.substring(0, i+1);
+	    		break;
+	    	}
+	    }
+	    return found ? value.length() : 0;
+	}
 
 
 	/**
