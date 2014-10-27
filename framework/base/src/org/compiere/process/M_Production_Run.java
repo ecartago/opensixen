@@ -172,11 +172,13 @@ public class M_Production_Run extends SvrProcess {
 							
 							// Check negative quantity and production product
 							if (pp.getM_Product_ID() == product.getM_Product_ID()) {
-								foundPP =  true;
-								if (pline.getMovementQty().compareTo(pp.getProductionQty()) != 0) {
-									log.severe("Production Product invalid quantity: "+product.getValue()+" - "+product.getName());
-									raiseError("@ProductionProductInvalidQuantity@: " + product.getName(), "");
-								}
+								if (pline.getMovementQty().doubleValue() > 0) {
+									foundPP =  true;
+									if (pline.getMovementQty().compareTo(pp.getProductionQty()) != 0) {
+										log.severe("Production Product invalid quantity: "+product.getValue()+" - "+product.getName());
+										raiseError("@ProductionProductInvalidQuantity@: " + product.getName(), "");
+									}
+								}	
 							} else {
 								if (pline.getMovementQty().doubleValue() > 0) {
 									log.severe("Product invalid quantity: "+product.getValue()+" - "+product.getName());
