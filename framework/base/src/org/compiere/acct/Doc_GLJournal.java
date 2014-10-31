@@ -144,6 +144,8 @@ public class Doc_GLJournal extends Doc
 		//  GLJ
 		if (getDocumentType().equals(DOCTYPE_GLJournal))
 		{
+			MJournal mJournal = ((MJournalLine) p_lines[0].p_po).getParent();
+			String journalType = p_lines.length > 0 ? mJournal.getJournalType() : "S";
 			//  account     DR      CR
 			for (int i = 0; i < p_lines.length; i++)
 			{
@@ -154,6 +156,7 @@ public class Doc_GLJournal extends Doc
 									getC_Currency_ID(),
 									p_lines[i].getAmtSourceDr (),
 									p_lines[i].getAmtSourceCr ());
+					line.setJournalType(journalType);
 				}
 			}	//	for all lines
 		}

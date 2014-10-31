@@ -377,8 +377,7 @@ public interface I_GL_JournalBatch
     public static final String COLUMNNAME_JournalType = "JournalType";
 
 	/** Set JournalType.
-	  	@param JournalType 
-	    The type of journal
+	  	@param JournalType The type of journal
 	  */
 	public void setJournalType (String JournalType);
 	/** Get JournalType.

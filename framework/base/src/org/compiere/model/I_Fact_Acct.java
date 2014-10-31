@@ -509,6 +509,19 @@ public interface I_Fact_Acct
 
 	/** Get JournalNo	  */
 	public int getJournalNo();
+	
+	/** Column name JournalType */
+    public static final String COLUMNNAME_JournalType = "JournalType";
+
+	/** Set JournalType.
+	  	@param JournalType 
+	    The type of journal
+	  */
+	public void setJournalType (String JournalType);
+	/** Get JournalType.
+		@return The type of journal
+	  */
+	public String getJournalType (); 
 
     /** Column name Line_ID */
     public static final String COLUMNNAME_Line_ID = "Line_ID";

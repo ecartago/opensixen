@@ -602,12 +602,10 @@ public class X_GL_JournalBatch extends PO implements I_GL_JournalBatch, I_Persis
 	/** Close = C */
 	public static final String JORNALTYPE_Close = "C";
 	/** Set JournalType.
-		@param JournalType 
-		The type of journal
+		@param JournalType The type of journal
 	  */
 	public void setJournalType (String JournalType)
 	{
-
 		set_Value (COLUMNNAME_JournalType, JournalType);
 	}
 

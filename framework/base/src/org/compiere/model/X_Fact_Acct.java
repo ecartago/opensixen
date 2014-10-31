@@ -837,6 +837,23 @@ public class X_Fact_Acct extends PO implements I_Fact_Acct, I_Persistent
 			 return 0;
 		return ii.intValue();
 	}
+	
+	/** Set JournalType.
+		@param JournalType The type of journal
+	 */
+	public void setJournalType (String JournalType)
+	{
+	
+		set_Value (COLUMNNAME_JournalType, JournalType);
+	}
+	
+	/** Get JournalType.
+		@return The type of journal
+	  */
+	public String getJournalType () 
+	{
+		return (String)get_Value(COLUMNNAME_JournalType);
+	}
 
 	/** Set Line ID.
 		@param Line_ID 
