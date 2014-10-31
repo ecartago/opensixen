@@ -592,4 +592,30 @@ public class X_GL_JournalBatch extends PO implements I_GL_JournalBatch, I_Persis
 			 return Env.ZERO;
 		return bd;
 	}
+
+	/** JournalType AD_Reference_ID=150015 */
+	public static final int JORNALTYPE_AD_Reference_ID=150015;
+	/** Standard = S */
+	public static final String JORNALTYPE_Standard = "S";
+	/** Open = O */
+	public static final String JORNALTYPE_Open = "O";
+	/** Close = C */
+	public static final String JORNALTYPE_Close = "C";
+	/** Set JournalType.
+		@param JournalType 
+		The type of journal
+	  */
+	public void setJournalType (String JournalType)
+	{
+
+		set_Value (COLUMNNAME_JournalType, JournalType);
+	}
+
+	/** Get JournalType.
+		@return The type of journal
+	  */
+	public String getJournalType () 
+	{
+		return (String)get_Value(COLUMNNAME_JournalType);
+	}
 }
