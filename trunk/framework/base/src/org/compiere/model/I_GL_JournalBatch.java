@@ -372,4 +372,17 @@ public interface I_GL_JournalBatch
 	  * User who updated this records
 	  */
 	public int getUpdatedBy();
+
+	/** Column name JournalType */
+    public static final String COLUMNNAME_JournalType = "JournalType";
+
+	/** Set JournalType.
+	  	@param JournalType 
+	    The type of journal
+	  */
+	public void setJournalType (String JournalType);
+	/** Get JournalType.
+		@return The type of journal
+	  */
+	public String getJournalType (); 
 }
