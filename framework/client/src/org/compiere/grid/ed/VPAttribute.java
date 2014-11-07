@@ -192,8 +192,8 @@ public class VPAttribute extends JComponent
 
 	private boolean				m_readWrite;
 	private boolean				m_mandatory;
-	protected int					m_WindowNo;
-	protected int					m_C_BPartner_ID;
+	protected int				m_WindowNo;
+	protected int				m_C_BPartner_ID;
 	/** The Grid Tab * */
 	protected GridTab m_GridTab; // added for processCallout
 	/** The Grid Field * */

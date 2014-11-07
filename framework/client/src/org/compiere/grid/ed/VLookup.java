@@ -41,6 +41,7 @@ import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
@@ -54,9 +55,11 @@ import org.compiere.apps.search.Info;
 import org.compiere.apps.search.InfoBPartner;
 import org.compiere.apps.search.InfoFactory;
 import org.compiere.apps.search.InfoProduct;
+import org.compiere.apps.search.PAttributeInstance;
 import org.compiere.model.GridField;
 import org.compiere.model.Lookup;
 import org.compiere.model.MColumn;
+import org.compiere.model.MDocType;
 import org.compiere.model.MInvoiceLine;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
@@ -64,6 +67,7 @@ import org.compiere.model.MOrderLine;
 import org.compiere.model.MProductPrice;
 import org.compiere.model.MQuery;
 import org.compiere.model.MRole;
+import org.compiere.model.X_M_MovementLine;
 import org.compiere.swing.CButton;
 import org.compiere.swing.CMenuItem;
 import org.compiere.swing.CTextField;
@@ -76,6 +80,7 @@ import org.compiere.util.Msg;
 import org.compiere.util.NamePair;
 import org.compiere.util.ValueNamePair;
 import org.eevolution.model.I_PP_Product_BOMLine;
+import org.opensixen.osgi.interfaces.IPAttributeInstance;
 
 /**
  *  Lookup Visual Field.
@@ -270,6 +275,8 @@ public class VLookup extends JComponent
 			m_button.setIcon(Env.getImageIcon("BPartner10.gif"));
 		else if (columnName.equals("M_Product_ID"))
 			m_button.setIcon(Env.getImageIcon("Product10.gif"));
+		else if (columnName.equals("M_AttributeSetInstance_ID"))
+			m_button.setIcon(Env.getImageIcon("PAttribute16.gif"));
 		else
 			m_button.setIcon(Env.getImageIcon("PickOpen10.gif"));
 
@@ -897,6 +904,64 @@ public class VLookup extends JComponent
 			ip.setVisible(true);
 			cancelled = ip.isCancelled();
 			result = ip.getSelectedKeys();
+		} 
+		else if (col.equals("M_AttributeSetInstance_ID"))
+		{
+			int M_Warehouse_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "M_Warehouse_ID");
+			int M_Product_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "M_Product_ID");
+			int C_BPartner_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "C_BPartner_ID");
+			int C_DocType_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "C_DocType_ID");
+			if (C_DocType_ID > 0) {
+				MDocType doctype = new MDocType (Env.getCtx(), C_DocType_ID, null);
+				String docbase = doctype.getDocBaseType();
+				if (docbase.equals(MDocType.DOCBASETYPE_MaterialReceipt))
+					M_Warehouse_ID = 0;
+			}
+			
+			// teo_sarca [ 1564520 ] Inventory Move: can't select existing attributes
+			// Trifon - Always read Locator from Context. There are too many windows to read explicitly one by one.
+			int M_Locator_ID = 0;
+			M_Locator_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), X_M_MovementLine.COLUMNNAME_M_Locator_ID, true); // only window
+			
+			String title = "";
+			//	Get Text
+			String sql = "SELECT p.Name, w.Name, w.M_Warehouse_ID FROM M_Product p, M_Warehouse w "
+				+ "WHERE p.M_Product_ID=? AND w.M_Warehouse_ID"
+					+ (M_Locator_ID <= 0 ? "=?" : " IN (SELECT M_Warehouse_ID FROM M_Locator where M_Locator_ID=?)"); // teo_sarca [ 1564520 ]
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			try
+			{
+				pstmt = DB.prepareStatement(sql, null);
+				pstmt.setInt(1, M_Product_ID);
+				pstmt.setInt(2, M_Locator_ID <= 0 ? M_Warehouse_ID : M_Locator_ID);
+				rs = pstmt.executeQuery();
+				if (rs.next()) {
+					title = ": " + rs.getString(1) + " - " + rs.getString(2);
+					M_Warehouse_ID = rs.getInt(3); // fetch the actual warehouse - teo_sarca [ 1564520 ]
+				}
+			}
+			catch (Exception e)
+			{
+				log.log(Level.SEVERE, sql, e);
+			}
+			finally
+			{
+				DB.close(rs, pstmt);
+				rs = null; pstmt = null;
+			}
+			
+			int docType = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "C_DocType_ID");
+			int productionPlan = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "M_ProductionPlan_ID");
+			boolean createAttribute = productionPlan != 0 || docType == 1000014 || docType == 1000046 || docType == 1000023;
+			
+			IPAttributeInstance pai = PAttributeInstance.get(null, title, M_Warehouse_ID, M_Locator_ID, M_Product_ID, C_BPartner_ID, createAttribute);
+			if (pai.getM_AttributeSetInstance_ID() != -1)
+			{
+				result = new Integer[1];
+				result[0] = pai.getM_AttributeSetInstance_ID();
+			}
+			cancelled = pai.isCancelled();
 		}
 		else	//	General Info
 		{

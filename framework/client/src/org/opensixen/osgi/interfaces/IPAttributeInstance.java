@@ -125,5 +125,17 @@ public interface IPAttributeInstance extends IService{
 	 * @return
 	 */
 	public ColumnInfo[] getLayoutInfo();
+	
+	/**
+	 * Determine if show new button
+	 * @param createAttribute True o false
+	 */
+	public void setCreateAttribute(boolean createAttribute);
+	
+	/**
+	 *	@return true if Cancel button was pressed
+	 */
+	public boolean isCancelled(); //	isCancelled
+
 
 }

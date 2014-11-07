@@ -108,5 +108,6 @@ public interface IVPAttributeDialog extends IService {
 	 *	@return true if changed
 	 */
 	public boolean isChanged(); //	isChanged
+	
 
 }
