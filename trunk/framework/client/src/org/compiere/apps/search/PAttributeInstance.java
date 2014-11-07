@@ -18,6 +18,9 @@ package org.compiere.apps.search;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.sql.PreparedStatement;
@@ -31,14 +34,19 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.adempiere.plaf.AdempierePLAF;
 import org.compiere.apps.AEnv;
 import org.compiere.apps.ConfirmPanel;
+import org.compiere.grid.ed.VPAttributeDialog;
 import org.compiere.minigrid.ColumnInfo;
 import org.compiere.minigrid.IDColumn;
 import org.compiere.minigrid.MiniTable;
+import org.compiere.swing.CButton;
 import org.compiere.swing.CCheckBox;
 import org.compiere.swing.CDialog;
+import org.compiere.swing.CLabel;
 import org.compiere.swing.CPanel;
+import org.compiere.swing.CTextField;
 import org.compiere.util.CLogger;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
@@ -46,6 +54,7 @@ import org.compiere.util.KeyNamePair;
 import org.compiere.util.Msg;
 import org.opensixen.osgi.Service;
 import org.opensixen.osgi.interfaces.IPAttributeInstance;
+import org.opensixen.osgi.interfaces.IVPAttributeDialog;
 
 
 /**
@@ -61,6 +70,14 @@ public class PAttributeInstance extends CDialog
 	 * 
 	 */
 	private static final long serialVersionUID = -3743466565716139916L;
+
+	private int m_C_BPartner_ID;
+	
+	Toolkit toolkit = Toolkit.getDefaultToolkit();
+	Dimension screensize = toolkit.getScreenSize();
+
+	protected final int        INFO_WIDTH = screensize.width > 1100 ? 1100 : screensize.width - 200;
+	protected final int        SCREEN_HEIGHT = screensize.height;
 
 	public PAttributeInstance()	{
 		super();
@@ -117,6 +134,7 @@ public class PAttributeInstance extends CDialog
 		m_M_Warehouse_ID = M_Warehouse_ID;
 		m_M_Locator_ID = M_Locator_ID;
 		m_M_Product_ID = M_Product_ID;
+		m_C_BPartner_ID = C_BPartner_ID;
 		try
 		{
 			jbInit();
@@ -131,20 +149,25 @@ public class PAttributeInstance extends CDialog
 	private CPanel mainPanel = new CPanel();
 	private BorderLayout mainLayout = new BorderLayout();
 	private CPanel northPanel = new CPanel();
-	private BorderLayout northLayout = new BorderLayout();
+	private FlowLayout northLayout = new FlowLayout();
 	private JScrollPane centerScrollPane = new JScrollPane();
-	private ConfirmPanel confirmPanel = new ConfirmPanel (true);
+	private ConfirmPanel confirmPanel = new ConfirmPanel (true, true, false, false, false, false, false);
 	private CCheckBox showAll = new CCheckBox (Msg.getMsg(Env.getCtx(), "ShowAll"));
+	private CLabel labelVendorLot = new CLabel(Msg.translate(Env.getCtx(), "VendorLot"));
+	private CTextField fieldVendorLot = new CTextField(10);
 	//
 	private MiniTable 			m_table = new MiniTable();
 	//	Parameter
 	private int			 		m_M_Warehouse_ID;
 	private int			 		m_M_Locator_ID;
 	private int			 		m_M_Product_ID;
+	private boolean				createAttribute;
 	//
 	private int					m_M_AttributeSetInstance_ID = -1;
 	private String				m_M_AttributeSetInstanceName = null;
 	private String				m_sql;
+	/** Cancel pressed - need to differentiate between OK - Cancel - Exit	*/
+	private boolean			   	m_cancel = false;
 	/**	Logger			*/
 	private static CLogger log = CLogger.getCLogger(PAttributeInstance.class);
 
@@ -153,18 +176,29 @@ public class PAttributeInstance extends CDialog
 	 * 	@throws Exception
 	 */
 	private void jbInit() throws Exception
-	{
+	{		
+
 		mainPanel.setLayout(mainLayout);
-		this.getContentPane().add(mainPanel, BorderLayout.CENTER);
+		mainPanel.setPreferredSize(new Dimension(INFO_WIDTH, SCREEN_HEIGHT > 600 ? 500 : 300));
+        this.getContentPane().add(mainPanel, BorderLayout.CENTER);
 		//	North
+		fieldVendorLot.setBackground(AdempierePLAF.getInfoBackground());
+		fieldVendorLot.addActionListener(this);
 		northPanel.setLayout(northLayout);
-		northPanel.add(showAll, BorderLayout.EAST);
+		northPanel.add(labelVendorLot);
+		northPanel.add(fieldVendorLot);
+		northPanel.add(showAll);
 		showAll.addActionListener(this);
 		mainPanel.add(northPanel, BorderLayout.NORTH);
 		//	Center
 		mainPanel.add(centerScrollPane, BorderLayout.CENTER);
 		centerScrollPane.getViewport().add(m_table, null);
 		//	South
+		if (createAttribute) {
+			CButton bNew = ConfirmPanel.createNewButton(true);
+			bNew.addActionListener(this);
+			confirmPanel.addComponent(bNew);
+		}
 		mainPanel.add(confirmPanel, BorderLayout.SOUTH);
 		confirmPanel.addActionListener(this);
 	}
@@ -175,7 +209,7 @@ public class PAttributeInstance extends CDialog
 		new ColumnInfo(" ", "asi.M_AttributeSetInstance_ID", IDColumn.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "specscode"), "spec.value", String.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "specsname"), "spec.name", String.class),
-		new ColumnInfo(Msg.translate(Env.getCtx(), "Description"), "asi.Description", String.class),
+//		new ColumnInfo(Msg.translate(Env.getCtx(), "Description"), "asi.Description", String.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "Lot"), "asi.Lot", String.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "SerNo"), "asi.SerNo", String.class), 
 		new ColumnInfo(Msg.translate(Env.getCtx(), "GuaranteeDate"), "asi.GuaranteeDate", Timestamp.class),
@@ -186,9 +220,9 @@ public class PAttributeInstance extends CDialog
 		new ColumnInfo(Msg.translate(Env.getCtx(), "QtyReserved"), "s.QtyReserved", Double.class),
 		new ColumnInfo(Msg.translate(Env.getCtx(), "QtyOrdered"), "s.QtyOrdered", Double.class),
 		//	See RV_Storage
-		new ColumnInfo(Msg.translate(Env.getCtx(), "GoodForDays"), "(daysbetween(asi.GuaranteeDate, SYSDATE))-p.GuaranteeDaysMin", Integer.class, true, true, null),
-		new ColumnInfo(Msg.translate(Env.getCtx(), "ShelfLifeDays"), "daysbetween(asi.GuaranteeDate, SYSDATE)", Integer.class),
-		new ColumnInfo(Msg.translate(Env.getCtx(), "ShelfLifeRemainingPct"), "CASE WHEN p.GuaranteeDays > 0 THEN TRUNC(((daysbetween(asi.GuaranteeDate, SYSDATE))/p.GuaranteeDays)*100) ELSE 0 END", Integer.class),
+//		new ColumnInfo(Msg.translate(Env.getCtx(), "GoodForDays"), "(daysbetween(asi.GuaranteeDate, SYSDATE))-p.GuaranteeDaysMin", Integer.class, true, true, null),
+//		new ColumnInfo(Msg.translate(Env.getCtx(), "ShelfLifeDays"), "daysbetween(asi.GuaranteeDate, SYSDATE)", Integer.class),
+//		new ColumnInfo(Msg.translate(Env.getCtx(), "ShelfLifeRemainingPct"), "CASE WHEN p.GuaranteeDays > 0 THEN TRUNC(((daysbetween(asi.GuaranteeDate, SYSDATE))/p.GuaranteeDays)*100) ELSE 0 END", Integer.class),
 	};
 	/**	From Clause							*/
 	private static String s_sqlFrom = "M_AttributeSetInstance asi"
@@ -200,7 +234,8 @@ public class PAttributeInstance extends CDialog
 		+ " LEFT OUTER JOIN C_specification spec ON (asi.c_specification_id = spec.c_specification_id)" 
 	;
 	/** Where Clause						*/ 
-	private static String s_sqlWhereWithoutWarehouse = " (pr.M_Product_ID=? AND p.M_Product_ID=?)";	// egomez: Cambiamos clausula OR por AND porque salian registros duplicados y no le encontre sentido
+	private static String s_sqlWhereWithoutWarehouse = " (pr.M_Product_ID=? AND p.M_Product_ID=?) AND (replace(replace(replace(replace(replace(replace(replace(upper(asi.VendorLot), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') LIKE '%' || replace(replace(replace(replace(replace(replace(replace(upper(?), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') || '%') ";	
+	// egomez: Cambiamos clausula OR por AND porque salian registros duplicados y no le encontre sentido
 	private static String s_sqlWhereSameWarehouse = " AND (l.M_Warehouse_ID=? OR 0=?)";
 
 	private String	m_sqlNonZero = " AND (s.QtyOnHand<>0 OR s.QtyReserved<>0 OR s.QtyOrdered<>0)";
@@ -294,9 +329,11 @@ public class PAttributeInstance extends CDialog
 			pstmt = DB.prepareStatement(sql, null);
 			pstmt.setInt(1, m_M_Product_ID);
 			pstmt.setInt(2, m_M_Product_ID);
+			pstmt.setString(3, fieldVendorLot.getText());
+
 			if ( !showAll.isSelected() ) {
-				pstmt.setInt(3, m_M_Warehouse_ID);
 				pstmt.setInt(4, m_M_Warehouse_ID);
+				pstmt.setInt(5, m_M_Warehouse_ID);
 			}
 
 			rs = pstmt.executeQuery();
@@ -321,13 +358,27 @@ public class PAttributeInstance extends CDialog
 	{
 		if (e.getActionCommand().equals(ConfirmPanel.A_OK))
 			dispose();
+		else if (e.getActionCommand().equals(ConfirmPanel.A_REFRESH))
+		{
+			refresh();
+		}
+		else if (e.getActionCommand().equals(ConfirmPanel.A_NEW))
+		{
+			IVPAttributeDialog vad = VPAttributeDialog.getDialog(Env.getFrame(this), 0, m_M_Product_ID, m_C_BPartner_ID, false, 0, 0);
+			if (vad.isChanged())
+			{
+				m_M_AttributeSetInstance_ID = vad.getM_AttributeSetInstance_ID();
+				dispose();
+			}		
+		}
 		else if (e.getActionCommand().equals(ConfirmPanel.A_CANCEL))
 		{
 			dispose();
 			m_M_AttributeSetInstance_ID = -1;
 			m_M_AttributeSetInstanceName = null;
+			m_cancel = true;
 		}
-		else if (e.getSource() == showAll)
+		else if (e.getSource() == showAll || e.getSource() == fieldVendorLot)
 		{
 			refresh();
 		}
@@ -426,18 +477,45 @@ public class PAttributeInstance extends CDialog
 		return s_layout;
 	}
 	
+	/**
+	 *	Is cancelled?
+	 *	- if pressed Cancel = true
+	 *	- if pressed OK or window closed = false
+	 *  @return true if cancelled
+	 */
+	@Override
+	public boolean isCancelled()
+	{
+		return m_cancel;
+	}	//	isCancelled
+
+	/**
+	 * Determine if show new button
+	 * @param createAttribute True o false
+	 */
+	@Override
+	public void setCreateAttribute(boolean createAttribute) {
+		this.createAttribute = createAttribute;
+	}
 
 	public static IPAttributeInstance get(JDialog parent, String title,
 			int M_Warehouse_ID, int M_Locator_ID, int M_Product_ID, int C_BPartner_ID)	{
+		return get(parent, title, M_Warehouse_ID, M_Locator_ID, M_Product_ID, C_BPartner_ID, false);
+	}
+
+	public static IPAttributeInstance get(JDialog parent, String title,
+			int M_Warehouse_ID, int M_Locator_ID, int M_Product_ID, int C_BPartner_ID, boolean createAttribute)	{
 		
 		IPAttributeInstance instance = Service.locate(IPAttributeInstance.class);
 		if (instance != null)	{
+			instance.setCreateAttribute(createAttribute);
 			instance.init(M_Warehouse_ID, M_Locator_ID, M_Product_ID, C_BPartner_ID);
 			AEnv.showCenterWindow(parent, (Dialog) instance);
 			return instance;
 		}
 		
 		instance = new PAttributeInstance(parent, title, M_Warehouse_ID, M_Locator_ID, M_Product_ID, C_BPartner_ID);
+		instance.setCreateAttribute(createAttribute);
 		return instance;
 	}
 }
