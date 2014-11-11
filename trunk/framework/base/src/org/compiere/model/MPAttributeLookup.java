@@ -119,7 +119,7 @@ public class MPAttributeLookup extends Lookup
 		ResultSet rs = null;
 		try
 		{
-			pstmt = DB.prepareStatement("SELECT Description "
+			pstmt = DB.prepareStatement("SELECT Lot "
 					+ "FROM M_AttributeSetInstance "
 					+ "WHERE M_AttributeSetInstance_ID=?", null);
 			pstmt.setInt(1, M_AttributeSetInstance_ID);
