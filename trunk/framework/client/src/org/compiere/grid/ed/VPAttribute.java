@@ -316,6 +316,7 @@ public class VPAttribute extends JComponent
 		log.fine("Value=" + value);
 		m_value = value;
 		m_text.setText(m_mPAttribute.getDisplay(value));	//	loads value
+		System.out.println(m_mPAttribute.getDisplay(value));
 	}	//	setValue
 
 	/**

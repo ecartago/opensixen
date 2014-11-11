@@ -163,7 +163,7 @@ public class VPAttributeDialog extends CDialog
 	private VString fieldSerNo = new VString ("SerNo", false, false, true, 20, 20, null, null);
 	private CButton bSerNo = new CButton(Msg.getMsg (Env.getCtx(), "New"));
 	//	Date
-	private VDate fieldGuaranteeDate = new VDate ("GuaranteeDate", false, false, true, DisplayType.Date, Msg.translate(Env.getCtx(), "GuaranteeDate"));
+	protected VDate fieldGuaranteeDate = new VDate ("GuaranteeDate", false, false, true, DisplayType.Date, Msg.getMsg(Env.getCtx(), "GuaranteeDate"));
 
 	private BorderLayout mainLayout = new BorderLayout();
 	protected CPanel centerPanel = new CPanel();
@@ -478,7 +478,7 @@ public class VPAttributeDialog extends CDialog
 		{
 			m_masi.save ();
 			m_M_AttributeSetInstance_ID = m_masi.getM_AttributeSetInstance_ID ();
-			m_M_AttributeSetInstanceName = m_masi.getDescription();
+			m_M_AttributeSetInstanceName = m_masi.getLot();
 		}
 
 		//	Save Instance Attributes
@@ -522,7 +522,7 @@ public class VPAttributeDialog extends CDialog
 			m_masi.save ();
 		}
 		m_M_AttributeSetInstance_ID = m_masi.getM_AttributeSetInstance_ID ();
-		m_M_AttributeSetInstanceName = m_masi.getDescription();
+		m_M_AttributeSetInstanceName = m_masi.getLot();
 		//
 		if (mandatory.length() > 0)
 		{
