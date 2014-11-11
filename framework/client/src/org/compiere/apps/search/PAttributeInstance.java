@@ -155,6 +155,8 @@ public class PAttributeInstance extends CDialog
 	private CCheckBox showAll = new CCheckBox (Msg.getMsg(Env.getCtx(), "ShowAll"));
 	private CLabel labelVendorLot = new CLabel(Msg.translate(Env.getCtx(), "VendorLot"));
 	private CTextField fieldVendorLot = new CTextField(10);
+	private CLabel labelSpec = new CLabel(Msg.translate(Env.getCtx(), "C_Specification_ID"));
+	private CTextField fieldSpec = new CTextField(10);
 	//
 	private MiniTable 			m_table = new MiniTable();
 	//	Parameter
@@ -182,9 +184,13 @@ public class PAttributeInstance extends CDialog
 		mainPanel.setPreferredSize(new Dimension(INFO_WIDTH, SCREEN_HEIGHT > 600 ? 500 : 300));
         this.getContentPane().add(mainPanel, BorderLayout.CENTER);
 		//	North
+        fieldSpec.setBackground(AdempierePLAF.getInfoBackground());
+        fieldSpec.addActionListener(this);
 		fieldVendorLot.setBackground(AdempierePLAF.getInfoBackground());
 		fieldVendorLot.addActionListener(this);
 		northPanel.setLayout(northLayout);
+		northPanel.add(labelSpec);
+		northPanel.add(fieldSpec);
 		northPanel.add(labelVendorLot);
 		northPanel.add(fieldVendorLot);
 		northPanel.add(showAll);
@@ -234,7 +240,10 @@ public class PAttributeInstance extends CDialog
 		+ " LEFT OUTER JOIN C_specification spec ON (asi.c_specification_id = spec.c_specification_id)" 
 	;
 	/** Where Clause						*/ 
-	private static String s_sqlWhereWithoutWarehouse = " (pr.M_Product_ID=? AND p.M_Product_ID=?) AND (replace(replace(replace(replace(replace(replace(replace(upper(asi.VendorLot), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') LIKE '%' || replace(replace(replace(replace(replace(replace(replace(upper(?), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') || '%') ";	
+	private static String s_sqlWhereWithoutWarehouse =
+		" (pr.M_Product_ID=? AND p.M_Product_ID=?) AND"+
+		" (replace(replace(replace(replace(replace(replace(replace(upper(spec.value), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') LIKE '%' || replace(replace(replace(replace(replace(replace(replace(upper(?), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') || '%') AND"+	
+		" (replace(replace(replace(replace(replace(replace(replace(upper(asi.VendorLot), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') LIKE '%' || replace(replace(replace(replace(replace(replace(replace(upper(?), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') || '%') ";	
 	// egomez: Cambiamos clausula OR por AND porque salian registros duplicados y no le encontre sentido
 	private static String s_sqlWhereSameWarehouse = " AND (l.M_Warehouse_ID=? OR 0=?)";
 
@@ -329,11 +338,12 @@ public class PAttributeInstance extends CDialog
 			pstmt = DB.prepareStatement(sql, null);
 			pstmt.setInt(1, m_M_Product_ID);
 			pstmt.setInt(2, m_M_Product_ID);
-			pstmt.setString(3, fieldVendorLot.getText());
+			pstmt.setString(3, fieldSpec.getText());
+			pstmt.setString(4, fieldVendorLot.getText());
 
 			if ( !showAll.isSelected() ) {
-				pstmt.setInt(4, m_M_Warehouse_ID);
 				pstmt.setInt(5, m_M_Warehouse_ID);
+				pstmt.setInt(6, m_M_Warehouse_ID);
 			}
 
 			rs = pstmt.executeQuery();
@@ -368,6 +378,7 @@ public class PAttributeInstance extends CDialog
 			if (vad.isChanged())
 			{
 				m_M_AttributeSetInstance_ID = vad.getM_AttributeSetInstance_ID();
+				m_M_AttributeSetInstanceName = vad.getM_AttributeSetInstanceName();
 				dispose();
 			}		
 		}
@@ -378,7 +389,7 @@ public class PAttributeInstance extends CDialog
 			m_M_AttributeSetInstanceName = null;
 			m_cancel = true;
 		}
-		else if (e.getSource() == showAll || e.getSource() == fieldVendorLot)
+		else if (e.getSource() == showAll || e.getSource() == fieldVendorLot || e.getSource() == fieldSpec)
 		{
 			refresh();
 		}
@@ -411,7 +422,7 @@ public class PAttributeInstance extends CDialog
 			if (ID != null)
 			{
 				m_M_AttributeSetInstance_ID = ID.intValue();
-				m_M_AttributeSetInstanceName = (String)m_table.getValueAt(row, 1);
+				m_M_AttributeSetInstanceName = (String)m_table.getValueAt(row, 3);
 				//
 				Object oo = m_table.getValueAt(row, 5);
 				if (oo instanceof KeyNamePair)
