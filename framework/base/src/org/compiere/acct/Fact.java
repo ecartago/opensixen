@@ -28,6 +28,7 @@ import org.compiere.model.MDistribution;
 import org.compiere.model.MDistributionLine;
 import org.compiere.model.MElementValue;
 import org.compiere.model.MFactAcct;
+import org.compiere.model.MJournal;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 
@@ -296,6 +297,9 @@ public final class Fact
 			m_doc.get_ID(), 0, m_trxName);
 		line.setDocumentInfo(m_doc, null);
 		line.setPostingType(m_postingType);
+
+		// Set JournalType from parent document
+		line.setJournalType(((MJournal) m_doc.getPO()).getJournalType());
 
 		//	Account
 		line.setAccount(m_acctSchema, m_acctSchema.getSuspenseBalancing_Acct());

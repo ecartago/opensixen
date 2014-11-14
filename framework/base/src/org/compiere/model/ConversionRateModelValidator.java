@@ -45,7 +45,7 @@ public class ConversionRateModelValidator implements ModelValidator {
 	@Override
 	public String modelChange(PO po, int type) throws Exception {
 		String result = null;
-		if (type == TYPE_BEFORE_CHANGE) {
+		if (type == TYPE_BEFORE_NEW || type == TYPE_BEFORE_CHANGE) {
 			PreparedStatement pstmt = null;
 			MConversionRate m_ConversionRate = (MConversionRate) po;
 			log.info("Validate: "+m_ConversionRate);
