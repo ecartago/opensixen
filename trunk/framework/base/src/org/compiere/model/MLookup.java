@@ -62,7 +62,7 @@ public final class MLookup extends Lookup implements Serializable
 	 */
 	public MLookup (MLookupInfo info, int TabNo)
 	{
-		super(info.DisplayType, info.WindowNo);
+		super(info.DisplayType, info.WindowNo, TabNo);
 		m_info = info;
 		log.fine(m_info.KeyColumn);
 

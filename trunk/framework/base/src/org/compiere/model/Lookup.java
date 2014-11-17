@@ -54,6 +54,18 @@ public abstract class Lookup extends AbstractListModel
 		m_displayType = displayType;
 		m_WindowNo = windowNo;
 	}   //  Lookup
+	
+	/**
+	 *  Lookup
+	 * 	@param displayType display type
+	 * 	@param windowNo window no
+	 */
+	public Lookup (int displayType, int windowNo, int tabNo)
+	{
+		m_displayType = displayType;
+		m_WindowNo = windowNo;
+		m_TabNo = tabNo;
+	}   //  Lookup
 
 	/** The Data List           */
 	protected volatile ArrayList<Object>   p_data = new ArrayList<Object>();
@@ -71,6 +83,9 @@ public abstract class Lookup extends AbstractListModel
 	private int						m_displayType;
 	/**	Window No				*/
 	private int						m_WindowNo;
+
+	/**	Tab No					*/
+	private int						m_TabNo;
 	
 	private boolean 				m_mandatory;
 	
@@ -93,6 +108,15 @@ public abstract class Lookup extends AbstractListModel
 	{
 		return m_WindowNo;
 	}	//	getWindowNo
+
+	/**
+	 * 	Get Tab No
+	 *	@return Window No
+	 */
+	public int getTabNo()
+	{
+		return m_TabNo;
+	}	//	getTabNo
 
 	
 	/**************************************************************************
