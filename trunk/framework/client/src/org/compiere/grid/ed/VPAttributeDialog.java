@@ -432,12 +432,15 @@ public class VPAttributeDialog extends CDialog
 	protected boolean saveSelection()
 	{
 		log.info("");
-		KeyNamePair pp = m_masi.createLot(m_M_Product_ID);
-		if (pp != null)
+		if (m_M_AttributeSetInstance_ID == 0) 
 		{
-			fieldLotString.setText (pp.getName());
+			KeyNamePair pp = m_masi.createLot(m_M_Product_ID);
+			if (pp != null) 
+			{
+				fieldLotString.setText (pp.getName());
+			}
 		}
-		
+
 		MAttributeSet as = m_masi.getMAttributeSet();
 		if (as == null)
 			return true;
