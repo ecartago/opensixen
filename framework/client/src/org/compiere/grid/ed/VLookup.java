@@ -908,7 +908,7 @@ public class VLookup extends JComponent
 		else if (col.equals("M_AttributeSetInstance_ID"))
 		{
 			int M_Warehouse_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "M_Warehouse_ID");
-			int M_Product_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "M_Product_ID");
+			int M_Product_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), m_lookup.getTabNo(), "M_Product_ID");
 			int C_BPartner_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "C_BPartner_ID");
 			int C_DocType_ID = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "C_DocType_ID");
 			if (C_DocType_ID > 0) {

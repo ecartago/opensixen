@@ -241,9 +241,9 @@ public class PAttributeInstance extends CDialog
 	;
 	/** Where Clause						*/ 
 	private static String s_sqlWhereWithoutWarehouse =
-		" (pr.M_Product_ID=? AND p.M_Product_ID=?) AND"+
-		" (replace(replace(replace(replace(replace(replace(replace(upper(spec.value), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') LIKE '%' || replace(replace(replace(replace(replace(replace(replace(upper(?), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') || '%') AND"+	
-		" (replace(replace(replace(replace(replace(replace(replace(upper(asi.VendorLot), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') LIKE '%' || replace(replace(replace(replace(replace(replace(replace(upper(?), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') || '%') ";	
+		" (pr.M_Product_ID=? AND p.M_Product_ID=?)" + 
+		" AND (replace(replace(replace(replace(replace(replace(replace(upper(spec.value), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') LIKE '%' || replace(replace(replace(replace(replace(replace(replace(upper(?), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') || '%') "+	
+		" AND (replace(replace(replace(replace(replace(replace(replace(upper(asi.VendorLot), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') LIKE '%' || replace(replace(replace(replace(replace(replace(replace(upper(?), ' ', ''), '.', ''), '-', ''), '/', ''), '(', ''), ')', ''), ',', '') || '%') ";	
 	// egomez: Cambiamos clausula OR por AND porque salian registros duplicados y no le encontre sentido
 	private static String s_sqlWhereSameWarehouse = " AND (l.M_Warehouse_ID=? OR 0=?)";
 
