@@ -17,6 +17,9 @@
 package org.compiere.process;
 
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Properties;
@@ -179,6 +182,11 @@ public class M_Production_Run extends SvrProcess {
 										raiseError("@ProductionProductInvalidQuantity@: " + product.getName(), "");
 									}
 								}	
+								// Check if lot is new
+								if (getLotNumberOfLocation(pline.getM_AttributeSetInstance_ID()) != 0) {
+									log.severe("Lot not is new: "+product.getValue()+" - "+product.getName());
+									raiseError("@ProductionProductLotNotNew@: " + product.getName(), "");
+								}
 							} else {
 								if (pline.getMovementQty().doubleValue() > 0) {
 									log.severe("Product invalid quantity: "+product.getValue()+" - "+product.getName());
@@ -258,6 +266,40 @@ public class M_Production_Run extends SvrProcess {
 
 	} 
 
+	/**
+	 * Calculate a number of location for a lot
+	 * 
+	 * @param M_AttributeSetInstance_ID Lot id.
+	 * @return Count of locations
+	 */
+	private int getLotNumberOfLocation(int M_AttributeSetInstance_ID) {
+		int result = -1;
+		try
+		{
+			PreparedStatement pstmt = DB.prepareStatement(
+					"SELECT count(*) FROM M_AttributeSetInstance asi "+
+					"JOIN M_Storage s ON s.M_AttributeSetInstance_ID = asi.M_AttributeSetInstance_ID "+
+					"JOIN M_Locator l ON s.M_Locator_ID = l.M_Locator_ID "+
+					"WHERE asi.M_AttributeSetInstance_ID = ?",
+					get_TrxName()
+			);
+			pstmt.setInt(1, M_AttributeSetInstance_ID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs != null) {
+				if (rs.next()) {
+					result = rs.getInt(1);
+				}
+				rs.close();
+			}
+			pstmt.close();
+		}
+		catch (SQLException ex)
+		{
+			log.log(Level.SEVERE, "ERROR: ", ex);
+		}	
+		return result;
+	}
+	
 	/**
 	 * Determine a decimal place of number
 	 * 
