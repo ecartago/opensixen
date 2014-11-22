@@ -41,9 +41,9 @@ public class BPartnerLocationModelValidator implements ModelValidator {
 		MBPartnerLocation m_BPartnerLocation = (MBPartnerLocation) po;
 		if (type == TYPE_BEFORE_NEW || type == TYPE_BEFORE_CHANGE) {
 			log.info("Validate: "+m_BPartnerLocation);
-			if (m_BPartnerLocation.isBillTo()) {
+			if (m_BPartnerLocation.isBillTo() && m_BPartnerLocation.isActive()) {
 				// Check have only one bill to address
-				List<X_C_BPartner_Location> locations = new Query(ctx, X_C_BPartner_Location.Table_Name , "c_bpartner_id=? and isbillto = 'Y' and c_bpartner_location_id <> ?", trxName)
+				List<X_C_BPartner_Location> locations = new Query(ctx, X_C_BPartner_Location.Table_Name , "c_bpartner_id=? and isbillto = 'Y' and isactive = 'Y' and c_bpartner_location_id <> ?", trxName)
 				  .setParameters(m_BPartnerLocation.getC_BPartner_ID(), m_BPartnerLocation.getC_BPartner_Location_ID())
 				  .list();
 				if (locations.size() > 0) {
