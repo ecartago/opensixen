@@ -1317,7 +1317,12 @@ public class MInvoice extends X_C_Invoice implements DocAction, DocWithAmounts
 	{
 		m_processMsg = null;
 		DocumentEngine engine = new DocumentEngine (this, getDocStatus());
-		return engine.processIt (processAction, getDocAction());
+		boolean result = engine.processIt (processAction, getDocAction());
+		if (processAction.equals(DocAction.ACTION_Complete) && result)  {
+			// Generate PDF and send email to customer
+			
+		}
+		return result;
 	}	//	process
 
 	/**	Process Message 			*/
