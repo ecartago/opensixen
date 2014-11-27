@@ -156,7 +156,8 @@ public class Doc_GLJournal extends Doc
 									getC_Currency_ID(),
 									p_lines[i].getAmtSourceDr (),
 									p_lines[i].getAmtSourceCr ());
-					line.setJournalType(journalType);
+					if (line != null)
+						line.setJournalType(journalType);
 				}
 			}	//	for all lines
 		}
