@@ -952,8 +952,12 @@ public class VLookup extends JComponent
 			}
 			
 			int docType = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "C_DocType_ID");
+			int targetDocType = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "C_DocTypeTarget_ID");
 			int productionPlan = Env.getContextAsInt(Env.getCtx(), m_lookup.getWindowNo(), "M_ProductionPlan_ID");
-			boolean createAttribute = productionPlan != 0 || docType == 1000014 || docType == 1000046 || docType == 1000023;
+			boolean createAttribute = 
+				productionPlan != 0 || 
+				docType == 1000014 || docType == 1000046 || docType == 1000023 || 
+				targetDocType == 1000016 || targetDocType == 1000045;
 			
 			IPAttributeInstance pai = PAttributeInstance.get(null, title, M_Warehouse_ID, M_Locator_ID, M_Product_ID, C_BPartner_ID, createAttribute);
 			if (pai.getM_AttributeSetInstance_ID() != -1)
