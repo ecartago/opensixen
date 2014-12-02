@@ -181,12 +181,12 @@ public class M_Production_Run extends SvrProcess {
 										log.severe("Production Product invalid quantity: "+product.getValue()+" - "+product.getName());
 										raiseError("@ProductionProductInvalidQuantity@: " + product.getName(), "");
 									}
+									// Check if lot is new
+									if (getLotNumberOfLocation(pline.getM_AttributeSetInstance_ID()) != 0) {
+										log.severe("Lot not is new: "+product.getValue()+" - "+product.getName());
+										raiseError("@ProductionProductLotNotNew@: " + product.getName(), "");
+									}
 								}	
-								// Check if lot is new
-								if (getLotNumberOfLocation(pline.getM_AttributeSetInstance_ID()) != 0) {
-									log.severe("Lot not is new: "+product.getValue()+" - "+product.getName());
-									raiseError("@ProductionProductLotNotNew@: " + product.getName(), "");
-								}
 							} else {
 								if (pline.getMovementQty().doubleValue() > 0) {
 									log.severe("Product invalid quantity: "+product.getValue()+" - "+product.getName());
