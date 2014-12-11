@@ -56,11 +56,11 @@ Bundle-ClassPath: lib/activemq-core-5.0.0.jar,
  lib/commons-beanutils.jar,
  lib/glazedlists-1.8.0_java15.jar,
  lib/mysql-connector-java-5.1.13-bin.jar,
- lib/poi-3.5-FINAL-20090928.jar,
  lib/ekit.jar,
  lib/miglayout-3.7.4-swing.jar,
  lib/xalan.jar,
- lib/serializer.jar
+ lib/serializer.jar,
+ lib/poi-3.6-20091214.jar
 Export-Package: bsh,
  bsh.classpath,
  bsh.collection,
