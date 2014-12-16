@@ -71,6 +71,10 @@ public class FinReport extends SvrProcess
 	private int					p_UserElement1_ID = 0;
 	/** User Element 2 Parameter		*/
 	private int					p_UserElement2_ID = 0;
+	/** ExcludeClose Parameter			*/
+	private boolean				p_ExcludeClose = true;
+	/** ExcludeOpen Parameter			*/
+	private boolean				p_ExcludeOpen  = true;
 	/** Details before Lines			*/
 	private boolean				p_DetailsSourceFirst = false;
 	/** Hierarchy						*/
@@ -139,6 +143,10 @@ public class FinReport extends SvrProcess
 				p_DetailsSourceFirst = "Y".equals(para[i].getParameter());
 			else if (name.equals("PA_ReportCube_ID"))
 				p_PA_ReportCube_ID = para[i].getParameterAsInt();
+			else if (name.equals("ExcludeClose"))
+				p_ExcludeClose = para[i].getParameterAsBoolean();
+			else if (name.equals("ExcludeOpen"))
+				p_ExcludeOpen = para[i].getParameterAsBoolean();
 			else
 				log.log(Level.SEVERE, "Unknown Parameter: " + name);
 		}
@@ -439,29 +447,38 @@ public class FinReport extends SvrProcess
 				}
 			}
 
-		//	Line Where
-		String s = m_lines[line].getWhereClause(p_PA_Hierarchy_ID);	//	(sources, posting type)
-		if (s != null && s.length() > 0)
-			select.append(" AND ").append(s);
-
-		//	Report Where
-		s = m_report.getWhereClause();
-		if (s != null && s.length() > 0)
-			select.append(" AND ").append(s);
-
-		//	PostingType
-		if (!m_lines[line].isPostingType())		//	only if not defined on line
-		{
-			String PostingType = m_columns[col].getPostingType();
-			if (PostingType != null && PostingType.length() > 0)
-				select.append(" AND PostingType='").append(PostingType).append("'");
-			// globalqss - CarlosRuiz
-			if (PostingType.equals(MReportColumn.POSTINGTYPE_Budget)) {
-				if (m_columns[col].getGL_Budget_ID() > 0)
-					select.append(" AND GL_Budget_ID=" + m_columns[col].getGL_Budget_ID());
+			//	Line Where
+			String s = m_lines[line].getWhereClause(p_PA_Hierarchy_ID);	//	(sources, posting type)
+			if (s != null && s.length() > 0)
+				select.append(" AND ").append(s);
+	
+			//	Report Where
+			s = m_report.getWhereClause();
+			if (s != null && s.length() > 0)
+				select.append(" AND ").append(s);
+	
+			//	PostingType
+			if (!m_lines[line].isPostingType())		//	only if not defined on line
+			{
+				String PostingType = m_columns[col].getPostingType();
+				if (PostingType != null && PostingType.length() > 0)
+					select.append(" AND PostingType='").append(PostingType).append("'");
+				// globalqss - CarlosRuiz
+				if (PostingType.equals(MReportColumn.POSTINGTYPE_Budget)) {
+					if (m_columns[col].getGL_Budget_ID() > 0)
+						select.append(" AND GL_Budget_ID=" + m_columns[col].getGL_Budget_ID());
+				}
+				// end globalqss
 			}
-			// end globalqss
-		}
+			// JournalType
+			if (p_PA_ReportCube_ID <= 0) {
+				String journaltype = "'S'";
+				if (!p_ExcludeClose)
+					journaltype += ", 'C'";	
+				if (!p_ExcludeOpen)
+					journaltype += ", 'O'";	
+				select.append(" AND Journaltype IN (").append(journaltype).append(")");	
+			}
 
 			if (m_columns[col].isColumnTypeSegmentValue())
 				select.append(m_columns[col].getWhereClause(p_PA_Hierarchy_ID));
