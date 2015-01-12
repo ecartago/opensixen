@@ -72,9 +72,9 @@ public class FinReport extends SvrProcess
 	/** User Element 2 Parameter		*/
 	private int					p_UserElement2_ID = 0;
 	/** ExcludeClose Parameter			*/
-	private boolean				p_ExcludeClose = true;
+	private boolean				p_IncludeClose = false;
 	/** ExcludeOpen Parameter			*/
-	private boolean				p_ExcludeOpen  = true;
+	private boolean				p_IncludeOpen  = false;
 	/** Details before Lines			*/
 	private boolean				p_DetailsSourceFirst = false;
 	/** Hierarchy						*/
@@ -143,10 +143,10 @@ public class FinReport extends SvrProcess
 				p_DetailsSourceFirst = "Y".equals(para[i].getParameter());
 			else if (name.equals("PA_ReportCube_ID"))
 				p_PA_ReportCube_ID = para[i].getParameterAsInt();
-			else if (name.equals("ExcludeClose"))
-				p_ExcludeClose = para[i].getParameterAsBoolean();
-			else if (name.equals("ExcludeOpen"))
-				p_ExcludeOpen = para[i].getParameterAsBoolean();
+			else if (name.equals("IncludeClose"))
+				p_IncludeClose = para[i].getParameterAsBoolean();
+			else if (name.equals("IncludeOpen"))
+				p_IncludeOpen = para[i].getParameterAsBoolean();
 			else
 				log.log(Level.SEVERE, "Unknown Parameter: " + name);
 		}
@@ -473,9 +473,9 @@ public class FinReport extends SvrProcess
 			// JournalType
 			if (p_PA_ReportCube_ID <= 0) {
 				String journaltype = "'S'";
-				if (!p_ExcludeClose)
+				if (p_IncludeClose)
 					journaltype += ", 'C'";	
-				if (!p_ExcludeOpen)
+				if (p_IncludeOpen)
 					journaltype += ", 'O'";	
 				select.append(" AND Journaltype IN (").append(journaltype).append(")");	
 			}
