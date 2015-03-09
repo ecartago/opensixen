@@ -52,7 +52,7 @@ public class AttributeSetInstanceModelValidator implements ModelValidator {
 			// Check GuaranteeDate >= ManufactureDate
 			Timestamp guaranteeDate = m_AttributeSetInstance.getGuaranteeDate();
 			Timestamp manufactureDate = (Timestamp) m_AttributeSetInstance.get_Value("ManufactureDate");
-			if (guaranteeDate.compareTo(manufactureDate) < 0) {
+			if (guaranteeDate != null && manufactureDate != null && guaranteeDate.compareTo(manufactureDate) < 0) {
 				result = Msg.translate(ctx, "AttributeSetInstanceDatesInvalid");
 			}
 		}
