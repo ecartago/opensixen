@@ -1717,5 +1717,15 @@ public class VLookup extends JComponent
 		m_stopediting = stopediting;
 	}
 
+	/**
+	 * Getter method for the property m_text
+	 * @return m_text peroperty
+	 */
+	public CTextField getM_text() {
+		return m_text;
+	}
+
+	
+	
 
 }	//	VLookup
