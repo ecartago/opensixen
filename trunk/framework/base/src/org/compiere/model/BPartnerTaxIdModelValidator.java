@@ -6,7 +6,7 @@ import java.util.Properties;
 import org.compiere.util.CLogger;
 import org.compiere.util.Msg;
 
-public class BPartnerVatNifModelValidation implements ModelValidator {
+public class BPartnerTaxIdModelValidator implements ModelValidator {
 
 	protected CLogger log = CLogger.getCLogger (getClass());
 	private int m_AD_Client_ID;
@@ -44,8 +44,8 @@ public class BPartnerVatNifModelValidation implements ModelValidator {
 			if (m_BPartner.isActive()) {
 				
 				// Check if exists a c_bpartner with that taxid
-				List<X_C_BPartner> partners = new Query(ctx, X_C_BPartner.Table_Name , "isactive = 'Y' and taxid = ?", trxName)
-				  .setParameters(m_BPartner.getTaxID())
+				List<X_C_BPartner> partners = new Query(ctx, X_C_BPartner.Table_Name , "isactive = 'Y' and taxid = ? and c_bpartner_id <> ?", trxName)
+				  .setParameters(m_BPartner.getTaxID(), m_BPartner.get_ID())
 				  .list();
 				if (partners.size() > 0) {
 					result = Msg.translate(ctx, "BPartnerVatNifExisting") + ": "+partners.get(0).getName();
