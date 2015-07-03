@@ -122,7 +122,8 @@ public class ExpenseAPInvoice extends SvrProcess
 					log.info("New Invoice for " + bp);
 					invoice = new MInvoice (getCtx(), 0, null);
 					invoice.setClientOrg(te.getAD_Client_ID(), te.getAD_Org_ID());
-					invoice.setC_DocTypeTarget_ID(MDocType.DOCBASETYPE_APInvoice);	//	API
+					invoice.setC_DocTypeTarget_ID(MDocType.ID_LIQ_VIAJE);
+					invoice.setIsSOTrx(false);
 					invoice.setDocumentNo (te.getDocumentNo());
 					//
 					invoice.setBPartner(bp);
@@ -189,6 +190,7 @@ public class ExpenseAPInvoice extends SvrProcess
 					il.setC_ProjectTask_ID(line.getC_ProjectTask_ID());
 					il.setC_Activity_ID(line.getC_Activity_ID());
 					il.setC_Campaign_ID(line.getC_Campaign_ID());
+					il.setAD_Org_ID(line.getAD_Org_ID());
 					
 					//Enrique Cartagena (Monteloeder s.l.) <Start>
 					il.setUser1_ID(User1_ID);

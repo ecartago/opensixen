@@ -357,6 +357,9 @@ public class X_C_DocType extends PO implements I_C_DocType, I_Persistent
 	public static final String DOCBASETYPE_DistributionOrder = "DOO";
 	/** Manufacturing Cost Collector = MCC */
 	public static final String DOCBASETYPE_ManufacturingCostCollector = "MCC";
+	/** IDfor the document type Liquidación de Viaje **/
+	public static final int ID_LIQ_VIAJE = 1000049;
+	
 	/** Set Document BaseType.
 		@param DocBaseType 
 		Logical type of document
