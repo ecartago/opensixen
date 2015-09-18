@@ -1,0 +1,1 @@
+ERP based on Compiere, Adempiere and OpenXpertya code.
